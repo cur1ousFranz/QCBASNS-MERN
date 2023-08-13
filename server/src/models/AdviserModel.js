@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-
 const adviserSchema = new Schema(
   {
     user_id: {
@@ -40,4 +39,4 @@ const adviserSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Adviser", adviserSchema);
+module.exports = mongoose.model("Adviser", adviserSchema);

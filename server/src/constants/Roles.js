@@ -1,1 +1,5 @@
-export const ADVISER = "adviser";
+const ADVISER = "adviser";
+
+module.exports = {
+  ADVISER,
+};

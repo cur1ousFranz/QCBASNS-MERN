@@ -1,9 +1,9 @@
-import { ADVISER } from "../constants/Roles";
-import User from "../models/UserModel";
-import Adviser from "../models/AdviserModel";
-import { createToken } from "../utils/CreateToken";
+const { ADVISER } = require("../constants/Roles");
+const User = require("../models/UserModel");
+const Adviser = require("../models/AdviserModel");
+const createToken = require("../utils/CreateToken");
 
-export const createAdviser = async (req, res) => {
+const createAdviser = async (req, res) => {
   const {
     email,
     password,
@@ -26,11 +26,11 @@ export const createAdviser = async (req, res) => {
   if (!birthdate) errorFields.push("birthdate");
   if (!contact_number) errorFields.push("contact_number");
   if (errorFields.length > 0) {
-    res.status(400).json({ error: errorMessage, errorFields });
+    return res.status(400).json({ error: errorMessage, errorFields });
   }
 
   try {
-    const user = await User.signUp(email, password, ADVISER);
+    const user = await User.signup(email, password, ADVISER);
     const adviser = await Adviser.create({
       user_id: user._id,
       first_name,
@@ -43,9 +43,12 @@ export const createAdviser = async (req, res) => {
     });
 
     const token = createToken(user._id);
-    res.status(200).json({ email, token, id: adviser._id });
+    return res.status(200).json({ email, token, id: adviser._id });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
+module.exports = {
+  createAdviser,
+};
