@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import validator from "validator";
 
 const Schema = mongoose.Schema;
 
@@ -36,4 +36,4 @@ userSchema.statics.signup = async function (email, password, role) {
   return user;
 };
 
-module.export = mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema);
