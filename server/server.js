@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const app = express();
 
 // MongoDB connection
@@ -14,3 +15,5 @@ mongoose
   .catch((error) => {
     console.log(`Something went wrong: ${error}`);
   });
+
+app.use(cors({ origin: "*" }));
