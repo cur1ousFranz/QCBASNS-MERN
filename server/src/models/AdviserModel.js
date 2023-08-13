@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const adviserSchema = new Schema(
   {
     user_id: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     first_name: {
