@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
 const adviser = require("./src/routes/adviser");
+const user = require("./src/routes/user");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -26,3 +27,4 @@ mongoose
 
 // Routes
 app.use(adviser);
+app.use(user);
