@@ -3,7 +3,7 @@ import User from "../models/UserModel";
 import Adviser from "../models/AdviserModel";
 import { createToken } from "../utils/CreateToken";
 
-export const signUp = async (req, res) => {
+export const createAdviser = async (req, res) => {
   const {
     email,
     password,
