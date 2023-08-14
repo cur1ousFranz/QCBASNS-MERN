@@ -10,7 +10,7 @@ const login = async (req, res) => {
     const token = createToken(user._id);
     return res.status(200).json({ email, token, id: adviser._id });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
 };
 
