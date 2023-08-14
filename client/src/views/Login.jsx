@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { loginUser } from "../lib/loginUser";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const { dispatch } = useContext(AuthContext);
 
   const submitForm = async (e) => {
     e.preventDefault();
     setError(null);
 
+    try {
+      const data = await loginUser(email, password);
+      dispatch({ type: "LOGIN", payload: data });
+      localStorage.setItem("user", JSON.stringify(data));
+    } catch (error) {
+      if (error.response.data.error) {
+        setError(error.response.data.error);
+      }
+    }
   };
 
   return (
@@ -43,7 +55,7 @@ export default function Login() {
               <div className="flex items-center h-5">
                 <input
                   type="checkbox"
-                  className="w-4s h-4 bg-gray-100 rounded border-gray-300 focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 accent-orange-500"
+                  className="w-4s h-4 bg-gray-100 rounded border-gray-300 focus:ring-gray-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 accent-gray-500"
                 />
                 <label className="ml-2 text-sm text-gray-900">
                   Remember me
@@ -51,13 +63,11 @@ export default function Login() {
               </div>
               <p className="text-sm text-blue-500 underline">Forgot pasword?</p>
             </div>
-            <button className="px-2 py-2 w-full rounded-md text-white bg-orange-500">
+            <button className="px-2 py-2 w-full rounded-md text-white bg-gray-500 hover:bg-gray-400">
               Sign in
             </button>
             <hr />
-            <p className="text-sm ">
-              Don't have an account yet?{" "}
-            </p>
+            <p className="text-sm ">Don't have an account yet? </p>
           </div>
         </form>
       </div>
