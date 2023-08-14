@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { loginUser } from "../lib/loginUser";
 import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -67,7 +68,12 @@ export default function Login() {
               Sign in
             </button>
             <hr />
-            <p className="text-sm ">Don't have an account yet? </p>
+            <p className="text-sm ">
+              Don't have an account yet?{" "}
+              <Link to={"/register"} className="underline text-blue-500">
+                Register
+              </Link>
+            </p>
           </div>
         </form>
       </div>
