@@ -21,7 +21,6 @@ const adviserSchema = new Schema(
     },
     suffix: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,
