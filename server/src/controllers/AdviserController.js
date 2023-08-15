@@ -15,16 +15,18 @@ const createAdviser = async (req, res) => {
     birthdate,
     contact_number,
   } = req.body;
+  console.log(req.body);
 
   const errorFields = [];
   const errorMessage = "Please fill in all fields";
   if (!first_name) errorFields.push("first_name");
   if (!middle_name) errorFields.push("middle_name");
   if (!last_name) errorFields.push("last_name");
-  if (!suffix) errorFields.push("suffix");
   if (!gender) errorFields.push("gender");
   if (!birthdate) errorFields.push("birthdate");
   if (!contact_number) errorFields.push("contact_number");
+  if (!email) errorFields.push("email");
+  if (!password) errorFields.push("password");
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
@@ -45,7 +47,7 @@ const createAdviser = async (req, res) => {
     const token = createToken(user._id);
     return res.status(200).json({ email, token, id: adviser._id });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
   }
 };
 
