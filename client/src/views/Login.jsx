@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
-import { loginUser } from "../lib/loginUser";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import axiosClient from "../utils/AxiosClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,20 +14,24 @@ export default function Login() {
     setError(null);
 
     try {
-      const data = await loginUser(email, password);
-      dispatch({ type: "LOGIN", payload: data });
-      localStorage.setItem("user", JSON.stringify(data));
+      const response = await axiosClient.post("/user", { email, password });
+      const data = response.data;
+      if (response.status === 200) {
+        dispatch({ type: "LOGIN", payload: data });
+        localStorage.setItem("user", JSON.stringify(data));
+      }
     } catch (error) {
       if (error.response.data.error) {
         setError(error.response.data.error);
       }
+      console.log(error);
     }
   };
 
   return (
-    <div className="flex justify-between py-6 px-24">
-      <div></div>
-      <div className="border shadow-sm rounded-md px-6 py-4 w-96">
+    <div
+      className="py-24 h-screen bg-slate-50">
+      <div className="border mx-auto shadow-sm rounded-md px-6 py-4 w-96 bg-white">
         <h1 className="font-semibold text-2xl">Log in</h1>
         <form onSubmit={submitForm}>
           <div className="py-6 space-y-5">
