@@ -1,10 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SIDEBAR_LIST_STYLE } from "../../constants/Constant";
+import {
+  PATHNAME,
+  SELECTED_SIDEBAR_LIST_STYLE,
+  SIDEBAR_LIST_STYLE,
+} from "../../constants/Constant";
 
-export default function Sidebar() {
+export default function Sidebar({ menu }) {
   return (
-    <div className="w-72 h-screen">
+    <div className="h-screen md:w-64 lg:w-72">
       {/* <button
         data-drawer-target="sidebar"
         data-drawer-toggle="sidebar"
@@ -28,42 +32,62 @@ export default function Sidebar() {
         </svg>
       </button> */}
 
-      <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+      <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50">
         <div className="py-6 flex justify-center">
-          <img src="/img/logo.png" alt="" />
+          <img src="/img/logo.png" className="object-fit w-1/2" alt="" />
         </div>
         <ul className="space-y-2 font-medium">
           <li>
-            <Link to={"/student"} className={SIDEBAR_LIST_STYLE}>
+            <Link
+              to={"/student"}
+              className={
+                menu === PATHNAME.STUDENT
+                  ? SELECTED_SIDEBAR_LIST_STYLE
+                  : SIDEBAR_LIST_STYLE
+              }
+            >
               <img src="/img/students.svg" alt="" />
               <span className="flex-1 ml-3 whitespace-nowrap">Students</span>
             </Link>
           </li>
           <li>
-            <Link to={"/attendance"} className={SIDEBAR_LIST_STYLE}>
+            <Link
+              to={"/attendance"}
+              className={
+                menu === PATHNAME.ATTENDANCE
+                  ? SELECTED_SIDEBAR_LIST_STYLE
+                  : SIDEBAR_LIST_STYLE
+              }
+            >
               <img src="/img/attendance.svg" alt="" />
               <span className="flex-1 ml-3 whitespace-nowrap">Attendance</span>
             </Link>
           </li>
           <li>
-            <Link to={"/report"} className={SIDEBAR_LIST_STYLE}>
+            <Link
+              to={"/report"}
+              className={
+                menu === PATHNAME.REPORT
+                  ? SELECTED_SIDEBAR_LIST_STYLE
+                  : SIDEBAR_LIST_STYLE
+              }
+            >
               <img src="/img/report.svg" alt="" />
               <span className="flex-1 ml-3 whitespace-nowrap">Report</span>
             </Link>
           </li>
           <li>
-            <Link to={"/message"} className={SIDEBAR_LIST_STYLE}>
+            <Link
+              to={"/message"}
+              className={
+                menu === PATHNAME.MESSAGE
+                  ? SELECTED_SIDEBAR_LIST_STYLE
+                  : SIDEBAR_LIST_STYLE
+              }
+            >
               <img src="/img/message.svg" alt="" />
               <span className="flex-1 ml-3 whitespace-nowrap">Message</span>
             </Link>
-          </li>
-          <li>
-            <div className={SIDEBAR_LIST_STYLE}>
-              <img src="/img/logout.svg" alt="" />
-              <button>
-                <span className="flex-1 ml-3 whitespace-nowrap">Logout</span>
-              </button>
-            </div>
           </li>
         </ul>
       </div>
