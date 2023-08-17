@@ -1,13 +1,21 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function Navbar() {
-  const { user } = useContext(AuthContext);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+  const { user, dispatch } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("user");
+  };
+
   return (
-    <div className="py-6 px-6 border-b flex justify-between">
+    <div className="py-6 px-12 border-b flex justify-between">
       <div className="font-semibold text-xl">QCBASNS</div>
-      {!user && (
+      {!user ? (
         <div className="space-x-6">
           <Link to={"/login"} className="text-lg">
             Login
@@ -15,6 +23,35 @@ export default function Navbar() {
           <Link to={"/register"} className="text-lg">
             Register
           </Link>
+        </div>
+      ) : (
+        <div>
+          <img
+            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+            src="/img/person.svg"
+            className="cursor-pointer"
+            alt=""
+          />
+
+          {showProfileDropdown && (
+            <div
+              onMouseLeave={() => setShowProfileDropdown(false)}
+              className="origin-top-right absolute right-0 mr-4 mt-2 w-44 z-10 rounded-md shadow-lg"
+            >
+              <div className="rounded-md border shadow-xs text-start bg-white">
+                <div className="p-2 hover:bg-gray-100">
+                  <Link
+                    to={"/"}
+                    onClick={handleLogout}
+                    className="w-full flex"
+                  >
+                    <span className="mr-2"><img src="/img/logout.svg" alt="" /></span>
+                    Log out
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
