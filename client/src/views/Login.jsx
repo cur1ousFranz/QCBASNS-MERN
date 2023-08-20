@@ -30,7 +30,14 @@ export default function Login() {
 
   return (
     <div
-      className="py-24 h-screen bg-slate-50">
+      className="py-24 h-screen bg-slate-50"
+        // style={{
+        //   backgroundImage: 'url("/img/logo.png")',
+        //   backgroundRepeat: 'no-repeat',
+        //   backgroundPosition: 'center',
+        //   backgroundSize: '40%'
+        // }}
+      >
       <div className="border mx-auto shadow-sm rounded-md px-6 py-4 w-96 bg-white">
         <h1 className="font-semibold text-2xl">Log in</h1>
         <form onSubmit={submitForm}>
