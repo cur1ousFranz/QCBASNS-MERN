@@ -28,7 +28,11 @@ const semesterSchema = new Schema(
       type: String,
       required: true,
     },
-    school_year: {
+    start_year: {
+      type: String,
+      required: true,
+    },
+    end_year: {
       type: String,
       required: true,
     },
