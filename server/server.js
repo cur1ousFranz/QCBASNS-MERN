@@ -6,6 +6,7 @@ const app = express();
 const adviser = require("./src/routes/adviser");
 const user = require("./src/routes/user");
 const semester = require("./src/routes/semester");
+const track = require("./src/routes/track");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -30,3 +31,4 @@ mongoose
 app.use(adviser);
 app.use(user);
 app.use(semester);
+app.use(track);
