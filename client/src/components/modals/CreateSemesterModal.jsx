@@ -183,9 +183,10 @@ const CreateSemesterModal = ({ toggleModal }) => {
                                 }
                                 type="radio"
                                 name="strand"
+                                checked={strand.strand_name === selectedStrand ? true : false}
                               />
                               <label>{strand.strand_name}</label>
-                            </div>
+                            </div>   
                           )
                         )}
                       </div>
