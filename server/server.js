@@ -7,13 +7,14 @@ const adviser = require("./src/routes/adviser");
 const user = require("./src/routes/user");
 const semester = require("./src/routes/semester");
 const track = require("./src/routes/track");
+const student = require("./src/routes/student");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use((req, res, next) => {
-  next()
-})
+  next();
+});
 app.use(cors({ origin: "*" }));
 // MongoDB connection
 mongoose
@@ -32,3 +33,4 @@ app.use(adviser);
 app.use(user);
 app.use(semester);
 app.use(track);
+app.use(student);
