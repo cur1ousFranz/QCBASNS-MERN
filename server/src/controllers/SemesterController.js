@@ -1,9 +1,9 @@
-const AdviserModel = require("../models/AdviserModel");
-const SemesterModel = require("../models/SemesterModel");
+const Adviser = require("../models/AdviserModel");
+const Semester = require("../models/SemesterModel");
 const extractUserID = require("../utils/ExtractUserId");
 
 const getAllSemester = async (req, res) => {
-  const semesters = await SemesterModel.find().sort('createdAt');
+  const semesters = await Semester.find().sort("createdAt");
   return res.status(200).json(semesters);
 };
 
@@ -30,7 +30,7 @@ const createSemester = async (req, res) => {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
   const userId = extractUserID(req);
-  const adviser = await AdviserModel.findOne({ user_id: userId });
+  const adviser = await Adviser.findOne({ user_id: userId });
   const newSemester = {
     adviser_id: adviser._id,
     semester,
@@ -41,11 +41,32 @@ const createSemester = async (req, res) => {
     start_year,
     end_year,
   };
-  const result = await SemesterModel.create(newSemester);
+  const result = await Semester.create(newSemester);
   return res.status(200).json(result);
+};
+
+const updateSemester = async (req, res) => {
+  const updated = req.body;
+  const userId = extractUserID(req);
+  const id = req.params;
+  const adviser = await Adviser.findById({ user_id: userId });
+  console.log(updated);
+  // await Semester.findByIdAndUpdate(
+  //   { adviser_id: adviser._id, _id: id },
+  //   { ...updated }
+  // );
+
+  // const semester = await Semester.findById({ _id: id})
+
+  // if (!updateSemester) {
+  //   return res.status(400).json({ error: "Cannot find semester" });
+  // }
+
+  return res.status(200).json(semester);
 };
 
 module.exports = {
   getAllSemester,
   createSemester,
+  updateSemester,
 };
