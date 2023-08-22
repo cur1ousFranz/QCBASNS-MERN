@@ -15,7 +15,6 @@ const createAdviser = async (req, res) => {
     birthdate,
     contact_number,
   } = req.body;
-  console.log(req.body);
 
   const errorFields = [];
   const errorMessage = "Please fill in all fields";
