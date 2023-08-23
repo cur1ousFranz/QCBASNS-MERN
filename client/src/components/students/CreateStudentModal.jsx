@@ -31,6 +31,10 @@ const CreateStudentModal = ({ toggleModal }) => {
   const [parentContactNumber, setParentContactNumber] = useState("");
   const [relationship, setRelationship] = useState("");
 
+  //Error fields
+  const [errorFields, setErrorFields] = useState([]);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
   //TODO:: DISPLAY ERROR EMPTY FIELDS
 
   useState(() => {
@@ -49,6 +53,76 @@ const CreateStudentModal = ({ toggleModal }) => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    const errors = [];
+    setErrorFields(() => errors);
+    setShowErrorMessage(false);
+
+    // Student details
+    if (!schoolId) errors.push("schoolId");
+    if (!firstName) errors.push("firstName");
+    if (!middleName) errors.push("middleName");
+    if (!lastName) errors.push("lastName");
+    if (!birthDate) errors.push("birthDate");
+    if (!village) errors.push("village");
+    if (!street) errors.push("street");
+    // Parent details
+    if (!parentFirstName) errors.push("parentFirstName");
+    if (!parentMiddleName) errors.push("parentMiddleName");
+    if (!parentLastName) errors.push("parentLastName");
+    if (!parentGender) errors.push("parentGender");
+    if (!parentContactNumber) errors.push("parentContactNumber");
+    if (!relationship) errors.push("relationship");
+
+    if (errors.length === 0) {
+      const studentSuff = showStudentSuffix === false ? suffix : "N/A";
+      const parentSuff = setShowParentSuffix === false ? parentSuffix : "N/A";
+
+      const newStudentData = {
+        school_id: schoolId,
+        first_name: firstName,
+        middle_name: middleName,
+        last_name: lastName,
+        gender,
+        suffix: studentSuff,
+        birthdate: birthDate,
+        contact_number: contactNumber,
+        parent: {
+          first_name: parentFirstName,
+          middle_name: parentMiddleName,
+          last_name: parentLastName,
+          suffix: parentSuff,
+          gender: parentGender,
+          contact_number: parentContactNumber,
+          relationship: relationship,
+        },
+        address: {
+          village,
+          street,
+          barangay,
+          city,
+        },
+      };
+
+      try {
+        const response = await axiosClient.post("/student", newStudentData);
+        if (response.status === 200) {
+          // Recently added student should be added in semester as well
+          const student = response.data;
+        //   const res = await axiosClient.put("/semester/:id", {
+        //     student_id: student._id,
+        //   });
+
+        //   if (res.status === 200) {
+        //     console.log(res.data);
+        //   }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      setErrorFields(() => errors);
+      setShowErrorMessage(true);
+    }
   };
 
   const handleCancel = () => {
@@ -67,8 +141,13 @@ const CreateStudentModal = ({ toggleModal }) => {
       className="fixed inset-0 flex items-center px-4 justify-center modal-backdrop bg-opacity-50 bg-gray-50"
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
-        <header className="modal-header px-4 py-4 mt-4">
+        <header className="modal-header border-b px-4 py-6 mt-4">
           <p className="text-xl">New Student</p>
+          {/* {showErrorMessage && (
+            <p className="text-sm absolute text-red-500">
+              Please fill in all fields*
+            </p>
+          )} */}
         </header>
 
         <main className="px-4">
@@ -80,59 +159,83 @@ const CreateStudentModal = ({ toggleModal }) => {
             <p className="text-lg">Student Details</p>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>School ID</label>
                   <input
                     type="text"
                     value={schoolId}
                     onChange={(e) => setSchoolid(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("schoolId")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("schoolId") && (
+                    <p className="text-sm absolute text-red-500">
+                      School ID is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>First Name</label>
                   <input
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("firstName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("firstName") && (
+                    <p className="text-sm absolute text-red-500">
+                      First Name is required
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Middle Name</label>
                   <input
                     type="text"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("middleName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("middleName") && (
+                    <p className="text-sm absolute text-red-500">
+                      Middle Name is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Last Name</label>
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("lastName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("lastName") && (
+                    <p className="text-sm absolute text-red-500">
+                      Last Name is required
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <div className="flex justify-between">
                     <label>Suffix (Optional)</label>
                     <input
@@ -159,7 +262,7 @@ const CreateStudentModal = ({ toggleModal }) => {
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Gender</label>
                   <select
                     onChange={(e) => setGender(() => e.target.value)}
@@ -175,20 +278,26 @@ const CreateStudentModal = ({ toggleModal }) => {
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Birthdate</label>
                   <input
                     onChange={(e) => setBirthDate(e.target.value)}
                     value={birthDate}
                     type="date"
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("birthDate")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("birthDate") && (
+                    <p className="text-sm absolute text-red-500">
+                      Birthdate is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
-                  <label>Contact Number</label>
+                <div className="w-full relative">
+                  <label>Contact Number (Optional)</label>
                   <input
                     onKeyDown={numbersOnly}
                     type="text"
@@ -197,53 +306,68 @@ const CreateStudentModal = ({ toggleModal }) => {
                     className="px-2 py-2 w-full bg-gray-100 rounded-md"
                     maxLength={11}
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
               </div>
               <hr />
               <p className="text-lg">Parent Details</p>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>First Name</label>
                   <input
                     type="text"
                     value={parentFirstName}
                     onChange={(e) => setParentFirstname(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("parentFirstName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("parentFirstName") && (
+                    <p className="text-sm absolute text-red-500">
+                      First Name is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Middle Name</label>
                   <input
                     type="text"
                     value={parentMiddleName}
                     onChange={(e) => setParentMiddleName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("parentMiddleName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("parentMiddleName") && (
+                    <p className="text-sm absolute text-red-500">
+                      Middle Name is required
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Last Name</label>
                   <input
                     type="text"
                     value={parentLastName}
                     onChange={(e) => setParentLastName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("parentLastName")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("parentLastName") && (
+                    <p className="text-sm absolute text-red-500">
+                      Last Name is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <div className="flex justify-between">
                     <label>Suffix (Optional)</label>
                     <input
@@ -272,7 +396,7 @@ const CreateStudentModal = ({ toggleModal }) => {
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Gender</label>
                   <select
                     onChange={(e) => setParentGender(() => e.target.value)}
@@ -286,65 +410,89 @@ const CreateStudentModal = ({ toggleModal }) => {
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Contact Number</label>
                   <input
                     onKeyDown={numbersOnly}
                     onChange={(e) => setParentContactNumber(e.target.value)}
                     value={parentContactNumber}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("parentContactNumber")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                     maxLength={11}
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("parentContactNumber") && (
+                    <p className="text-sm absolute text-red-500">
+                      Contact Number is required
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Relationship</label>
                   <input
                     type="text"
                     value={relationship}
                     onChange={(e) => setRelationship(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("relationship")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("relationship") && (
+                    <p className="text-sm absolute text-red-500">
+                      Relationship is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full"></div>
+                <div className="w-full relative"></div>
               </div>
               <hr />
               <p className="text-lg">Address Details</p>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Village</label>
                   <input
                     type="text"
                     value={village}
                     onChange={(e) => setVillage(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("village")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("village") && (
+                    <p className="text-sm absolute text-red-500">
+                      Village is required
+                    </p>
+                  )}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Street</label>
                   <input
                     type="text"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={
+                      !errorFields.includes("street")
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
                   />
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                  {errorFields.includes("street") && (
+                    <p className="text-sm absolute text-red-500">
+                      Street is required
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>Barangay</label>
                   <select
                     onChange={(e) => setBarangay(() => e.target.value)}
@@ -362,7 +510,7 @@ const CreateStudentModal = ({ toggleModal }) => {
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
                 </div>
-                <div className="w-full">
+                <div className="w-full relative">
                   <label>City/Municipality</label>
                   <input
                     type="text"
