@@ -1,3 +1,7 @@
 const { seedTracks } = require("./src/seeders/TrackSeeder");
+const { seedBarangays } = require("./src/seeders/BarangaySeeder");
 
-seedTracks();
+(async () => {
+    await seedBarangays();
+    await seedTracks();
+})()
