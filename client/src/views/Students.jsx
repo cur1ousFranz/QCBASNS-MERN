@@ -42,7 +42,7 @@ export default function Students() {
       if (showStudentSemesterId) {
         try {
           const response = await axiosClient.get(
-            `/student/semester/${showStudentSemesterId}`
+            `/semester/${showStudentSemesterId}/student`
           );
           if (response.status === 200) {
             console.log(response.data);
