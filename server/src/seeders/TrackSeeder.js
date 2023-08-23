@@ -59,7 +59,7 @@ async function seedTracks() {
       await track.save();
     }
 
-    console.log("Seed data inserted successfully.");
+    console.log("Tracks data seed successfully.");
   } catch (error) {
     console.error(`Error seeding data: ${error}`);
   } finally {
