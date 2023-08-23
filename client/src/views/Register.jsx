@@ -89,9 +89,8 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex justify-between py-6 px-24">
-      <div></div>
-      <div className="border shadow-sm rounded-md px-6 py-4 w-1/3">
+    <div className="flex py-6 px-24">
+      <div className="border shadow-sm mx-auto rounded-md px-6 py-4 w-1/3">
         <h1 className="font-semibold text-2xl mb-1">Register</h1>
         {errorMessage && (
           <p className="text-sm absolute text-red-500">{errorMessage}</p>
