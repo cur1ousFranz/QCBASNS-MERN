@@ -60,6 +60,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    return // FIX BUG HERE:::
     setErrorStrand(false);
     setErrorSection(false);
 
@@ -159,7 +160,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
                   value={track}
                   className="px-2 py-2 w-full bg-gray-100 rounded-md"
                 >
-                  {tracks &&
+                  {tracks.length > 0 &&
                     tracks.map((track, index) => (
                       <option key={track._id} value={track.name}>
                         {track.name}
