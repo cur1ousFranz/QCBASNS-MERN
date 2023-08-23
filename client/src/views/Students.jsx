@@ -135,7 +135,7 @@ export default function Students() {
           )}
 
           {showCreateStudentModal && (
-            <CreateStudentModal toggleModal={toggleCreateStudentModal} />
+            <CreateStudentModal toggleModal={toggleCreateStudentModal} semesterId={showStudentSemesterId} />
           )}
         </div>
       </div>
