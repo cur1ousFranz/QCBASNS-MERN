@@ -29,6 +29,22 @@ const CreateStudentModal = ({ toggleModal }) => {
   const [showStudentSuffix, setShowStudentSuffix] = useState(true);
   const [showParentSuffix, setShowParentSuffix] = useState(true);
 
+  const [barangayList, setBarangayList] = useState([]);
+
+  useState(() => {
+    const getAllBarangays = async () => {
+      try {
+        const response = await axiosClient.get("/barangay");
+        if (response.status === 200) {
+          setBarangayList(() => response.data);
+          setBarangay(() => response.data[0].name)
+        }
+      } catch (error) {}
+    };
+
+    getAllBarangays();
+  }, []);
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
   };
@@ -329,12 +345,18 @@ const CreateStudentModal = ({ toggleModal }) => {
               <div className="w-full">
                 {/* TODO:: DISPLAY BARANGAYS */}
                 <label>Barangay</label>
-                <input
-                  type="text"
-                  value={village}
-                  onChange={(e) => setVillage(e.target.value)}
+                <select
+                  onChange={(e) => setBarangay(() => e.target.value)}
+                  value={barangay}
                   className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                />
+                >
+                  {barangayList.length > 0 &&
+                    barangayList.map((barangay) => (
+                      <option key={barangay._id} value={barangay.name}>
+                        {barangay.name}
+                      </option>
+                    ))}
+                </select>
                 {/* {error && (
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
