@@ -9,16 +9,16 @@ export default function StudentListTable() {
             ID No.
           </th>
           <th scope="col" className="px-6 py-3">
-            Name
+            Full Name
           </th>
           <th scope="col" className="px-6 py-3">
-            Date
+            Grade
           </th>
           <th scope="col" className="px-6 py-3">
-            Time Out (AM)
+            Contact
           </th>
           <th scope="col" className="px-6 py-3">
-            Time Out (PM)
+            QR
           </th>
         </tr>
       </thead>
