@@ -8,6 +8,7 @@ import { SemesterContext } from "../context/SemesterContext";
 import EditSemesterModal from "../components/modals/EditSemesterModal";
 import StudentListTable from "../components/students/StudentListTable";
 import SemesterListTable from "../components/semester/SemesterListTable";
+import CreateStudentModal from "../components/students/CreateStudentModal";
 
 export default function Students() {
   const location = useLocation();
@@ -18,7 +19,9 @@ export default function Students() {
   const [selectedSemesterId, setSelecteSemesterId] = useState(null);
   const [showEditSemesterModal, setShowEditSemesterModal] = useState(false);
   const [showStudentList, setShowStudentList] = useState(false);
+  const [showCreateStudentModal, setShowCreateStudentModal] = useState(false);
 
+  // Used to fetch all students from specific semester
   const [showStudentSemesterId, setShowSudentSemesterId] = useState("");
 
   const handleShowSemesterModal = (value) => setShowSemesterModal(() => value);
@@ -62,6 +65,7 @@ export default function Students() {
   };
 
   const toggleEditSemesterModal = (value) => setShowEditSemesterModal(value);
+  const toggleCreateStudentModal = (value) => setShowCreateStudentModal(value);
 
   return (
     <div className="w-full">
@@ -81,14 +85,22 @@ export default function Students() {
               </div>
             )}
             {showStudentList && (
-              <div className="flex space-x-3">
-                <img
-                  onClick={() => setShowStudentList(false)}
-                  className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
-                  src="/img/arrow-back.svg"
-                  alt=""
-                />
-                <Header title="Students" />
+              <div className="flex justify-between space-x-3 w-full">
+                <div className="flex">
+                  <img
+                    onClick={() => setShowStudentList(false)}
+                    className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
+                    src="/img/arrow-back.svg"
+                    alt=""
+                  />
+                  <Header title="Students" />
+                </div>
+                <button
+                  onClick={() => setShowCreateStudentModal(true)}
+                  className="px-2 py-2 text-sm rounded-md text-gray-700 bg-green-400"
+                >
+                  New Student
+                </button>
               </div>
             )}
           </div>
@@ -120,6 +132,10 @@ export default function Students() {
                 semesterId={selectedSemesterId}
               />
             </div>
+          )}
+
+          {showCreateStudentModal && (
+            <CreateStudentModal toggleModal={toggleCreateStudentModal} />
           )}
         </div>
       </div>
