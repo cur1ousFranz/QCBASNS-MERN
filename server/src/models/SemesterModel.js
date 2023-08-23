@@ -28,6 +28,13 @@ const semesterSchema = new Schema(
       type: String,
       required: true,
     },
+    students: {
+      type: [
+        {
+          student_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+        },
+      ],
+    },
     start_year: {
       type: String,
       required: true,
