@@ -4,6 +4,11 @@ import { Alert } from "../../utils/Alert";
 import numbersOnly from "../../utils/NumberKeys";
 
 const CreateStudentModal = ({ toggleModal }) => {
+  const [barangayList, setBarangayList] = useState([]);
+
+  const [showStudentSuffix, setShowStudentSuffix] = useState(true);
+  const [showParentSuffix, setShowParentSuffix] = useState(true);
+
   const [schoolId, setSchoolid] = useState("");
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -15,7 +20,7 @@ const CreateStudentModal = ({ toggleModal }) => {
   const [village, setVillage] = useState("");
   const [street, setStreet] = useState("");
   const [barangay, setBarangay] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("General Santos City");
 
   //Parent fields
   const [parentFirstName, setParentFirstname] = useState("");
@@ -26,10 +31,7 @@ const CreateStudentModal = ({ toggleModal }) => {
   const [parentContactNumber, setParentContactNumber] = useState("");
   const [relationship, setRelationship] = useState("");
 
-  const [showStudentSuffix, setShowStudentSuffix] = useState(true);
-  const [showParentSuffix, setShowParentSuffix] = useState(true);
-
-  const [barangayList, setBarangayList] = useState([]);
+  //TODO:: DISPLAY ERROR EMPTY FIELDS
 
   useState(() => {
     const getAllBarangays = async () => {
@@ -37,7 +39,7 @@ const CreateStudentModal = ({ toggleModal }) => {
         const response = await axiosClient.get("/barangay");
         if (response.status === 200) {
           setBarangayList(() => response.data);
-          setBarangay(() => response.data[0].name)
+          setBarangay(() => response.data[0].name);
         }
       } catch (error) {}
     };
@@ -313,65 +315,71 @@ const CreateStudentModal = ({ toggleModal }) => {
                 </div>
                 <div className="w-full"></div>
               </div>
-            </div>
-            <p className="text-lg">Address Details</p>
-            <div className="flex space-x-3">
-              <div className="w-full">
-                <label>Village</label>
-                <input
-                  type="text"
-                  value={village}
-                  onChange={(e) => setVillage(e.target.value)}
-                  className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                />
-                {/* {error && (
+              <hr />
+              <p className="text-lg">Address Details</p>
+              <div className="flex space-x-3">
+                <div className="w-full">
+                  <label>Village</label>
+                  <input
+                    type="text"
+                    value={village}
+                    onChange={(e) => setVillage(e.target.value)}
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                  />
+                  {/* {error && (
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
+                </div>
+                <div className="w-full">
+                  <label>Street</label>
+                  <input
+                    type="text"
+                    value={street}
+                    onChange={(e) => setStreet(e.target.value)}
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                  />
+                  {/* {error && (
+                  <p className="text-sm absolute text-red-500">{error}</p>
+                )} */}
+                </div>
               </div>
-              <div className="w-full">
-                <label>Street</label>
-                <input
+              <div className="flex space-x-3">
+                <div className="w-full">
+                  <label>Barangay</label>
+                  <select
+                    onChange={(e) => setBarangay(() => e.target.value)}
+                    value={barangay}
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                  >
+                    {barangayList.length > 0 &&
+                      barangayList.map((barangay) => (
+                        <option key={barangay._id} value={barangay.name}>
+                          {barangay.name}
+                        </option>
+                      ))}
+                  </select>
+                  {/* {error && (
+                  <p className="text-sm absolute text-red-500">{error}</p>
+                )} */}
+                </div>
+                <div className="w-full">
+                  <label>City/Municipality</label>
+                  <input
+                    type="text"
+                    value={city}
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    disabled
+                  />
+                  {/* <input
                   type="text"
                   value={street}
                   onChange={(e) => setStreet(e.target.value)}
                   className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                />
-                {/* {error && (
+                /> */}
+                  {/* {error && (
                   <p className="text-sm absolute text-red-500">{error}</p>
                 )} */}
-              </div>
-            </div>
-            <div className="flex space-x-3">
-              <div className="w-full">
-                {/* TODO:: DISPLAY BARANGAYS */}
-                <label>Barangay</label>
-                <select
-                  onChange={(e) => setBarangay(() => e.target.value)}
-                  value={barangay}
-                  className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                >
-                  {barangayList.length > 0 &&
-                    barangayList.map((barangay) => (
-                      <option key={barangay._id} value={barangay.name}>
-                        {barangay.name}
-                      </option>
-                    ))}
-                </select>
-                {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
-              </div>
-              <div className="w-full">
-                <label>City/Municipality</label>
-                <input
-                  type="text"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                />
-                {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
+                </div>
               </div>
             </div>
           </form>
