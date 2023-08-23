@@ -38,6 +38,7 @@ const createSemester = async (req, res) => {
     strand,
     grade_level,
     section,
+    students: [],
     start_year,
     end_year,
   };
@@ -65,8 +66,17 @@ const updateSemester = async (req, res) => {
   return res.status(200).json(semester);
 };
 
+const getSemesterStudents = async (req, res) => {
+  const { id } = req.params;
+
+  const semester = await Semester.findById(id);
+
+  return res.status(200).json(semester);
+};
+
 module.exports = {
   getAllSemester,
   createSemester,
   updateSemester,
+  getSemesterStudents,
 };
