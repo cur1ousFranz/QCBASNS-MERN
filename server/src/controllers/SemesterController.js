@@ -1,6 +1,9 @@
+const { isValidObjectId } = require("mongoose");
 const Adviser = require("../models/AdviserModel");
 const Semester = require("../models/SemesterModel");
 const extractUserID = require("../utils/ExtractUserId");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 const getAllSemester = async (req, res) => {
   const semesters = await Semester.find().sort("createdAt");
@@ -49,21 +52,48 @@ const createSemester = async (req, res) => {
 const updateSemester = async (req, res) => {
   const updated = req.body;
   const userId = extractUserID(req);
-  const id = req.params;
-  const adviser = await Adviser.findById({ user_id: userId });
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such semeester" });
+  }
+
+  const adviser = await Adviser.findOne({ user_id: userId });
   console.log(updated);
-  // await Semester.findByIdAndUpdate(
-  //   { adviser_id: adviser._id, _id: id },
-  //   { ...updated }
-  // );
+  await Semester.findByIdAndUpdate(
+    { adviser_id: adviser._id, _id: id },
+    { ...updated }
+  );
 
-  // const semester = await Semester.findById({ _id: id})
+  const semester = await Semester.findById({ _id: id });
 
-  // if (!updateSemester) {
-  //   return res.status(400).json({ error: "Cannot find semester" });
-  // }
+  if (!updateSemester) {
+    return res.status(400).json({ error: "Cannot find semester" });
+  }
 
   return res.status(200).json(semester);
+};
+
+const addStudentToSemester = async (req, res) => {
+  const { student_id } = req.body;
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such semeester" });
+  }
+
+  try {
+    const sem = await Semester.findById({ _id: id });
+    const students = sem.students;
+
+    const newStudents = [...students, { student_id: new ObjectId(student_id) }];
+    await Semester.findByIdAndUpdate({ _id: id }, { students: newStudents });
+    const semester = await Semester.findById({ _id: id });
+
+    return res.status(200).json(semester);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
 };
 
 const getSemesterStudents = async (req, res) => {
@@ -79,4 +109,5 @@ module.exports = {
   createSemester,
   updateSemester,
   getSemesterStudents,
+  addStudentToSemester,
 };
