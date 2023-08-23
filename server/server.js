@@ -8,6 +8,7 @@ const user = require("./src/routes/user");
 const semester = require("./src/routes/semester");
 const track = require("./src/routes/track");
 const student = require("./src/routes/student");
+const barangay = require("./src/routes/barangay");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -34,3 +35,4 @@ app.use(user);
 app.use(semester);
 app.use(track);
 app.use(student);
+app.use(barangay)
