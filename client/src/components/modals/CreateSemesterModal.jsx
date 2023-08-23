@@ -4,7 +4,7 @@ import { SemesterContext } from "../../context/SemesterContext";
 import { Alert } from "../../utils/Alert";
 
 const CreateSemesterModal = ({ toggleModal }) => {
-  const [semester, setSemester] = useState("1st Semester");
+  const [semester, setSemester] = useState("1");
   const [gradeLevel, setGradeLevel] = useState("12");
   const [track, setTrack] = useState("");
   const [selectedStrand, setSelectedStrand] = useState("N/A");

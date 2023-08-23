@@ -50,7 +50,7 @@ export default function SemesterListTable({
               </th>
               <td className="px-6 py-4">
                 {semester.semester}
-                {semester.semester === 1 ? "st Semester" : "nd Semester"}
+                {semester.semester === "1" ? "st Semester" : "nd Semester"}
               </td>
               <td className="px-6 py-4">{semester.track}</td>
               <td className="px-6 py-4">{semester.strand}</td>
