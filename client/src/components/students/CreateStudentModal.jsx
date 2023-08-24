@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
 import numbersOnly from "../../utils/NumberKeys";
+import { Alert } from "../../utils/Alert";
+import { StudentContext } from "../../context/StudentContext";
 // TODO:: DISPLAY STUDENTS FROM SPECIFIC SEMESTER
 const CreateStudentModal = ({ toggleModal, semesterId }) => {
+  const { dispatch } = useContext(StudentContext);
   const [barangayList, setBarangayList] = useState([]);
 
   const [showStudentSuffix, setShowStudentSuffix] = useState(true);
@@ -33,7 +36,6 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
   //Error fields
   const [errorFields, setErrorFields] = useState([]);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-
 
   useState(() => {
     const getAllBarangays = async () => {
@@ -106,12 +108,14 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
         if (response.status === 200) {
           // Recently added student should be added in semester as well
           const student = response.data;
+          dispatch({ type: "ADD_STUDENT", payload: student });
           const res = await axiosClient.post(`/semester/${semesterId}`, {
             student_id: student._id,
           });
 
           if (res.status === 200) {
-            console.log(res.data);
+            Alert("Added student successfully");
+            toggleModal(false);
           }
         }
       } catch (error) {
