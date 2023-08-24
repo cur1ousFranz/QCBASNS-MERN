@@ -9,11 +9,14 @@ import EditSemesterModal from "../components/modals/EditSemesterModal";
 import StudentListTable from "../components/students/StudentListTable";
 import SemesterListTable from "../components/semester/SemesterListTable";
 import CreateStudentModal from "../components/students/CreateStudentModal";
+import { StudentContext } from "../context/StudentContext";
 
 export default function Students() {
   const location = useLocation();
-  const [showSemesterModal, setShowSemesterModal] = useState(false);
   const { semesters, dispatch } = useContext(SemesterContext);
+  const studentContext = useContext(StudentContext);
+
+  const [showSemesterModal, setShowSemesterModal] = useState(false);
   const [showOptionMenu, setShowOptionMenu] = useState(false);
   const [selectedOptionIndex, setSeletedOptionIndex] = useState(null);
   const [selectedSemesterId, setSelecteSemesterId] = useState(null);
@@ -23,7 +26,6 @@ export default function Students() {
 
   // Used to fetch all students from specific semester
   const [showStudentSemesterId, setShowSudentSemesterId] = useState("");
-
   const handleShowSemesterModal = (value) => setShowSemesterModal(() => value);
 
   useEffect(() => {
@@ -48,7 +50,10 @@ export default function Students() {
             `/semester/${showStudentSemesterId}/student`
           );
           if (response.status === 200) {
-            console.log(response.data);
+            studentContext.dispatch({
+              type: "SET_SEMESTER_STUDENTS",
+              payload: response.data,
+            });
           }
         } catch (error) {
           console.log(error);
@@ -118,7 +123,9 @@ export default function Students() {
             />
           )}
           {/* STUDENTS LIST */}
-          {showStudentList && <StudentListTable />}
+          {showStudentList && (
+            <StudentListTable students={studentContext.students} />
+          )}
           {showSemesterModal && (
             <div className="mx-auto">
               <CreateSemesterModal toggleModal={handleShowSemesterModal} />
@@ -135,7 +142,10 @@ export default function Students() {
           )}
 
           {showCreateStudentModal && (
-            <CreateStudentModal toggleModal={toggleCreateStudentModal} semesterId={showStudentSemesterId} />
+            <CreateStudentModal
+              toggleModal={toggleCreateStudentModal}
+              semesterId={showStudentSemesterId}
+            />
           )}
         </div>
       </div>
