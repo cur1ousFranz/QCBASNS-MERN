@@ -4,6 +4,7 @@ const Semester = require("../models/SemesterModel");
 const extractUserID = require("../utils/ExtractUserId");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const Student = require("../models/StudentModel");
 
 const getAllSemester = async (req, res) => {
   const semesters = await Semester.find().sort("createdAt");
@@ -100,8 +101,13 @@ const getSemesterStudents = async (req, res) => {
   const { id } = req.params;
 
   const semester = await Semester.findById(id);
-
-  return res.status(200).json(semester);
+  const students = semester.students;
+  const studentList = [];
+  for (const student of students) {
+    const result = await Student.findById({ _id: student.student_id });
+    studentList.push(result);
+  }
+  return res.status(200).json(studentList);
 };
 
 module.exports = {
