@@ -22,8 +22,9 @@ const CreateSemesterModal = ({ toggleModal }) => {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 2 }, (_, index) => currentYear + index);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isVerificationChecked, setIsVerificationChecked] = useState(false);
 
-  const { dispatch } = useContext(SemesterContext);
+  const { semesters, dispatch } = useContext(SemesterContext);
 
   useEffect(() => {
     const getAllTracks = async () => {
@@ -34,7 +35,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           const firstTrack = response.data[0];
           setTrack(() => firstTrack.name);
         } else {
-          setShowErrorModal(true)
+          setShowErrorModal(true);
         }
       } catch (error) {
         console.log(error);
@@ -83,13 +84,34 @@ const CreateSemesterModal = ({ toggleModal }) => {
       section,
       start_year: startYear,
       end_year: endYear,
+      active: true,
     };
 
     if (!hasError) {
       try {
+        let latestSemester;
+        if (semesters.length) {
+          latestSemester = semesters[0];
+        }
+
+        // POP PROMPT WARNING
         const response = await axiosClient.post("/semester", newSemester);
         if (response.status === 200) {
           dispatch({ type: "ADD_SEMESTER", payload: response.data });
+          // Update the latest semester to make inactive
+          if (latestSemester) {
+            const res = await axiosClient.put(
+              `/semester/${latestSemester._id}`,
+              {
+                active: false,
+              }
+            );
+
+            if (res.status === 200) {
+              dispatch({ type: "UPDATE_SEMESTER", payload: res.data });
+            }
+          }
+
           toggleModal(false);
           Alert("Semester Added");
         }
@@ -114,7 +136,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
     >
-      <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
+      <div className="modal w-full md:w-1/3 overflow-y-auto bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4">
           <p className="text-xl">New Semester</p>
         </header>
@@ -179,24 +201,24 @@ const CreateSemesterModal = ({ toggleModal }) => {
                       <label>Select Strand</label>
                       <div className="grid grid-cols-2 mt-2">
                         {tracks[currentTrackIndex].strand.map(
-                            (strand, index) => (
-                              <div key={strand._id} className="space-x-3">
-                                <input
-                                  onChange={() =>
-                                    setSelectedStrand(strand.strand_name)
-                                  }
-                                  type="radio"
-                                  name="strand"
-                                  checked={
-                                    strand.strand_name === selectedStrand
-                                      ? true
-                                      : false
-                                  }
-                                />
-                                <label>{strand.strand_name}</label>
-                              </div>
-                            )
-                          )}
+                          (strand, index) => (
+                            <div key={strand._id} className="space-x-3">
+                              <input
+                                onChange={() =>
+                                  setSelectedStrand(strand.strand_name)
+                                }
+                                type="radio"
+                                name="strand"
+                                checked={
+                                  strand.strand_name === selectedStrand
+                                    ? true
+                                    : false
+                                }
+                              />
+                              <label>{strand.strand_name}</label>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                     {errorStrand && (
@@ -256,7 +278,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
 
         <footer className="modal-footer p-4 flex justify-end space-x-3">
           <button
-            onClick={handleCancel}
+            onClick={() => handleCancel()}
             className="px-3 py-2 border border-gray-900 text-gray-900 text-sm"
             type="button"
           >
@@ -273,7 +295,10 @@ const CreateSemesterModal = ({ toggleModal }) => {
       </div>
 
       {showErrorModal && (
-        <ErrorModal toggleModal={handleCancel} title={"Something went wrong!"} />
+        <ErrorModal
+          toggleModal={handleCancel}
+          title={"Something went wrong!"}
+        />
       )}
     </div>
   );
