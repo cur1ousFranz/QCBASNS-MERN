@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
 import { SemesterContext } from "../../context/SemesterContext";
 import { Alert } from "../../utils/Alert";
+import ErrorModal from "./ErrorModal";
 
 const CreateSemesterModal = ({ toggleModal }) => {
   const [semester, setSemester] = useState("1");
@@ -20,6 +21,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 2 }, (_, index) => currentYear + index);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const { dispatch } = useContext(SemesterContext);
 
@@ -27,10 +29,12 @@ const CreateSemesterModal = ({ toggleModal }) => {
     const getAllTracks = async () => {
       try {
         const response = await axiosClient.get("/track");
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.length) {
           setTracks(() => response.data);
           const firstTrack = response.data[0];
           setTrack(() => firstTrack.name);
+        } else {
+          setShowErrorModal(true)
         }
       } catch (error) {
         console.log(error);
@@ -87,7 +91,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
         if (response.status === 200) {
           dispatch({ type: "ADD_SEMESTER", payload: response.data });
           toggleModal(false);
-          Alert('Semester Added')
+          Alert("Semester Added");
         }
       } catch (error) {
         console.log(error);
@@ -95,8 +99,8 @@ const CreateSemesterModal = ({ toggleModal }) => {
     }
   };
 
-  const handleCancel = () => {
-    toggleModal(false);
+  const handleCancel = (value = false) => {
+    toggleModal(value);
   };
 
   const handleBackdropCancel = (e) => {
@@ -152,7 +156,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
                   value={track}
                   className="px-2 py-2 w-full bg-gray-100 rounded-md"
                 >
-                  {tracks &&
+                  {tracks.length > 0 &&
                     tracks.map((track, index) => (
                       <option key={track._id} value={track.name}>
                         {track.name}
@@ -161,7 +165,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
                 </select>
               </div>
               {/* STRAND */}
-              {tracks &&
+              {tracks.length > 0 &&
                 tracks[currentTrackIndex] &&
                 tracks[currentTrackIndex].strand.length > 0 && (
                   <div>
@@ -175,20 +179,24 @@ const CreateSemesterModal = ({ toggleModal }) => {
                       <label>Select Strand</label>
                       <div className="grid grid-cols-2 mt-2">
                         {tracks[currentTrackIndex].strand.map(
-                          (strand, index) => (
-                            <div key={strand._id} className="space-x-3">
-                              <input
-                                onChange={() =>
-                                  setSelectedStrand(strand.strand_name)
-                                }
-                                type="radio"
-                                name="strand"
-                                checked={strand.strand_name === selectedStrand ? true : false}
-                              />
-                              <label>{strand.strand_name}</label>
-                            </div>   
-                          )
-                        )}
+                            (strand, index) => (
+                              <div key={strand._id} className="space-x-3">
+                                <input
+                                  onChange={() =>
+                                    setSelectedStrand(strand.strand_name)
+                                  }
+                                  type="radio"
+                                  name="strand"
+                                  checked={
+                                    strand.strand_name === selectedStrand
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                <label>{strand.strand_name}</label>
+                              </div>
+                            )
+                          )}
                       </div>
                     </div>
                     {errorStrand && (
@@ -263,6 +271,10 @@ const CreateSemesterModal = ({ toggleModal }) => {
           </button>
         </footer>
       </div>
+
+      {showErrorModal && (
+        <ErrorModal toggleModal={handleCancel} title={"Something went wrong!"} />
+      )}
     </div>
   );
 };
