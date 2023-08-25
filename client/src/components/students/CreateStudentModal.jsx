@@ -36,6 +36,8 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
   //Error fields
   const [errorFields, setErrorFields] = useState([]);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [contactNumberErrorMessage, setContactNumberErrorMessage] =
+    useState("");
 
   useState(() => {
     const getAllBarangays = async () => {
@@ -56,6 +58,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
     const errors = [];
     setErrorFields(() => errors);
     setShowErrorMessage(false);
+    setContactNumberErrorMessage("");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
@@ -68,9 +71,17 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
     if (!parentFirstName) errors.push("parentFirstName");
     if (!parentLastName) errors.push("parentLastName");
     if (!parentGender) errors.push("parentGender");
-    if (!parentContactNumber) errors.push("parentContactNumber");
-    if (!relationship) errors.push("relationship");
+    if (parentContactNumber.length < 11) {
+      setContactNumberErrorMessage("Contact number must be 11 digits.");
+      errors.push("parentContactNumber");
+    }
+    if (!parentContactNumber) {
+      setContactNumberErrorMessage(() => "Contact number is required.");
+      errors.push("parentContactNumber");
+    }
+    
 
+    if (!relationship) errors.push("relationship");
     if (errors.length === 0) {
       const studentSuff = showStudentSuffix === false ? suffix : "N/A";
       const parentSuff = setShowParentSuffix === false ? parentSuffix : "N/A";
@@ -414,7 +425,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                   />
                   {errorFields.includes("parentContactNumber") && (
                     <p className="text-sm absolute text-red-500">
-                      Contact Number is required
+                      {contactNumberErrorMessage}
                     </p>
                   )}
                 </div>
