@@ -7,7 +7,9 @@ const ObjectId = mongoose.Types.ObjectId;
 const Student = require("../models/StudentModel");
 
 const getAllSemester = async (req, res) => {
-  const semesters = await Semester.find().sort("createdAt");
+  const userId = extractUserID(req);
+  const adviser = await Adviser.findOne({ user_id: userId });
+  const semesters = await Semester.find({ adviser_id: adviser._id }).sort({ createdAt: -1});
   return res.status(200).json(semesters);
 };
 
@@ -20,6 +22,7 @@ const createSemester = async (req, res) => {
     section,
     start_year,
     end_year,
+    active,
   } = req.body;
 
   const errorFields = [];
@@ -30,6 +33,7 @@ const createSemester = async (req, res) => {
   if (!section) errorFields.push("section");
   if (!start_year) errorFields.push("school_year");
   if (!end_year) errorFields.push("school_year");
+  if (!active) errorFields.push("active");
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
@@ -45,6 +49,7 @@ const createSemester = async (req, res) => {
     students: [],
     start_year,
     end_year,
+    active,
   };
   const result = await Semester.create(newSemester);
   return res.status(200).json(result);
@@ -60,7 +65,6 @@ const updateSemester = async (req, res) => {
   }
 
   const adviser = await Adviser.findOne({ user_id: userId });
-  console.log(updated);
   await Semester.findByIdAndUpdate(
     { adviser_id: adviser._id, _id: id },
     { ...updated }
@@ -68,7 +72,7 @@ const updateSemester = async (req, res) => {
 
   const semester = await Semester.findById({ _id: id });
 
-  if (!updateSemester) {
+  if (!semester) {
     return res.status(400).json({ error: "Cannot find semester" });
   }
 
