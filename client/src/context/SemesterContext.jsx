@@ -7,7 +7,16 @@ const semesterReducer = (state, action) => {
     case "SET_SEMESTERS":
       return { semesters: action.payload };
     case "ADD_SEMESTER":
-      return { semesters: [...state.semesters, action.payload] };
+      return { semesters: [action.payload, ...state.semesters] };
+    case "UPDATE_SEMESTER":
+      return {
+        semesters: state.semesters.map((semester) => {
+          if (semester._id === action.payload._id) {
+            return action.payload;
+          }
+          return semester;
+        }),
+      };
     default:
       return state;
   }
