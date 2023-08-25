@@ -18,7 +18,6 @@ const createStudent = async (req, res) => {
   const errorMessage = "Please fill in all fields";
   if (!school_id) errorFields.push("school_id");
   if (!first_name) errorFields.push("first_name");
-  if (!middle_name) errorFields.push("middle_name");
   if (!last_name) errorFields.push("last_name");
   if (!gender) errorFields.push("gender");
   if (!birthdate) errorFields.push("birthdate");

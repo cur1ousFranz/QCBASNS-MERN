@@ -60,14 +60,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
     // Student details
     if (!schoolId) errors.push("schoolId");
     if (!firstName) errors.push("firstName");
-    if (!middleName) errors.push("middleName");
     if (!lastName) errors.push("lastName");
     if (!birthDate) errors.push("birthDate");
     if (!village) errors.push("village");
     if (!street) errors.push("street");
     // Parent details
     if (!parentFirstName) errors.push("parentFirstName");
-    if (!parentMiddleName) errors.push("parentMiddleName");
     if (!parentLastName) errors.push("parentLastName");
     if (!parentGender) errors.push("parentGender");
     if (!parentContactNumber) errors.push("parentContactNumber");
@@ -200,16 +198,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
               </div>
               <div className="flex space-x-3">
                 <div className="w-full relative">
-                  <label>Middle Name</label>
+                  <label>Middle Name (Optional)</label>
                   <input
                     type="text"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
-                    className={
-                      !errorFields.includes("middleName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
-                    }
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
                   />
                   {errorFields.includes("middleName") && (
                     <p className="text-sm absolute text-red-500">
@@ -274,9 +268,6 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                   </select>
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -332,16 +323,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Middle Name</label>
+                  <label>Middle Name (Optional)</label>
                   <input
                     type="text"
                     value={parentMiddleName}
                     onChange={(e) => setParentMiddleName(e.target.value)}
-                    className={
-                      !errorFields.includes("parentMiddleName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
-                    }
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
                   />
                   {errorFields.includes("parentMiddleName") && (
                     <p className="text-sm absolute text-red-500">
