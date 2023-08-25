@@ -60,7 +60,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    return // FIX BUG HERE:::
+    // return // FIX BUG HERE:::
     setErrorStrand(false);
     setErrorSection(false);
 
@@ -90,9 +90,9 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
     if (!hasError) {
       try {
-        const response = await axiosClient.put(`/semester/${semesterId}`, updatedSemester);
+        const response = await axiosClient.put(`/semester/${semesterId}`, { ...updatedSemester });
         if (response.status === 200) {
-          dispatch({ type: "ADD_SEMESTER", payload: response.data });
+          dispatch({ type: "UPDATE_SEMESTER", payload: response.data });
           toggleModal(false);
           Alert("Semester Updated");
         }
