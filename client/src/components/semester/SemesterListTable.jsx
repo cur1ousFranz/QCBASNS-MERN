@@ -21,6 +21,9 @@ export default function SemesterListTable({
             Semester
           </th>
           <th scope="col" className="px-6 py-3">
+            School Year
+          </th>
+          <th scope="col" className="px-6 py-3">
             Track
           </th>
           <th scope="col" className="px-6 py-3">
@@ -28,6 +31,9 @@ export default function SemesterListTable({
           </th>
           <th scope="col" className="px-6 py-3">
             Grade Level
+          </th>
+          <th scope="col" className="px-6 py-3">
+            Status
           </th>
         </tr>
       </thead>
@@ -52,10 +58,22 @@ export default function SemesterListTable({
                 {semester.semester}
                 {semester.semester === "1" ? "st Semester" : "nd Semester"}
               </td>
+              <td className="px-6 py-4">
+                {semester.start_year} - {semester.end_year}
+              </td>
               <td className="px-6 py-4">{semester.track}</td>
               <td className="px-6 py-4">{semester.strand}</td>
+              <td className="px-6 py-4">{semester.grade_level}</td>
               <td className="px-6 py-4 flex justify-between">
-                <p>Grade {semester.grade_level}</p>
+                <p
+                  className={
+                    semester.active
+                      ? "font-semibold text-green-700"
+                      : "font-semibold text-red-500"
+                  }
+                >
+                  {semester.active ? "Active" : "Inactive"}
+                </p>
                 <img
                   onClick={() => {
                     setShowOptionMenu(true);
@@ -87,7 +105,10 @@ export default function SemesterListTable({
 
         {semesters && semesters.length === 0 && (
           <tr>
-            <td colSpan={5} className="px-6 py-4">
+            <td
+              colSpan={6}
+              className="px-6 py-4 text-center border-b cursor-pointer bg-white"
+            >
               No semesters to show.
             </td>
           </tr>
