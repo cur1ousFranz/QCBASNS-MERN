@@ -273,6 +273,19 @@ const CreateSemesterModal = ({ toggleModal }) => {
                 </div>
               </div>
             </div>
+            <div className="flex space-x-4">
+              <input
+                onChange={() =>
+                  setIsVerificationChecked(() => !isVerificationChecked)
+                }
+                type="checkbox"
+                className="w-3 h-3 mt-1 bg-gray-100 rounded border-gray-300 focus:ring-gray-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 accent-gray-500"
+              />
+              <p className="text-sm text-gray-700">
+                By proceeding to create a new semester, the previous semester
+                will be set to inactive.
+              </p>
+            </div>
           </form>
         </main>
 
@@ -285,9 +298,14 @@ const CreateSemesterModal = ({ toggleModal }) => {
             Cancel
           </button>
           <button
-            className="px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm"
+            className={
+              !isVerificationChecked
+                ? "px-3 py-2 cursor-not-allowed bg-green-400 text-white text-sm"
+                : "px-3 py-2 bg-green-500 hover:bg-green-400 text-white text-sm"
+            }
             type="submit"
             form="semester-form"
+            disabled={!isVerificationChecked}
           >
             Creat Semester
           </button>
