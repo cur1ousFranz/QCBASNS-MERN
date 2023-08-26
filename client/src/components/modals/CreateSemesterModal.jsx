@@ -113,7 +113,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           }
 
           toggleModal(false);
-          Alert("Semester Added");
+          Alert("Semester Created");
         }
       } catch (error) {
         console.log(error);
