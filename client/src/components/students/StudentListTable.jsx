@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import QrCodeModal from "../modals/QrCodeModal";
 
 export default function StudentListTable({ students }) {
+  const [showQrCodeModal, setShowQrCodeModal] = useState(false);
+  const [selectedStudentName, setSelectedStudentName] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
+  const toggleQrCodeModal = (value = false) => setShowQrCodeModal(value);
+
   return (
     <>
       <table className="w-full text-sm text-left mx-auto transition duration-700 ease-in-out">
@@ -37,11 +44,21 @@ export default function StudentListTable({ students }) {
                   {student.school_id}
                 </th>
                 <td className="px-6 py-4">
-                  {student.first_name} {student.middle_name} {student.last_name}{" "}
+                  {student.first_name} {student.middle_name} {student.last_name}
                 </td>
                 <td className="px-6 py-4">{student.contact_number}</td>
                 {/* <td className="px-6 py-4">07:21</td> */}
-                <td className="px-6 py-4">
+                <td
+                  onClick={() => {
+                    setSelectedStudentName(
+                      () =>
+                        `${student.first_name} ${student.middle_name} ${student.last_name}`
+                    );
+                    setSelectedStudent(() => student)
+                    setShowQrCodeModal(true);
+                  }}
+                  className="px-6 py-4"
+                >
                   <img src="/img/qrcode.svg" alt="" />
                 </td>
               </tr>
@@ -55,6 +72,13 @@ export default function StudentListTable({ students }) {
           )}
         </tbody>
       </table>
+      {showQrCodeModal && (
+        <QrCodeModal
+          toggleModal={toggleQrCodeModal}
+          title={selectedStudentName}
+          student={selectedStudent}
+        />
+      )}
     </>
   );
 }
