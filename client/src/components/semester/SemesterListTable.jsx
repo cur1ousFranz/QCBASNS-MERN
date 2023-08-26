@@ -65,15 +65,19 @@ export default function SemesterListTable({
               <td className="px-6 py-4">{semester.strand}</td>
               <td className="px-6 py-4">{semester.grade_level}</td>
               <td className="px-6 py-4 flex justify-between">
-                <p
-                  className={
-                    semester.active
-                      ? "font-semibold text-green-700"
-                      : "font-semibold text-red-500"
-                  }
-                >
-                  {semester.active ? "Active" : "Inactive"}
-                </p>
+                {semester.active ? (
+                  <p className="mt-2">
+                    <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
+                      Active
+                    </span>
+                  </p>
+                ) : (
+                  <p className="mt-2">
+                    <span className="p-1 font-semibold text-xs rounded-md bg-red-300">
+                      Inactive
+                    </span>
+                  </p>
+                )}
                 <img
                   onClick={() => {
                     setShowOptionMenu(true);
