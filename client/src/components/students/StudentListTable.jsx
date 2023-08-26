@@ -6,6 +6,9 @@ export default function StudentListTable({ students }) {
   const [selectedStudentName, setSelectedStudentName] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
 
+  const [showOptionMenu, setShowOptionMenu] = useState(false);
+  const [selectedOptionIndex, setSeletedOptionIndex] = useState(null);
+
   const toggleQrCodeModal = (value = false) => setShowQrCodeModal(value);
 
   return (
@@ -32,7 +35,7 @@ export default function StudentListTable({ students }) {
         </thead>
         <tbody>
           {students &&
-            students.map((student) => (
+            students.map((student, index) => (
               <tr
                 key={student._id}
                 className="border-b cursor-pointer bg-white hover:bg-green-50"
@@ -48,18 +51,44 @@ export default function StudentListTable({ students }) {
                 </td>
                 <td className="px-6 py-4">{student.contact_number}</td>
                 {/* <td className="px-6 py-4">07:21</td> */}
-                <td
-                  onClick={() => {
-                    setSelectedStudentName(
-                      () =>
-                        `${student.first_name} ${student.middle_name} ${student.last_name}`
-                    );
-                    setSelectedStudent(() => student)
-                    setShowQrCodeModal(true);
-                  }}
-                  className="px-6 py-4"
-                >
-                  <img src="/img/qrcode.svg" alt="" />
+                <td className="px-6 py-4 flex justify-between">
+                  <img
+                    onClick={() => {
+                      setSelectedStudentName(
+                        () =>
+                          `${student.first_name} ${student.middle_name} ${student.last_name}`
+                      );
+                      setSelectedStudent(() => student);
+                      setShowQrCodeModal(true);
+                    }}
+                    src="/img/qrcode.svg"
+                    alt=""
+                  />
+                  <img
+                    onClick={() => {
+                      setShowOptionMenu(true);
+                      setSeletedOptionIndex(index);
+                    }}
+                    className="inline-block"
+                    src="/img/dots_option.svg"
+                    alt=""
+                  />
+                  {showOptionMenu && index === selectedOptionIndex && (
+                    <div
+                      onMouseLeave={() => setShowOptionMenu(false)}
+                      className="origin-top-right absolute ml-4 mt-2 w-44 z-10 rounded-md shadow-lg"
+                    >
+                      <div className="rounded-md border shadow-xs text-start bg-white">
+                        <div
+                          // onClick={() => handleEditSemester(semester._id)}
+                          className="p-3 flex space-x-3 hover:bg-gray-100"
+                        >
+                          <img src="/img/edit.svg" alt="" />
+                          <p className="me-4">Edit</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
