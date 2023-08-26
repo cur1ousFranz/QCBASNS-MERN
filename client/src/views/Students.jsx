@@ -107,7 +107,7 @@ export default function Students() {
                     alt=""
                   />
                   <Header title="Students" />
-                  {currentSemester.active ? (
+                  {currentSemester && currentSemester.active ? (
                     <p className="mt-2">
                       <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
                         Active
