@@ -27,6 +27,7 @@ export default function Students() {
   // Used to fetch all students from specific semester
   const [showStudentSemesterId, setShowSudentSemesterId] = useState("");
   const handleShowSemesterModal = (value) => setShowSemesterModal(() => value);
+  const [currentSemester, setCurrentSemester] = useState(null);
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -54,6 +55,13 @@ export default function Students() {
               type: "SET_SEMESTER_STUDENTS",
               payload: response.data,
             });
+          }
+
+          const res = await axiosClient.get(
+            `/semester/${showStudentSemesterId}`
+          );
+          if (res.status === 200) {
+            setCurrentSemester(() => res.data);
           }
         } catch (error) {
           console.log(error);
@@ -90,8 +98,8 @@ export default function Students() {
               </div>
             )}
             {showStudentList && (
-              <div className="flex justify-between space-x-3 w-full">
-                <div className="flex">
+              <div className="flex justify-between w-full">
+                <div className="flex space-x-4">
                   <img
                     onClick={() => setShowStudentList(false)}
                     className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
@@ -99,6 +107,19 @@ export default function Students() {
                     alt=""
                   />
                   <Header title="Students" />
+                  {currentSemester.active ? (
+                    <p className="mt-2">
+                      <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
+                        Active
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="mt-2">
+                      <span className="p-1 font-semibold text-xs rounded-md bg-red-300">
+                        Inactive
+                      </span>
+                    </p>
+                  )}
                 </div>
                 <div className="space-x-3">
                   <button
