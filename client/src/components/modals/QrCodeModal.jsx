@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 
 const QrCodeModal = ({ toggleModal, title, student }) => {
   const [studentQrValue, setStudentQrValue] = useState(null);
+  const qrContentRef = useRef(null);
 
   useEffect(() => {
     const qrValue = {
@@ -14,10 +15,33 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
     setStudentQrValue(() => qrValue);
   }, []);
 
+  const handlePrint = () => {
+    const printContents = qrContentRef.current.innerHTML;
+
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+
+    const printDocument =
+      printFrame.contentDocument || printFrame.contentWindow.document;
+    printDocument.body.innerHTML = printContents;
+    printFrame.contentWindow.print();
+
+    document.body.removeChild(printFrame);
+  };
+
   const handleCancel = () => toggleModal(false);
+  const handleBackdropCancel = (e) => {
+    if (e.target.classList.contains("modal-backdrop")) {
+      toggleModal(false);
+    }
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50">
+    <div
+      onClick={handleBackdropCancel}
+      className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
+    >
       <div className="modal w-full md:w-1/4 overflow-y-auto bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4 flex justify-between">
           <p className="text-sm md:text-lg lg:text-lg">Printable QR Code</p>
@@ -30,24 +54,30 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
         </header>
 
         <main className="px-4 shadow-sm py-6">
-          <div className="flex justify-center mx-auto w-full">
-            {studentQrValue && (
-              <QRCode
-                title={`${student.first_name} ${student.middle_name} ${student.last_name}`}
-                value={JSON.stringify(studentQrValue)}
-                bgColor="#FFFFFF"
-                fgColor="#000000"
-                size={256}
-              />
-            )}
+          <div ref={qrContentRef} className="print-center">
+            <div className="flex justify-center mx-auto w-full">
+              {studentQrValue && (
+                <QRCode
+                  title={`${student.first_name} ${student.middle_name} ${student.last_name}`}
+                  value={JSON.stringify(studentQrValue)}
+                  bgColor="#FFFFFF"
+                  fgColor="#000000"
+                  size={256}
+                />
+              )}
+            </div>
+            <p className="text-sm mt-2 font-semibold text-center">
+              ID: {student.school_id}
+            </p>
+            <p className="text-sm font-semibold text-center">
+              {title}
+            </p>
           </div>
-          <p className="text-sm mt-2 font-semibold text-center md:text-lg lg:text-lg">
-            {title}
-          </p>
         </main>
 
         <footer className="modal-footer p-4 flex justify-end space-x-3">
           <button
+            onClick={handlePrint}
             type="submit"
             form="semester-form"
             className="p-2 border text-sm lg:text-base rounded-md text-gray-700 border-gray-700 hover:bg-gray-100"
@@ -55,7 +85,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
             <span>
               <img className="inline-block me-2" src="/img/print.svg" alt="" />
             </span>
-            Print Qr
+            Print QR
           </button>
         </footer>
       </div>
