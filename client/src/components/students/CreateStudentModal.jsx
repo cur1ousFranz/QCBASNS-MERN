@@ -79,8 +79,6 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
       setContactNumberErrorMessage(() => "Contact number is required.");
       errors.push("parentContactNumber");
     }
-    
-
     if (!relationship) errors.push("relationship");
     if (errors.length === 0) {
       const studentSuff = showStudentSuffix === false ? suffix : "N/A";
@@ -191,6 +189,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>First Name</label>
                   <input
+                    name="first_name"
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
@@ -211,6 +210,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>Middle Name (Optional)</label>
                   <input
+                    name="middle_name"
                     type="text"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
@@ -225,6 +225,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>Last Name</label>
                   <input
+                    name="last_name"
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
@@ -318,6 +319,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>First Name</label>
                   <input
+                    name="first_name"
                     type="text"
                     value={parentFirstName}
                     onChange={(e) => setParentFirstname(e.target.value)}
@@ -336,6 +338,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>Middle Name (Optional)</label>
                   <input
+                    name="middle_name"
                     type="text"
                     value={parentMiddleName}
                     onChange={(e) => setParentMiddleName(e.target.value)}
@@ -352,6 +355,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                 <div className="w-full relative">
                   <label>Last Name</label>
                   <input
+                    name="last_name"
                     type="text"
                     value={parentLastName}
                     onChange={(e) => setParentLastName(e.target.value)}
