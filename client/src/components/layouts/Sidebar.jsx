@@ -8,7 +8,7 @@ import {
 
 export default function Sidebar({ menu }) {
   return (
-    <div className="h-screen md:w-64 lg:w-72">
+    <div className="h-screen w-52">
       {/* <button
         data-drawer-target="sidebar"
         data-drawer-toggle="sidebar"

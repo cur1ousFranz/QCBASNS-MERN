@@ -51,7 +51,7 @@ export default function StudentListTable({ students }) {
                 </td>
                 <td className="px-6 py-4">{student.contact_number}</td>
                 {/* <td className="px-6 py-4">07:21</td> */}
-                <td className="px-6 py-4 flex justify-between">
+                <td className="relative px-6 py-4 flex justify-between">
                   <img
                     onClick={() => {
                       setSelectedStudentName(
@@ -76,7 +76,8 @@ export default function StudentListTable({ students }) {
                   {showOptionMenu && index === selectedOptionIndex && (
                     <div
                       onMouseLeave={() => setShowOptionMenu(false)}
-                      className="origin-top-right absolute ml-4 mt-2 w-44 z-10 rounded-md shadow-lg"
+                      className="origin-top-left mt-2 w-44 absolute z-10 rounded-md shadow-lg bg-white"
+                      style={{ top: '100%', left: 0 }}
                     >
                       <div className="rounded-md border shadow-xs text-start bg-white">
                         <div

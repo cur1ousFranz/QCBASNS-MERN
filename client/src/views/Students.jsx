@@ -83,22 +83,24 @@ export default function Students() {
   return (
     <div className="w-full">
       <div className="flex">
-        <Sidebar menu={location.pathname} />
-        <div className="p-12 w-10/12 space-y-6">
-          <div className="flex">
+        <div className="hidden md:block">
+          <Sidebar menu={location.pathname} />
+        </div>
+        <div className="p-12 w-full md:w-10/12 space-y-6">
+          <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
             {!showStudentList && (
               <div className="flex justify-end w-full">
                 <button
                   onClick={() => setShowSemesterModal(true)}
-                  className="px-2 py-2 text-sm rounded-md text-gray-700 bg-green-400"
+                  className="px-2 py-2 text-xs rounded-md text-white bg-gray-500 hover:bg-gray-400"
                 >
                   Create Semester
                 </button>
               </div>
             )}
             {showStudentList && (
-              <div className="flex justify-between w-full">
+              <div className="flex flex-col md:flex-row justify-between w-full">
                 <div className="flex space-x-4">
                   <img
                     onClick={() => setShowStudentList(false)}
@@ -125,13 +127,13 @@ export default function Students() {
                   <button
                     // TODO :: CREATE MODAL WITH LIST OF STUDENTS TO ADD TO THIS SEMESTER
                     // onClick={() => setShowCreateStudentModal(true)}
-                    className="px-2 py-2 text-sm rounded-md text-gray-700 bg-yellow-300"
+                    className="px-2 py-2 text-xs rounded-md text-gray-700 bg-yellow-300"
                   >
                     Existing Student
                   </button>
                   <button
                     onClick={() => setShowCreateStudentModal(true)}
-                    className="px-2 py-2 text-sm rounded-md text-gray-700 bg-green-400"
+                    className="px-2 py-2 text-xs rounded-md text-gray-700 bg-green-400"
                   >
                     New Student
                   </button>
