@@ -11,8 +11,8 @@ export default function SemesterListTable({
   setShowSudentSemesterId,
 }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full text-sm text-left mx-auto">
+    <div className="w-full overflow-x-auto">
+      <table className="w-full text-sm text-left mx-auto">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3">
@@ -88,10 +88,17 @@ export default function SemesterListTable({
                     src="/img/dots_option.svg"
                     alt=""
                   />
+                  {/* <select name="" id="" className="w-6">
+                    <option disabled selected></option>
+                    <option value="" className="px-2">
+                      <img src="/img/edit.svg" alt="" />
+                      <p className="me-4">Edit</p>
+                    </option>
+                  </select> */}
                   {showOptionMenu && index === selectedOptionIndex && (
                     <div
                       onMouseLeave={() => setShowOptionMenu(false)}
-                      className="origin-top-right absolute ml-4 mt-2 w-44 z-10 rounded-md shadow-lg"
+                      className="origin-top-right absolute right-0 mr-20 mt-4 w-44 z-10 rounded-md shadow-lg"
                     >
                       <div className="rounded-md border shadow-xs text-start bg-white">
                         <div

@@ -13,8 +13,8 @@ export default function StudentListTable({ students }) {
 
   return (
     <>
-      <table className="w-full text-sm text-left mx-auto transition duration-700 ease-in-out">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+      <table className="w-full whitespace-nowrap text-sm text-left mx-auto transition duration-700 ease-in-out">
+        <thead className=" text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3">
               ID No.
@@ -76,8 +76,7 @@ export default function StudentListTable({ students }) {
                   {showOptionMenu && index === selectedOptionIndex && (
                     <div
                       onMouseLeave={() => setShowOptionMenu(false)}
-                      className="origin-top-left mt-2 w-44 absolute z-10 rounded-md shadow-lg bg-white"
-                      style={{ top: '100%', left: 0 }}
+                      className="origin-top-right absolute right-0 mr-8 mt-2 w-44 z-10 rounded-md shadow-lg"
                     >
                       <div className="rounded-md border shadow-xs text-start bg-white">
                         <div

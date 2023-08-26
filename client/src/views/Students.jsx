@@ -86,7 +86,7 @@ export default function Students() {
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />
         </div>
-        <div className="p-12 w-full md:w-10/12 space-y-6">
+        <div className="p-12 w-full space-y-6">
           <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
             {!showStudentList && (
