@@ -9,8 +9,22 @@ const Student = require("../models/StudentModel");
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
   const adviser = await Adviser.findOne({ user_id: userId });
-  const semesters = await Semester.find({ adviser_id: adviser._id }).sort({ createdAt: -1});
+  const semesters = await Semester.find({ adviser_id: adviser._id }).sort({
+    createdAt: -1,
+  });
   return res.status(200).json(semesters);
+};
+
+const getSemester = async (req, res) => {
+  const { id } = req.params;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such semeester" });
+  }
+  const userId = extractUserID(req);
+  const adviser = await Adviser.findOne({ user_id: userId });
+  const semester = await Semester.findOne({ _id: id, adviser_id: adviser._id });
+  return res.status(200).json(semester);
 };
 
 const createSemester = async (req, res) => {
@@ -116,6 +130,7 @@ const getSemesterStudents = async (req, res) => {
 
 module.exports = {
   getAllSemester,
+  getSemester,
   createSemester,
   updateSemester,
   getSemesterStudents,
