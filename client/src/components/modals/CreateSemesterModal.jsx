@@ -139,7 +139,13 @@ const CreateSemesterModal = ({ toggleModal }) => {
     >
       <div className="modal w-full md:w-1/3 overflow-y-auto bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4">
-          <p className="text-xl">New Semester</p>
+          <p className="text-lg">
+            {" "}
+            <span className="inline-block me-1">
+              <img src="/img/plus.svg" alt="" />
+            </span>
+            New Semester
+          </p>
         </header>
 
         <main className="px-4">

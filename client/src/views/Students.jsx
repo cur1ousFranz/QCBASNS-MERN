@@ -103,8 +103,12 @@ export default function Students() {
               <div className="flex justify-end w-full">
                 <button
                   onClick={() => setShowSemesterModal(true)}
-                  className="px-2 py-2 text-xs rounded-md text-white bg-gray-500 hover:bg-gray-400"
+                  className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
                 >
+                  {" "}
+                  <span className="me-1">
+                    <img src="/img/plus.svg" alt="" />
+                  </span>
                   Create Semester
                 </button>
               </div>
@@ -134,17 +138,19 @@ export default function Students() {
                   )}
                 </div>
                 <div className="space-x-3">
-                  <button
-                    // TODO :: CREATE MODAL WITH LIST OF STUDENTS TO ADD TO THIS SEMESTER
-                    // onClick={() => setShowCreateStudentModal(true)}
+                  {/* <button
                     className="px-2 py-2 text-xs rounded-md text-gray-700 bg-yellow-300"
                   >
                     Existing Student
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setShowCreateStudentModal(true)}
-                    className="px-2 py-2 text-xs rounded-md text-gray-700 bg-green-400"
+                    className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
                   >
+                    {" "}
+                    <span className="me-2">
+                      <img src="/img/person-plus.svg" alt="" />
+                    </span>
                     New Student
                   </button>
                 </div>
