@@ -80,7 +80,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
             onClick={handlePrint}
             type="submit"
             form="semester-form"
-            className="p-2 border text-sm lg:text-base rounded-md text-gray-700 border-gray-700 hover:bg-gray-100"
+            className="px-2 py-1 border text-sm rounded-md text-gray-700 border-gray-700 hover:bg-gray-100"
           >
             <span>
               <img className="inline-block me-2" src="/img/print.svg" alt="" />
