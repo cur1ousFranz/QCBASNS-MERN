@@ -11,6 +11,7 @@ import SemesterListTable from "../components/semester/SemesterListTable";
 import CreateStudentModal from "../components/students/CreateStudentModal";
 import { StudentContext } from "../context/StudentContext";
 import EditStudentModal from "../components/students/EditStudentModal";
+import StudentParentDetailsModal from "../components/modals/StudentParentDetailsModal";
 
 export default function Students() {
   const location = useLocation();
@@ -25,13 +26,15 @@ export default function Students() {
   const [showStudentList, setShowStudentList] = useState(false);
   const [showCreateStudentModal, setShowCreateStudentModal] = useState(false);
   const [showEditStudentModal, setShowEditStudentModal] = useState(false);
+  const [showStudentDetailsModal, setShowStudentDetailsModal] = useState(false);
 
   // Used to fetch all students from specific semester
   const [showStudentSemesterId, setShowSudentSemesterId] = useState("");
 
   const handleShowSemesterModal = (value) => setShowSemesterModal(() => value);
   const [currentSemester, setCurrentSemester] = useState(null);
-  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [selectedStudentIdEdit, setSelectedStudentIdEdit] = useState("");
+  const [selectedStudentIdDetails, setSelecedStudentIdDetails] = useState("");
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -84,6 +87,8 @@ export default function Students() {
   const toggleEditSemesterModal = (value) => setShowEditSemesterModal(value);
   const toggleCreateStudentModal = (value) => setShowCreateStudentModal(value);
   const toggleEditStudentModal = (value) => setShowEditStudentModal(value);
+  const toggleStudentParentDetailsModal = (value) =>
+    setShowStudentDetailsModal(value);
 
   return (
     <div className="w-full">
@@ -164,7 +169,9 @@ export default function Students() {
             <StudentListTable
               toggleEditStudentModal={toggleEditStudentModal}
               students={studentContext.students}
-              setSelectedStudentId={setSelectedStudentId}
+              setSelectedStudentIdEdit={setSelectedStudentIdEdit}
+              setSelecedStudentIdDetails={setSelecedStudentIdDetails}
+              setShowStudentDetailsModal={setShowStudentDetailsModal}
             />
           )}
           {showSemesterModal && (
@@ -194,7 +201,14 @@ export default function Students() {
             <EditStudentModal
               toggleModal={toggleEditStudentModal}
               title={"Edit Student"}
-              studentId={selectedStudentId}
+              studentId={selectedStudentIdEdit}
+            />
+          )}
+
+          {showStudentDetailsModal && (
+            <StudentParentDetailsModal
+              toggleModal={toggleStudentParentDetailsModal}
+              studentId={selectedStudentIdDetails}
             />
           )}
         </div>

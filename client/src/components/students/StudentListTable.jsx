@@ -4,7 +4,9 @@ import QrCodeModal from "../modals/QrCodeModal";
 export default function StudentListTable({
   toggleEditStudentModal,
   students,
-  setSelectedStudentId,
+  setSelectedStudentIdEdit,
+  setSelecedStudentIdDetails,
+  setShowStudentDetailsModal,
 }) {
   const [showQrCodeModal, setShowQrCodeModal] = useState(false);
   const [selectedStudentName, setSelectedStudentName] = useState("");
@@ -45,18 +47,45 @@ export default function StudentListTable({
                 className="border-b cursor-pointer bg-white hover:bg-green-50"
               >
                 <th
+                  onClick={() => {
+                    setShowStudentDetailsModal(true);
+                    setSelecedStudentIdDetails(() => student._id);
+                  }}
                   scope="row"
                   className="px-6 py-4 font-medium whitespace-nowrap"
                 >
                   {student.school_id}
                 </th>
-                <td className="px-6 py-4">
+                <td
+                  onClick={() => {
+                    setShowStudentDetailsModal(true);
+                    setSelecedStudentIdDetails(() => student._id);
+                  }}
+                  className="px-6 py-4"
+                >
                   {student.first_name}{" "}
                   {student.middle_name !== "N/A" ? student.middle_name : ""}{" "}
-                  {student.last_name}{student.suffix !== 'N/A' ? `, ${student.suffix}` : ""}
+                  {student.last_name}
+                  {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                 </td>
-                <td className="px-6 py-4">{student.gender}</td>
-                <td className="px-6 py-4">{student.contact_number}</td>
+                <td
+                  onClick={() => {
+                    setShowStudentDetailsModal(true);
+                    setSelecedStudentIdDetails(() => student._id);
+                  }}
+                  className="px-6 py-4"
+                >
+                  {student.gender}
+                </td>
+                <td
+                  onClick={() => {
+                    setShowStudentDetailsModal(true);
+                    setSelecedStudentIdDetails(() => student._id);
+                  }}
+                  className="px-6 py-4"
+                >
+                  {student.contact_number}
+                </td>
                 <td className="relative px-6 py-4 flex justify-between">
                   <img
                     onClick={() => {
@@ -88,7 +117,7 @@ export default function StudentListTable({
                         <div
                           onClick={() => {
                             toggleEditStudentModal(true);
-                            setSelectedStudentId(() => student._id);
+                            setSelectedStudentIdEdit(() => student._id);
                           }}
                           className="p-3 flex space-x-3 hover:bg-gray-100"
                         >
