@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import QrCodeModal from "../modals/QrCodeModal";
 
-export default function StudentListTable({ students }) {
+export default function StudentListTable({
+  toggleEditStudentModal,
+  students,
+  setSelectedStudentId,
+}) {
   const [showQrCodeModal, setShowQrCodeModal] = useState(false);
   const [selectedStudentName, setSelectedStudentName] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -22,9 +26,9 @@ export default function StudentListTable({ students }) {
             <th scope="col" className="px-6 py-3">
               Full Name
             </th>
-            {/* <th scope="col" className="px-6 py-3">
-            Grade
-          </th> */}
+            <th scope="col" className="px-6 py-3">
+              Gender
+            </th>
             <th scope="col" className="px-6 py-3">
               Contact
             </th>
@@ -47,10 +51,12 @@ export default function StudentListTable({ students }) {
                   {student.school_id}
                 </th>
                 <td className="px-6 py-4">
-                  {student.first_name} {student.middle_name} {student.last_name}
+                  {student.first_name}{" "}
+                  {student.middle_name !== "N/A" ? student.middle_name : ""}{" "}
+                  {student.last_name}{student.suffix !== 'N/A' ? `, ${student.suffix}` : ""}
                 </td>
+                <td className="px-6 py-4">{student.gender}</td>
                 <td className="px-6 py-4">{student.contact_number}</td>
-                {/* <td className="px-6 py-4">07:21</td> */}
                 <td className="relative px-6 py-4 flex justify-between">
                   <img
                     onClick={() => {
@@ -80,7 +86,10 @@ export default function StudentListTable({ students }) {
                     >
                       <div className="rounded-md border shadow-xs text-start bg-white">
                         <div
-                          // onClick={() => handleEditSemester(semester._id)}
+                          onClick={() => {
+                            toggleEditStudentModal(true);
+                            setSelectedStudentId(() => student._id);
+                          }}
                           className="p-3 flex space-x-3 hover:bg-gray-100"
                         >
                           <img src="/img/edit.svg" alt="" />
