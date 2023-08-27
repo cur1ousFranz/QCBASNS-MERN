@@ -8,7 +8,7 @@ import { SemesterContext } from "../context/SemesterContext";
 import EditSemesterModal from "../components/modals/EditSemesterModal";
 import StudentListTable from "../components/students/StudentListTable";
 import SemesterListTable from "../components/semester/SemesterListTable";
-import CreateStudentModal from "../components/students/CreateStudentModal";
+import StudentModal from "../components/students/StudentModal";
 import { StudentContext } from "../context/StudentContext";
 
 export default function Students() {
@@ -174,7 +174,7 @@ export default function Students() {
           )}
 
           {showCreateStudentModal && (
-            <CreateStudentModal
+            <StudentModal
               toggleModal={toggleCreateStudentModal}
               semesterId={showStudentSemesterId}
             />

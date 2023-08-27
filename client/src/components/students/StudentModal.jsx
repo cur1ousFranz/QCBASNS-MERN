@@ -9,13 +9,15 @@ import {
   INPUT_DEFAULT_STYLE,
   INPUT_ERROR_STYLE,
 } from "../../constants/Constant";
-// TODO:: DISPLAY STUDENTS FROM SPECIFIC SEMESTER
-const CreateStudentModal = ({ toggleModal, semesterId }) => {
+import ErrorModal from "../modals/ErrorModal";
+
+const StudentModal = ({ toggleModal, semesterId }) => {
   const { dispatch } = useContext(StudentContext);
   const [barangayList, setBarangayList] = useState([]);
 
   const [showStudentSuffix, setShowStudentSuffix] = useState(true);
   const [showParentSuffix, setShowParentSuffix] = useState(true);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const [schoolId, setSchoolid] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -49,9 +51,11 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
     const getAllBarangays = async () => {
       try {
         const response = await axiosClient.get("/barangay");
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.length) {
           setBarangayList(() => response.data);
           setBarangay(() => response.data[0].name);
+        } else {
+          setShowErrorModal(true);
         }
       } catch (error) {}
     };
@@ -93,7 +97,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
       const newStudentData = {
         school_id: schoolId,
         first_name: firstName,
-        middle_name: middleName,
+        middle_name: middleName ? middleName : "N/A",
         last_name: lastName,
         gender,
         suffix: studentSuff,
@@ -101,7 +105,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
         contact_number: contactNumber,
         parent: {
           first_name: parentFirstName,
-          middle_name: parentMiddleName,
+          middle_name: parentMiddleName ? parentMiddleName : "N/A",
           last_name: parentLastName,
           suffix: parentSuff,
           gender: parentGender,
@@ -509,8 +513,14 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
           </button>
         </footer>
       </div>
+      {showErrorModal && (
+        <ErrorModal
+          toggleModal={handleCancel}
+          title={"Something went wrong!"}
+        />
+      )}
     </div>
   );
 };
 
-export default CreateStudentModal;
+export default StudentModal;
