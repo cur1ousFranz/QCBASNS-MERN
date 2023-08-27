@@ -45,8 +45,8 @@ export default function Navbar() {
                     onClick={handleLogout}
                     className="w-full flex"
                   >
-                    <span className="mr-2"><img src="/img/logout.svg" alt="" /></span>
-                    Log out
+                    <span className="mr-2 mt-1"><img src="/img/logout.svg" alt="" /></span>
+                    Logout
                   </Link>
                 </div>
               </div>
