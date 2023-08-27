@@ -144,7 +144,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
         contact_number: contactNumber ? contactNumber : "N/A",
         parent: {
           first_name: UpperCaseWords(parentFirstName),
-          middle_name: parentMiddleName ? UpperCaseWords(parentMiddleName) : "N/A",
+          middle_name: parentMiddleName
+            ? UpperCaseWords(parentMiddleName)
+            : "N/A",
           last_name: UpperCaseWords(parentLastName),
           suffix: parentSuff,
           gender: parentGender,
@@ -194,7 +196,13 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-6 mt-4">
-          <p className="text-xl">{title}</p>
+          <p className="text-xl">
+            {" "}
+            <span className="inline-block me-2">
+              <img src="/img/edit.svg" alt="" />
+            </span>
+            {title}
+          </p>
         </header>
 
         <main className="px-4">

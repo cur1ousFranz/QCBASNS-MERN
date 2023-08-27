@@ -3,7 +3,7 @@ import axiosClient from "../../utils/AxiosClient";
 import { Alert } from "../../utils/Alert";
 import { SemesterContext } from "../../context/SemesterContext";
 import UpperCaseWords from "../../utils/UpperCaseWords";
-  //   TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:::: NAVIGATE TO OTHER TAB AFTER CLICKING SEMESTER 
+//   TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:::: NAVIGATE TO OTHER TAB AFTER CLICKING SEMESTER
 export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [semester, setSemester] = useState("1st Semester");
   const [gradeLevel, setGradeLevel] = useState("12");
@@ -91,7 +91,9 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
     if (!hasError) {
       try {
-        const response = await axiosClient.put(`/semester/${semesterId}`, { ...updatedSemester });
+        const response = await axiosClient.put(`/semester/${semesterId}`, {
+          ...updatedSemester,
+        });
         if (response.status === 200) {
           dispatch({ type: "UPDATE_SEMESTER", payload: response.data });
           toggleModal(false);
@@ -121,7 +123,13 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
     >
       <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4">
-          <p className="text-xl">Edit Semester</p>
+          <p className="text-xl">
+            {" "}
+            <span className="inline-block me-2">
+              <img src="/img/edit.svg" alt="" />
+            </span>
+            Edit Semester
+          </p>
         </header>
 
         <main className="px-4">

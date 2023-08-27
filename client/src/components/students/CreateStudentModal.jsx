@@ -44,7 +44,6 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
 
   //Error fields
   const [errorFields, setErrorFields] = useState([]);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [contactNumberErrorMessage, setContactNumberErrorMessage] =
     useState("");
 
@@ -68,7 +67,6 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     e.preventDefault();
     const errors = [];
     setErrorFields(() => errors);
-    setShowErrorMessage(false);
     setContactNumberErrorMessage("");
 
     // Student details
@@ -106,7 +104,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
         contact_number: contactNumber ? contactNumber : "N/A",
         parent: {
           first_name: UpperCaseWords(parentFirstName),
-          middle_name: parentMiddleName ? UpperCaseWords(parentMiddleName) : "N/A",
+          middle_name: parentMiddleName
+            ? UpperCaseWords(parentMiddleName)
+            : "N/A",
           last_name: UpperCaseWords(parentLastName),
           suffix: parentSuff,
           gender: parentGender,
@@ -141,7 +141,6 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
       }
     } else {
       setErrorFields(() => errors);
-      setShowErrorMessage(true);
     }
   };
 
@@ -162,12 +161,13 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-6 mt-4">
-          <p className="text-xl">{title}</p>
-          {/* {showErrorMessage && (
-            <p className="text-sm absolute text-red-500">
-              Please fill in all fields*
-            </p>
-          )} */}
+          <p className="text-xl">
+            {" "}
+            <span className="inline-block me-2">
+              <img src="/img/person-plus.svg" alt="" />
+            </span>
+            {title}
+          </p>
         </header>
 
         <main className="px-4">
