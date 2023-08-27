@@ -8,6 +8,15 @@ const studentReducer = (state, action) => {
       return { students: action.payload };
     case "ADD_STUDENT":
       return { students: [...state.students, action.payload] };
+    case "UPDATE_STUDENT":
+      return {
+        students: state.students.map((student) => {
+          if (student._id === action.payload._id) {
+            return action.payload;
+          }
+          return student;
+        }),
+      };
     default:
       return state;
   }

@@ -164,7 +164,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           updatedtudentData
         );
         if (response.status === 200) {
-          console.log(response.data);
+          dispatch({ type: "UPDATE_STUDENT", payload: response.data });
+          Alert("Updated student successfully");
+          toggleModal(false);
         }
       } catch (error) {
         console.log(error);
