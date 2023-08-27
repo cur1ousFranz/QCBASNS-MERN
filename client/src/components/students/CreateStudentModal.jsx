@@ -3,6 +3,12 @@ import axiosClient from "../../utils/AxiosClient";
 import numbersOnly from "../../utils/NumberKeys";
 import { Alert } from "../../utils/Alert";
 import { StudentContext } from "../../context/StudentContext";
+import ValidationMessage from "../typography/ValidationMessage";
+import {
+  CHECKBOX_DEFAULT_STYLE,
+  INPUT_DEFAULT_STYLE,
+  INPUT_ERROR_STYLE,
+} from "../../constants/Constant";
 // TODO:: DISPLAY STUDENTS FROM SPECIFIC SEMESTER
 const CreateStudentModal = ({ toggleModal, semesterId }) => {
   const { dispatch } = useContext(StudentContext);
@@ -176,14 +182,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setSchoolid(e.target.value)}
                     className={
                       !errorFields.includes("schoolId")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("schoolId") && (
-                    <p className="text-sm absolute text-red-500">
-                      School ID is required
-                    </p>
+                    <ValidationMessage message="School ID is required." />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -195,14 +199,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setFirstName(e.target.value)}
                     className={
                       !errorFields.includes("firstName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("firstName") && (
-                    <p className="text-sm absolute text-red-500">
-                      First Name is required
-                    </p>
+                    <ValidationMessage message="First Name is required." />
                   )}
                 </div>
               </div>
@@ -214,13 +216,8 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     type="text"
                     value={middleName}
                     onChange={(e) => setMiddleName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                   />
-                  {errorFields.includes("middleName") && (
-                    <p className="text-sm absolute text-red-500">
-                      Middle Name is required
-                    </p>
-                  )}
                 </div>
                 <div className="w-full relative">
                   <label>Last Name</label>
@@ -231,14 +228,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setLastName(e.target.value)}
                     className={
                       !errorFields.includes("lastName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("lastName") && (
-                    <p className="text-sm absolute text-red-500">
-                      Last Name is required
-                    </p>
+                    <ValidationMessage message="Last Name is required." />
                   )}
                 </div>
               </div>
@@ -251,7 +246,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                         setShowStudentSuffix(() => !showStudentSuffix)
                       }
                       type="checkbox"
-                      className="w-3 h-3 mt-2 bg-gray-100 rounded border-gray-300 focus:ring-gray-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 accent-gray-500"
+                      className={CHECKBOX_DEFAULT_STYLE}
                     />
                   </div>
                   <select
@@ -266,16 +261,13 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     <option value="Jr">Jr</option>
                     <option value="Sr">Sr</option>
                   </select>
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
                 <div className="w-full relative">
                   <label>Gender</label>
                   <select
                     onChange={(e) => setGender(() => e.target.value)}
                     value={gender}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -291,14 +283,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     type="date"
                     className={
                       !errorFields.includes("birthDate")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("birthDate") && (
-                    <p className="text-sm absolute text-red-500">
-                      Birthdate is required
-                    </p>
+                    <ValidationMessage message="Birthdate is required." />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -308,7 +298,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     type="text"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                     maxLength={11}
                   />
                 </div>
@@ -325,14 +315,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setParentFirstname(e.target.value)}
                     className={
                       !errorFields.includes("parentFirstName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("parentFirstName") && (
-                    <p className="text-sm absolute text-red-500">
-                      First Name is required
-                    </p>
+                    <ValidationMessage message="First Name is required." />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -342,13 +330,8 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     type="text"
                     value={parentMiddleName}
                     onChange={(e) => setParentMiddleName(e.target.value)}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                   />
-                  {errorFields.includes("parentMiddleName") && (
-                    <p className="text-sm absolute text-red-500">
-                      Middle Name is required
-                    </p>
-                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -361,14 +344,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setParentLastName(e.target.value)}
                     className={
                       !errorFields.includes("parentLastName")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("parentLastName") && (
-                    <p className="text-sm absolute text-red-500">
-                      Last Name is required
-                    </p>
+                    <ValidationMessage message="Last Name is required." />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -379,13 +360,13 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                         setShowParentSuffix(() => !showParentSuffix)
                       }
                       type="checkbox"
-                      className="w-3 h-3 mt-2 bg-gray-100 rounded border-gray-300 focus:ring-gray-500 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 accent-gray-500"
+                      className={CHECKBOX_DEFAULT_STYLE}
                     />
                   </div>
                   <select
                     onChange={(e) => setParentSuffix(e.target.value)}
                     defaultValue={"Select"}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                     disabled={showParentSuffix}
                   >
                     <option value="Select" disabled>
@@ -394,9 +375,6 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     <option value="Jr">Jr</option>
                     <option value="Sr">Sr</option>
                   </select>
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -405,14 +383,11 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                   <select
                     onChange={(e) => setParentGender(() => e.target.value)}
                     value={parentGender}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                   </select>
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
                 <div className="w-full relative">
                   <label>Contact Number</label>
@@ -422,15 +397,13 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     value={parentContactNumber}
                     className={
                       !errorFields.includes("parentContactNumber")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                     maxLength={11}
                   />
                   {errorFields.includes("parentContactNumber") && (
-                    <p className="text-sm absolute text-red-500">
-                      {contactNumberErrorMessage}
-                    </p>
+                    <ValidationMessage message={contactNumberErrorMessage} />
                   )}
                 </div>
               </div>
@@ -443,14 +416,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setRelationship(e.target.value)}
                     className={
                       !errorFields.includes("relationship")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("relationship") && (
-                    <p className="text-sm absolute text-red-500">
-                      Relationship is required
-                    </p>
+                    <ValidationMessage message="Relationship is required." />
                   )}
                 </div>
                 <div className="w-full relative"></div>
@@ -466,14 +437,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setVillage(e.target.value)}
                     className={
                       !errorFields.includes("village")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("village") && (
-                    <p className="text-sm absolute text-red-500">
-                      Village is required
-                    </p>
+                    <ValidationMessage message="Village is required." />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -484,14 +453,12 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                     onChange={(e) => setStreet(e.target.value)}
                     className={
                       !errorFields.includes("street")
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
                     }
                   />
                   {errorFields.includes("street") && (
-                    <p className="text-sm absolute text-red-500">
-                      Street is required
-                    </p>
+                    <ValidationMessage message="Street is required." />
                   )}
                 </div>
               </div>
@@ -501,7 +468,7 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                   <select
                     onChange={(e) => setBarangay(() => e.target.value)}
                     value={barangay}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                   >
                     {barangayList.length > 0 &&
                       barangayList.map((barangay) => (
@@ -510,27 +477,15 @@ const CreateStudentModal = ({ toggleModal, semesterId }) => {
                         </option>
                       ))}
                   </select>
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
                 <div className="w-full relative">
                   <label>City/Municipality</label>
                   <input
                     type="text"
                     value={city}
-                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                    className={INPUT_DEFAULT_STYLE}
                     disabled
                   />
-                  {/* <input
-                  type="text"
-                  value={street}
-                  onChange={(e) => setStreet(e.target.value)}
-                  className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                /> */}
-                  {/* {error && (
-                  <p className="text-sm absolute text-red-500">{error}</p>
-                )} */}
                 </div>
               </div>
             </div>
