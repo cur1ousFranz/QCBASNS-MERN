@@ -51,20 +51,56 @@ export default function SemesterListTable({
                     setShowSudentSemesterId(() => semester._id);
                   }}
                   scope="row"
-                  className="px-6 py-4 font-medium whitespace-nowrap hover:underline"
+                  className="px-6 py-4 font-medium whitespace-nowrap"
                 >
                   {semester.section}
                 </th>
-                <td className="px-6 py-4">
+                <td
+                  onClick={() => {
+                    setShowStudentList(true);
+                    setShowSudentSemesterId(() => semester._id);
+                  }}
+                  className="px-6 py-4"
+                >
                   {semester.semester}
                   {semester.semester === "1" ? "st Semester" : "nd Semester"}
                 </td>
-                <td className="px-6 py-4">
+                <td
+                  onClick={() => {
+                    setShowStudentList(true);
+                    setShowSudentSemesterId(() => semester._id);
+                  }}
+                  className="px-6 py-4"
+                >
                   {semester.start_year} - {semester.end_year}
                 </td>
-                <td className="px-6 py-4">{semester.track}</td>
-                <td className="px-6 py-4">{semester.strand}</td>
-                <td className="px-6 py-4">{semester.grade_level}</td>
+                <td
+                  onClick={() => {
+                    setShowStudentList(true);
+                    setShowSudentSemesterId(() => semester._id);
+                  }}
+                  className="px-6 py-4"
+                >
+                  {semester.track}
+                </td>
+                <td
+                  onClick={() => {
+                    setShowStudentList(true);
+                    setShowSudentSemesterId(() => semester._id);
+                  }}
+                  className="px-6 py-4"
+                >
+                  {semester.strand}
+                </td>
+                <td
+                  onClick={() => {
+                    setShowStudentList(true);
+                    setShowSudentSemesterId(() => semester._id);
+                  }}
+                  className="px-6 py-4"
+                >
+                  {semester.grade_level}
+                </td>
                 <td className="px-6 py-4 flex justify-between">
                   {semester.active ? (
                     <p className="mt-2">
