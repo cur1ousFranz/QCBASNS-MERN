@@ -3,6 +3,7 @@ import axiosClient from "../../utils/AxiosClient";
 import { SemesterContext } from "../../context/SemesterContext";
 import { Alert } from "../../utils/Alert";
 import ErrorModal from "./ErrorModal";
+import UpperCaseWords from "../../utils/UpperCaseWords";
 
 const CreateSemesterModal = ({ toggleModal }) => {
   const [semester, setSemester] = useState("1");
@@ -81,7 +82,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
       grade_level: gradeLevel,
       track,
       strand: selectedStrand,
-      section,
+      section: UpperCaseWords(section),
       start_year: startYear,
       end_year: endYear,
       active: true,

@@ -10,6 +10,7 @@ import {
   INPUT_ERROR_STYLE,
 } from "../../constants/Constant";
 import ErrorModal from "../modals/ErrorModal";
+import UpperCaseWords from "../../utils/UpperCaseWords";
 
 const EditStudentModal = ({ toggleModal, studentId, title }) => {
   const { students, dispatch } = useContext(StudentContext);
@@ -134,25 +135,25 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
 
       const updatedtudentData = {
         school_id: schoolId,
-        first_name: firstName,
-        middle_name: middleName ? middleName : "N/A",
-        last_name: lastName,
+        first_name: UpperCaseWords(firstName),
+        middle_name: middleName ? UpperCaseWords(middleName) : "N/A",
+        last_name: UpperCaseWords(lastName),
         gender,
         suffix: studentSuff,
         birthdate: birthDate,
         contact_number: contactNumber ? contactNumber : "N/A",
         parent: {
-          first_name: parentFirstName,
-          middle_name: parentMiddleName ? parentMiddleName : "N/A",
-          last_name: parentLastName,
+          first_name: UpperCaseWords(parentFirstName),
+          middle_name: parentMiddleName ? UpperCaseWords(parentMiddleName) : "N/A",
+          last_name: UpperCaseWords(parentLastName),
           suffix: parentSuff,
           gender: parentGender,
           contact_number: parentContactNumber,
-          relationship: relationship,
+          relationship: UpperCaseWords(relationship),
         },
         address: {
-          village,
-          street,
+          village: UpperCaseWords(village),
+          street: UpperCaseWords(street),
           barangay,
           city,
         },

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
 import { Alert } from "../../utils/Alert";
 import { SemesterContext } from "../../context/SemesterContext";
+import UpperCaseWords from "../../utils/UpperCaseWords";
   //   TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:::: NAVIGATE TO OTHER TAB AFTER CLICKING SEMESTER 
 export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [semester, setSemester] = useState("1st Semester");
@@ -83,7 +84,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
       grade_level: gradeLevel,
       track,
       strand: selectedStrand,
-      section,
+      section: UpperCaseWords(section),
       start_year: startYear,
       end_year: endYear,
     };
