@@ -1,3 +1,4 @@
+const { isValidObjectId } = require("mongoose");
 const Student = require("./../models/StudentModel");
 
 const createStudent = async (req, res) => {
@@ -48,6 +49,19 @@ const createStudent = async (req, res) => {
   }
 };
 
+const updateStudent = async (req, res) => {
+  const { id } = req.params;
+  const updated = req.body;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such student" });
+  }
+
+  await Student.findByIdAndUpdate({ _id: id }, { ...updated });
+  const student = await Student.findById({ _id: id });
+  return res.status(200).json(student);
+};
 module.exports = {
   createStudent,
+  updateStudent,
 };
