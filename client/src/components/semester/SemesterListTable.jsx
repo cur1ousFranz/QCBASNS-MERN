@@ -88,13 +88,6 @@ export default function SemesterListTable({
                     src="/img/dots_option.svg"
                     alt=""
                   />
-                  {/* <select name="" id="" className="w-6">
-                    <option disabled selected></option>
-                    <option value="" className="px-2">
-                      <img src="/img/edit.svg" alt="" />
-                      <p className="me-4">Edit</p>
-                    </option>
-                  </select> */}
                   {showOptionMenu && index === selectedOptionIndex && (
                     <div
                       onMouseLeave={() => setShowOptionMenu(false)}
