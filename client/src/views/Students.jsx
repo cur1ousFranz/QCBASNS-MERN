@@ -143,16 +143,18 @@ export default function Students() {
                   >
                     Existing Student
                   </button> */}
-                  <button
-                    onClick={() => setShowCreateStudentModal(true)}
-                    className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
-                  >
-                    {" "}
-                    <span className="me-2">
-                      <img src="/img/person-plus.svg" alt="" />
-                    </span>
-                    New Student
-                  </button>
+                  {currentSemester && currentSemester.active && (
+                    <button
+                      onClick={() => setShowCreateStudentModal(true)}
+                      className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
+                    >
+                      {" "}
+                      <span className="me-2">
+                        <img src="/img/person-plus.svg" alt="" />
+                      </span>
+                      New Student
+                    </button>
+                  )}
                 </div>
               </div>
             )}
