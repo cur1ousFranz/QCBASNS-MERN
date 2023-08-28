@@ -23,23 +23,10 @@ const userSchema = Schema(
   { timestamps: true }
 );
 
-userSchema.statics.signup = async function (email, password, role) {
-  if (!email) throw Error("Email is required.");
-  if (!password) throw Error("Password is required.");
-  if (!validator.isEmail(email)) throw Error("Email is invalid.");
-  const exist = await this.findOne({ email });
-  if (exist) throw Error("Email already exist.");
-
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
-  const user = await this.create({ email, password: hash, role });
-  return user;
-};
-
 userSchema.statics.login = async function (email, password) {
   if (!email || !password) throw Error("Please fill in all fields.");
   if (!validator.isEmail(email)) throw Error("Email is invalid.");
-  
+
   const user = await this.findOne({ email });
   if (!user) throw Error("Invalid credentials");
   const match = await bcrypt.compare(password, user.password);
