@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { registerAdviser } from "../lib/registerAdviser";
 import { Alert } from "../utils/Alert";
+import ValidationMessage from "../components/typography/ValidationMessage";
+import numbersOnly from "../utils/NumberKeys";
 
 export const Register = () => {
   const { dispatch } = useContext(AuthContext);
@@ -27,6 +29,9 @@ export const Register = () => {
   const [errorBirthDate, setErrorBirthDate] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
+  const [errorMessages, setErrorMessages] = useState("");
+  const [contactNumberErrorMessage, setContactNumberErrorMessage] =
+    useState("");
 
   const submitSignup = async (e) => {
     e.preventDefault();
@@ -38,10 +43,20 @@ export const Register = () => {
     setErrorContactNumber(false);
     setErrorEmail(false);
     setErrorPassword(false);
+    setContactNumberErrorMessage("");
 
     if (password && password !== confirmPassword) {
       setErrorPassword(true);
       return;
+    }
+
+    if (contactNumber.length < 11) {
+      setContactNumberErrorMessage("Contact number must be 11 digits.");
+      setErrorContactNumber(true);
+    }
+    if (!contactNumber) {
+      setContactNumberErrorMessage(() => "Contact number is required.");
+      setErrorContactNumber(true);
     }
 
     const currentSuffix = showSuffix === false ? suffix : "";
@@ -62,34 +77,22 @@ export const Register = () => {
       localStorage.setItem("user", JSON.stringify(data));
       Alert("Registation successful");
     } catch (error) {
-      if (error.response.data.error === "Please fill in all fields") {
-        setErrorMessage(error.response.data.error);
-      }
-      if (error.response.data.error === "Email is invalid.") {
-        setErrorMessage(error.response.data.error);
-        setErrorEmail(true);
-      }
       if (error.response.data.errorFields) {
-        if (error.response.data.errorFields.includes("first_name"))
-          setErrorFirstName(true);
-        if (error.response.data.errorFields.includes("middle_name"))
-          setErrorMiddleName(true);
-        if (error.response.data.errorFields.includes("last_name"))
-          setErrorLastName(true);
-        if (error.response.data.errorFields.includes("birthdate"))
-          setErrorBirthDate(true);
-        if (error.response.data.errorFields.includes("contact_number"))
-          setErrorContactNumber(true);
-        if (error.response.data.errorFields.includes("email"))
-          setErrorEmail(true);
-        if (error.response.data.errorFields.includes("password"))
-          setErrorPassword(true);
+        const errorFields = error.response.data.errorFields;
+        if (errorFields.includes("first_name")) setErrorFirstName(true);
+        if (errorFields.includes("middle_name")) setErrorMiddleName(true);
+        if (errorFields.includes("last_name")) setErrorLastName(true);
+        if (errorFields.includes("birthdate")) setErrorBirthDate(true);
+        if (errorFields.includes("contact_number")) setErrorContactNumber(true);
+        if (errorFields.includes("email")) setErrorEmail(true);
+        if (errorFields.includes("password")) setErrorPassword(true);
+        setErrorMessages(() => error.response.data.error[0]);
       }
     }
   };
 
   return (
-    <div class="py-32 bg-slate-50" style={{ minHeight: "100vh"}}>
+    <div className="py-32 bg-slate-50" style={{ minHeight: "100vh" }}>
       <div className="relative border mx-auto shadow-sm rounded-md px-6 py-4 w-10/12 md:w-4/12 bg-white">
         <div
           className="absolute inset-0 z-0 opacity-10"
@@ -213,10 +216,12 @@ export const Register = () => {
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
+                  <ValidationMessage message={errorMessages} />
                 </div>
                 <div className="w-full">
                   <label>Contact Number</label>
                   <input
+                    onKeyDown={numbersOnly}
                     onChange={(e) => setContactNumber(() => e.target.value)}
                     value={contactNumber}
                     type="text"
@@ -225,7 +230,9 @@ export const Register = () => {
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
+                    maxLength={11}
                   />
+                  <ValidationMessage message={contactNumberErrorMessage} />
                 </div>
               </div>
               <div className="flex space-x-3">
