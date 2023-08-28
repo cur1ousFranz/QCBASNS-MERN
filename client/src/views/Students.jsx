@@ -176,16 +176,21 @@ export default function Students() {
               )}
             </div>
           </div>
-          {/* STUDENTS LIST */}
-          {showStudentList && (
-            <StudentListTable
-              toggleEditStudentModal={toggleEditStudentModal}
-              students={studentContext.students}
-              setSelectedStudentIdEdit={setSelectedStudentIdEdit}
-              setSelecedStudentIdDetails={setSelecedStudentIdDetails}
-              setShowStudentDetailsModal={setShowStudentDetailsModal}
-            />
-          )}
+          <div className="w-full">
+            <div className="overflow-x-auto">
+              {/* STUDENTS LIST */}
+              {showStudentList && (
+                <StudentListTable
+                  toggleEditStudentModal={toggleEditStudentModal}
+                  students={studentContext.students}
+                  setSelectedStudentIdEdit={setSelectedStudentIdEdit}
+                  setSelecedStudentIdDetails={setSelecedStudentIdDetails}
+                  setShowStudentDetailsModal={setShowStudentDetailsModal}
+                />
+              )}
+            </div>
+          </div>
+
           {showSemesterModal && (
             <div className="mx-auto">
               <CreateSemesterModal toggleModal={handleShowSemesterModal} />
