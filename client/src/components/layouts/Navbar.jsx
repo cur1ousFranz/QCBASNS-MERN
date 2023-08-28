@@ -9,6 +9,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
+    setShowProfileDropdown(false)
     localStorage.removeItem("user");
   };
 
