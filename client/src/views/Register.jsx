@@ -89,8 +89,8 @@ export const Register = () => {
   };
 
   return (
-    <div class="h-screen relative py-32 bg-slate-50">
-      <div className="relative border mx-auto shadow-sm rounded-md px-6 py-4 w-1/3 bg-white">
+    <div class="py-32 bg-slate-50" style={{ minHeight: "100vh"}}>
+      <div className="relative border mx-auto shadow-sm rounded-md px-6 py-4 w-10/12 md:w-4/12 bg-white">
         <div
           className="absolute inset-0 z-0 opacity-10"
           style={{
