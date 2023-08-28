@@ -30,8 +30,14 @@ export const Register = () => {
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorMessages, setErrorMessages] = useState("");
+
+  const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
+  const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
   const [contactNumberErrorMessage, setContactNumberErrorMessage] =
     useState("");
+  const [birthDateErrorMessage, setBirthDateErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [hasErrors, setHasErrors] = useState(false);
 
   const submitSignup = async (e) => {
     e.preventDefault();
@@ -43,50 +49,87 @@ export const Register = () => {
     setErrorContactNumber(false);
     setErrorEmail(false);
     setErrorPassword(false);
+    setFirstNameErrorMessage("");
+    setLastNameErrorMessage("");
+    setBirthDateErrorMessage("");
+    setPasswordErrorMessage("");
     setContactNumberErrorMessage("");
+    setHasErrors(false);
+    setErrorMessages("")
+
+    if (!firstName) {
+      setFirstNameErrorMessage(() => "First Name is required.");
+      setErrorFirstName(true);
+    }
+
+    if (!lastName) {
+      setLastNameErrorMessage(() => "Last Name is required.");
+      setErrorLastName(true);
+    }
+
+    if (!birthDate) {
+      setBirthDateErrorMessage(() => "Birthdate is required.");
+      setErrorBirthDate(true);
+    }
 
     if (password && password !== confirmPassword) {
       setErrorPassword(true);
-      return;
+      setPasswordErrorMessage("Password does not match.");
+      setHasErrors(true);
+    }
+
+    if (password === confirmPassword && password.length < 3) {
+      setErrorPassword(true);
+      setPasswordErrorMessage("Password atleast 3 characters long.");
+      setHasErrors(true);
     }
 
     if (contactNumber.length < 11) {
       setContactNumberErrorMessage("Contact number must be 11 digits.");
       setErrorContactNumber(true);
+      setHasErrors(true);
     }
+
     if (!contactNumber) {
       setContactNumberErrorMessage(() => "Contact number is required.");
       setErrorContactNumber(true);
+      setHasErrors(true);
     }
 
     const currentSuffix = showSuffix === false ? suffix : "";
-    try {
-      const data = await registerAdviser(
-        firstName,
-        middleName,
-        lastName,
-        currentSuffix,
-        birthDate,
-        gender,
-        email,
-        contactNumber,
-        password
-      );
+    if (!hasErrors) {
+      try {
+        const data = await registerAdviser(
+          firstName,
+          middleName,
+          lastName,
+          currentSuffix,
+          birthDate,
+          gender,
+          email,
+          contactNumber,
+          password
+        );
 
-      dispatch({ type: "LOGIN", payload: data });
-      localStorage.setItem("user", JSON.stringify(data));
-      Alert("Registation successful");
-    } catch (error) {
-      if (error.response.data.errorFields) {
-        const errorFields = error.response.data.errorFields;
-        if (errorFields.includes("first_name")) setErrorFirstName(true);
-        if (errorFields.includes("middle_name")) setErrorMiddleName(true);
-        if (errorFields.includes("last_name")) setErrorLastName(true);
-        if (errorFields.includes("birthdate")) setErrorBirthDate(true);
-        if (errorFields.includes("contact_number")) setErrorContactNumber(true);
-        if (errorFields.includes("email")) setErrorEmail(true);
-        if (errorFields.includes("password")) setErrorPassword(true);
-        setErrorMessages(() => error.response.data.error[0]);
+        dispatch({ type: "LOGIN", payload: data });
+        localStorage.setItem("user", JSON.stringify(data));
+        Alert("Registation successful");
+      } catch (error) {
+        if (error.response.data.errorFields) {
+          const errorFields = error.response.data.errorFields;
+          if (errorFields.includes("first_name")) setErrorFirstName(true);
+          if (errorFields.includes("middle_name")) setErrorMiddleName(true);
+          if (errorFields.includes("last_name")) setErrorLastName(true);
+          if (errorFields.includes("birthdate")) setErrorBirthDate(true);
+          if (errorFields.includes("contact_number"))
+            setErrorContactNumber(true);
+          if (errorFields.includes("email")) setErrorEmail(true);
+          if (errorFields.includes("password")) setErrorPassword(true);
+          if (error.response.data.error[0]) {
+            setErrorMessages(() => error.response.data.error[0]);
+            setErrorEmail(true);
+          }
+        }
       }
     }
   };
@@ -125,9 +168,10 @@ export const Register = () => {
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
+                  <ValidationMessage message={firstNameErrorMessage} />
                 </div>
                 <div className="w-full">
-                  <label>Middle Name</label>
+                  <label>Middle Name (Optional)</label>
                   <input
                     onChange={(e) => setMiddleName(() => e.target.value)}
                     value={middleName}
@@ -153,6 +197,7 @@ export const Register = () => {
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
+                  <ValidationMessage message={lastNameErrorMessage} />
                 </div>
                 <div className="w-full">
                   <div className="flex justify-between">
@@ -190,6 +235,7 @@ export const Register = () => {
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
+                  <ValidationMessage message={birthDateErrorMessage} />
                 </div>
                 <div className="w-full">
                   <label>Gender</label>
@@ -249,9 +295,7 @@ export const Register = () => {
                     }
                   />
                   {password && errorPassword && (
-                    <p className="text-sm absolute text-red-500">
-                      Password does not match.
-                    </p>
+                    <ValidationMessage message={passwordErrorMessage} />
                   )}
                 </div>
                 <div className="w-full">
