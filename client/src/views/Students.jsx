@@ -91,7 +91,7 @@ export default function Students() {
     setShowStudentDetailsModal(value);
 
   return (
-    <div className="w-full" style={{ minHeight: "100vh"}}>
+    <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />
@@ -160,18 +160,22 @@ export default function Students() {
             )}
           </div>
           {/* SEMESTER LISTS */}
-          {!showStudentList && (
-            <SemesterListTable
-              semesters={semesters}
-              setShowStudentList={setShowStudentList}
-              setShowOptionMenu={setShowOptionMenu}
-              setSeletedOptionIndex={setSeletedOptionIndex}
-              showOptionMenu={showOptionMenu}
-              selectedOptionIndex={selectedOptionIndex}
-              handleEditSemester={handleEditSemester}
-              setShowSudentSemesterId={setShowSudentSemesterId}
-            />
-          )}
+          <div className="w-full">
+            <div className="overflow-x-auto">
+              {!showStudentList && (
+                <SemesterListTable
+                  semesters={semesters}
+                  setShowStudentList={setShowStudentList}
+                  setShowOptionMenu={setShowOptionMenu}
+                  setSeletedOptionIndex={setSeletedOptionIndex}
+                  showOptionMenu={showOptionMenu}
+                  selectedOptionIndex={selectedOptionIndex}
+                  handleEditSemester={handleEditSemester}
+                  setShowSudentSemesterId={setShowSudentSemesterId}
+                />
+              )}
+            </div>
+          </div>
           {/* STUDENTS LIST */}
           {showStudentList && (
             <StudentListTable
