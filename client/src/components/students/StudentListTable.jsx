@@ -91,7 +91,11 @@ export default function StudentListTable({
                     onClick={() => {
                       setSelectedStudentName(
                         () =>
-                          `${student.first_name} ${student.middle_name} ${student.last_name}`
+                          `${student.first_name} ${
+                            student.middle_name !== "N/A"
+                              ? student.middle_name
+                              : ""
+                          } ${student.last_name}`
                       );
                       setSelectedStudent(() => student);
                       setShowQrCodeModal(true);

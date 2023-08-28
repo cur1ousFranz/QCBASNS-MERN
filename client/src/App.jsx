@@ -8,6 +8,7 @@ import Students from "./views/Students";
 import Attendance from "./views/Attendance";
 import Report from "./views/Report";
 import Message from "./views/Message";
+import Footer from "./components/layouts/Footer";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -27,21 +28,22 @@ function App() {
           />
           <Route
             path="/student"
-            element={user ? <Students /> : <Navigate to={'/login'} />}
+            element={user ? <Students /> : <Navigate to={"/login"} />}
           />
           <Route
             path="/attendance"
-            element={user ? <Attendance /> : <Navigate to={'/login'} />}
+            element={user ? <Attendance /> : <Navigate to={"/login"} />}
           />
           <Route
             path="/report"
-            element={user ? <Report /> : <Navigate to={'/login'} />}
+            element={user ? <Report /> : <Navigate to={"/login"} />}
           />
           <Route
             path="/message"
-            element={user ? <Message /> : <Navigate to={'/login'} />}
+            element={user ? <Message /> : <Navigate to={"/login"} />}
           />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );

@@ -120,9 +120,10 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
+      style={{ minHeight: "100vh"}}
     >
       <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
-        <header className="modal-header px-4 mt-4">
+        <header className="modal-header px-4 py-3 mt-4">
           <p className="text-xl">
             {" "}
             <span className="inline-block me-2">
@@ -132,7 +133,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
           </p>
         </header>
 
-        <main className="px-4">
+        <main className="px-4 h-96 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">

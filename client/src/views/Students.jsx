@@ -91,7 +91,7 @@ export default function Students() {
     setShowStudentDetailsModal(value);
 
   return (
-    <div className="w-full">
+    <div className="w-full" style={{ minHeight: "100vh"}}>
       <div className="flex">
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />

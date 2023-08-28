@@ -136,9 +136,10 @@ const CreateSemesterModal = ({ toggleModal }) => {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
+      style={{ minHeight: "100vh"}}
     >
-      <div className="modal w-full md:w-1/3 overflow-y-auto bg-white rounded-lg shadow-lg">
-        <header className="modal-header px-4 mt-4">
+      <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
+        <header className="modal-header px-4 mt-4 py-3">
           <p className="text-lg">
             {" "}
             <span className="inline-block me-1">
@@ -148,7 +149,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           </p>
         </header>
 
-        <main className="px-4">
+        <main className="px-4 h-96 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">

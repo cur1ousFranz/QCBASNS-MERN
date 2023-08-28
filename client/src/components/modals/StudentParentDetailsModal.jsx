@@ -57,7 +57,10 @@ export default function StudentParentDetailsModal({ toggleModal, studentId }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center modal-backdrop">
+    <div
+      className="fixed inset-0 flex items-center justify-center modal-backdrop"
+      style={{ minHeight: "100vh" }}
+    >
       <div className="modal w-full md:w-7/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 py-3 mt-4 border-b border-gray-50">
           <p className="text-xl">
@@ -68,8 +71,8 @@ export default function StudentParentDetailsModal({ toggleModal, studentId }) {
           </p>
         </header>
 
-        <main className="px-8 pb-4">
-          <div className="max-h-96 px-2 flex space-x-6 overflow-y-auto">
+        <main className="px-8 pb-4 h-96 overflow-y-auto">
+          <div className="max-h-96 px-2 flex space-x-6">
             <div className="py-6 w-full space-y-4">
               <p className="py-1 px-2 rounded-md text-center text-gray-700 bg-gray-100">
                 Student

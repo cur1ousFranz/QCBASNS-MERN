@@ -29,7 +29,7 @@ export default function Login() {
   };
 
   return (
-    <div class="h-screen relative py-32 bg-slate-50">
+    <div class="relative py-32 bg-slate-50" style={{ minHeight: "100vh"}}>
       <div className="relative border mx-auto shadow-sm rounded-md px-6 py-4 w-96 bg-white">
         <div
           className="absolute inset-0 z-0 opacity-20"

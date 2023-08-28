@@ -24,6 +24,18 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
 
     const printDocument =
       printFrame.contentDocument || printFrame.contentWindow.document;
+
+    printDocument.head.innerHTML = `
+      <style>
+        @media print {
+          /* Adjust the scale as needed */
+          body {
+            transform: scale(0.50); /* Modify the scale factor */
+            transform-origin: top left;
+          }
+        }
+      </style>
+    `;
     printDocument.body.innerHTML = printContents;
     printFrame.contentWindow.print();
 
@@ -58,7 +70,9 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
             <div className="flex justify-center mx-auto w-full">
               {studentQrValue && (
                 <QRCode
-                  title={`${student.first_name} ${student.middle_name} ${student.last_name}`}
+                  title={`${student.first_name} ${
+                    student.middle_name !== "N/A" ? student.middle_name : ""
+                  } ${student.last_name}`}
                   value={JSON.stringify(studentQrValue)}
                   bgColor="#FFFFFF"
                   fgColor="#000000"
@@ -69,9 +83,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
             <p className="text-sm mt-2 font-semibold text-center">
               ID: {student.school_id}
             </p>
-            <p className="text-sm font-semibold text-center">
-              {title}
-            </p>
+            <p className="text-sm font-semibold text-center">{title}</p>
           </div>
         </main>
 
