@@ -3,6 +3,7 @@ const User = require("../models/UserModel");
 const Adviser = require("../models/AdviserModel");
 const createToken = require("../utils/CreateToken");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const createAdviser = async (req, res) => {
   const {
@@ -20,7 +21,6 @@ const createAdviser = async (req, res) => {
   const errorFields = [];
   const errorMessage = [];
   if (!first_name) errorFields.push("first_name");
-  if (!middle_name) errorFields.push("middle_name");
   if (!last_name) errorFields.push("last_name");
   if (!gender) errorFields.push("gender");
   if (!birthdate) errorFields.push("birthdate");
@@ -50,7 +50,7 @@ const createAdviser = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
-    const user = await this.create({ email, password: hash, role });
+    const user = await User.create({ email, password: hash, role: ADVISER });
 
     // const user = await User.signup(email, password, ADVISER);
     const adviser = await Adviser.create({
