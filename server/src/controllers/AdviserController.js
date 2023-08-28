@@ -2,6 +2,7 @@ const { ADVISER } = require("../constants/Roles");
 const User = require("../models/UserModel");
 const Adviser = require("../models/AdviserModel");
 const createToken = require("../utils/CreateToken");
+const validator = require("validator");
 
 const createAdviser = async (req, res) => {
   const {
@@ -17,7 +18,7 @@ const createAdviser = async (req, res) => {
   } = req.body;
 
   const errorFields = [];
-  const errorMessage = "Please fill in all fields";
+  const errorMessage = [];
   if (!first_name) errorFields.push("first_name");
   if (!middle_name) errorFields.push("middle_name");
   if (!last_name) errorFields.push("last_name");
@@ -26,12 +27,32 @@ const createAdviser = async (req, res) => {
   if (!contact_number) errorFields.push("contact_number");
   if (!email) errorFields.push("email");
   if (!password) errorFields.push("password");
+
+  if (!validator.isEmail(email)) {
+    errorFields.push("email");
+    errorMessage.push("Email is invalid.");
+  }
+
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
 
   try {
-    const user = await User.signup(email, password, ADVISER);
+    const exist = await User.findOne({ email });
+    if (exist) {
+      errorFields.push("email");
+      errorMessage.push("Email is already exist.");
+    }
+
+    if (errorFields.length > 0) {
+      return res.status(400).json({ error: errorMessage, errorFields });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    const user = await this.create({ email, password: hash, role });
+
+    // const user = await User.signup(email, password, ADVISER);
     const adviser = await Adviser.create({
       user_id: user._id,
       first_name,
