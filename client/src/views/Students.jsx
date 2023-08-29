@@ -96,14 +96,14 @@ export default function Students() {
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />
         </div>
-        <div className="py-12 px-6 lg:px-12 w-full space-y-6">
+        <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
             {!showStudentList && (
               <div className="flex justify-end w-full">
                 <button
                   onClick={() => setShowSemesterModal(true)}
-                  className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
+                  className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                 >
                   {" "}
                   <span className="me-1">
@@ -125,13 +125,13 @@ export default function Students() {
                   <Header title="Students" />
                   {currentSemester && currentSemester.active ? (
                     <p className="mt-2">
-                      <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
+                      <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
                         Active
                       </span>
                     </p>
                   ) : (
                     <p className="mt-2">
-                      <span className="p-1 font-semibold text-xs rounded-md bg-red-300">
+                      <span className="p-1 font-semibold text-xs rounded-md text-white bg-red-400">
                         Inactive
                       </span>
                     </p>
@@ -146,7 +146,7 @@ export default function Students() {
                   {currentSemester && currentSemester.active && (
                     <button
                       onClick={() => setShowCreateStudentModal(true)}
-                      className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
+                      className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                     >
                       {" "}
                       <span className="me-2">

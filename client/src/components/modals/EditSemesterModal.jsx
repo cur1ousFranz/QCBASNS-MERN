@@ -270,7 +270,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
             Cancel
           </button>
           <button
-            className="px-3 py-2 bg-green-500 hover:bg-green-940 text-white text-sm"
+            className="px-3 py-2 bg-green-500 hover:bg-green-400 text-white text-sm"
             type="submit"
             form="semester-form"
           >

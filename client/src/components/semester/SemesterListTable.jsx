@@ -103,13 +103,13 @@ export default function SemesterListTable({
               <td className="px-6 py-4 flex justify-between">
                 {semester.active ? (
                   <p className="mt-2">
-                    <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
+                    <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
                       Active
                     </span>
                   </p>
                 ) : (
                   <p className="mt-2">
-                    <span className="p-1 font-semibold text-xs rounded-md bg-red-300">
+                    <span className="p-1 font-semibold text-xs rounded-md text-white bg-red-400">
                       Inactive
                     </span>
                   </p>
