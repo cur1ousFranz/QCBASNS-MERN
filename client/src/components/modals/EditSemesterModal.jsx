@@ -3,7 +3,8 @@ import axiosClient from "../../utils/AxiosClient";
 import { Alert } from "../../utils/Alert";
 import { SemesterContext } from "../../context/SemesterContext";
 import UpperCaseWords from "../../utils/UpperCaseWords";
-//   TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:::: NAVIGATE TO OTHER TAB AFTER CLICKING SEMESTER
+import ValidationMessage from "../typography//ValidationMessage";
+
 export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [semester, setSemester] = useState("1st Semester");
   const [gradeLevel, setGradeLevel] = useState("12");
@@ -120,7 +121,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-      style={{ minHeight: "100vh"}}
+      style={{ minHeight: "100vh" }}
     >
       <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 py-3 mt-4">
@@ -182,7 +183,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
               {tracks &&
                 tracks[currentTrackIndex] &&
                 tracks[currentTrackIndex].strand.length > 0 && (
-                  <div>
+                  <div className="relative">
                     <div
                       className={
                         !errorStrand
@@ -210,14 +211,12 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
                       </div>
                     </div>
                     {errorStrand && (
-                      <p className="text-sm absolute text-red-500">
-                        Must select strand.
-                      </p>
+                      <ValidationMessage message="Must select strand." />
                     )}
                   </div>
                 )}
               {/* SECTION */}
-              <div>
+              <div className="relative">
                 <div className="flex space-x-3">
                   <div className="w-full">
                     <label>Section</label>
@@ -234,9 +233,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
                   </div>
                 </div>
                 {errorSection && (
-                  <p className="text-sm absolute text-red-500">
-                    Section is required.
-                  </p>
+                  <ValidationMessage message="Section is required." />
                 )}
               </div>
               {/* SCHOOL YEAR */}
@@ -273,11 +270,11 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
             Cancel
           </button>
           <button
-            className="px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm"
+            className="px-3 py-2 bg-green-500 hover:bg-green-940 text-white text-sm"
             type="submit"
             form="semester-form"
           >
-            Creat Semester
+            Update Semester
           </button>
         </footer>
       </div>

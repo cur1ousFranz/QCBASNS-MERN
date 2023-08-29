@@ -96,7 +96,7 @@ export default function Students() {
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />
         </div>
-        <div className="p-12 w-full space-y-6">
+        <div className="py-12 px-6 lg:px-12 w-full space-y-6">
           <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
             {!showStudentList && (
@@ -177,18 +177,16 @@ export default function Students() {
             </div>
           </div>
           <div className="w-full">
-            <div className="overflow-x-auto">
-              {/* STUDENTS LIST */}
-              {showStudentList && (
-                <StudentListTable
-                  toggleEditStudentModal={toggleEditStudentModal}
-                  students={studentContext.students}
-                  setSelectedStudentIdEdit={setSelectedStudentIdEdit}
-                  setSelecedStudentIdDetails={setSelecedStudentIdDetails}
-                  setShowStudentDetailsModal={setShowStudentDetailsModal}
-                />
-              )}
-            </div>
+            {/* STUDENTS LIST */}
+            {showStudentList && (
+              <StudentListTable
+                toggleEditStudentModal={toggleEditStudentModal}
+                students={studentContext.students}
+                setSelectedStudentIdEdit={setSelectedStudentIdEdit}
+                setSelecedStudentIdDetails={setSelecedStudentIdDetails}
+                setShowStudentDetailsModal={setShowStudentDetailsModal}
+              />
+            )}
           </div>
 
           {showSemesterModal && (

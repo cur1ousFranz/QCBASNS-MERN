@@ -507,7 +507,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
             Cancel
           </button>
           <button
-            className="px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm"
+            className="px-3 py-2 bg-green-500 hover:bg-green-400 text-white text-sm"
             type="submit"
             form="semester-form"
           >
