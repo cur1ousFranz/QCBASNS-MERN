@@ -19,7 +19,7 @@ export default function StudentListTable({
 
   return (
     <>
-      <table className="w-full whitespace-nowrap text-sm text-left mx-auto transition duration-700 ease-in-out">
+      <table className="w-full overflow-x-auto text-sm text-left mx-auto">
         <thead className=" text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3">
@@ -95,7 +95,9 @@ export default function StudentListTable({
                             student.middle_name !== "N/A"
                               ? student.middle_name
                               : ""
-                          } ${student.last_name}`
+                          } ${student.last_name}${
+                            student.suffix !== "N/A" ? ", " + student.suffix : ""
+                          }`
                       );
                       setSelectedStudent(() => student);
                       setShowQrCodeModal(true);

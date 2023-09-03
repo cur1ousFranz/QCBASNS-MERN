@@ -38,6 +38,7 @@ export const Register = () => {
   const [birthDateErrorMessage, setBirthDateErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [hasErrors, setHasErrors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitSignup = async (e) => {
     e.preventDefault();
@@ -55,7 +56,7 @@ export const Register = () => {
     setPasswordErrorMessage("");
     setContactNumberErrorMessage("");
     setHasErrors(false);
-    setErrorMessages("")
+    setErrorMessages("");
 
     if (!firstName) {
       setFirstNameErrorMessage(() => "First Name is required.");
@@ -99,6 +100,7 @@ export const Register = () => {
     const currentSuffix = showSuffix === false ? suffix : "";
     if (!hasErrors) {
       try {
+        setIsLoading(true);
         const data = await registerAdviser(
           firstName,
           middleName,
@@ -114,6 +116,7 @@ export const Register = () => {
         dispatch({ type: "LOGIN", payload: data });
         localStorage.setItem("user", JSON.stringify(data));
         Alert("Registation successful");
+        setIsLoading(false);
       } catch (error) {
         if (error.response.data.errorFields) {
           const errorFields = error.response.data.errorFields;
@@ -130,6 +133,7 @@ export const Register = () => {
             setErrorEmail(true);
           }
         }
+        setIsLoading(false);
       }
     }
   };
@@ -313,15 +317,25 @@ export const Register = () => {
                 </div>
               </div>
               <div className="py-3">
-                <button className="px-2 py-2 w-full rounded-md text-white bg-gray-500 hover:bg-gray-400">
-                  Sign up
+                <button className="px-2 py-2 w-full rounded-md text-white bg-green-500 hover:bg-green-400">
+                  {isLoading ? (
+                    <div className="flex justify-center">
+                      <img
+                        className="animate-spin"
+                        src="/img/loading.svg"
+                        alt=""
+                      />
+                    </div>
+                  ) : (
+                    <p className="uppercase">Sign up</p>
+                  )}
                 </button>
               </div>
               <hr />
               <p className="text-sm ">
                 Already have an account?{" "}
                 <Link to={"/login"} className="underline text-blue-500">
-                  Login
+                  Signin
                 </Link>
               </p>
             </div>

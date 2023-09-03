@@ -8,28 +8,31 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const { dispatch } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitForm = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
+      setIsLoading(true);
       const response = await axiosClient.post("/user", { email, password });
       const data = response.data;
       if (response.status === 200) {
         dispatch({ type: "LOGIN", payload: data });
         localStorage.setItem("user", JSON.stringify(data));
       }
+      setIsLoading(false);
     } catch (error) {
       if (error.response.data.error) {
         setError(error.response.data.error);
+        setIsLoading(false);
       }
-      console.log(error);
     }
   };
 
   return (
-    <div class="relative py-32 bg-slate-50" style={{ minHeight: "100vh"}}>
+    <div className="relative py-32 bg-slate-50" style={{ minHeight: "100vh" }}>
       <div className="relative border mx-auto shadow-sm rounded-md px-6 py-4 w-96 bg-white">
         <div
           className="absolute inset-0 z-0 opacity-20"
@@ -38,8 +41,8 @@ export default function Login() {
             backgroundRepeat: "no-repeat",
             backgroundPosition: "right",
             backgroundSize: "90%",
-            backgroundPositionY: 'center',
-            backgroundPositionX: 'center'
+            backgroundPositionY: "center",
+            backgroundPositionX: "center",
           }}
         ></div>
         <div className="relative z-10">
@@ -81,14 +84,27 @@ export default function Login() {
                   Forgot pasword?
                 </p>
               </div>
-              <button className="px-2 py-2 w-full rounded-md text-white bg-gray-500 hover:bg-gray-400">
-                Sign in
+              <button
+                className="px-2 py-2 w-full rounded-md text-white bg-green-500 hover:bg-green-400"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex justify-center">
+                    <img
+                      className="animate-spin"
+                      src="/img/loading.svg"
+                      alt=""
+                    />
+                  </div>
+                ) : (
+                  <p className="uppercase">Sign in</p>
+                )}
               </button>
               <hr />
               <p className="text-sm ">
                 Don't have an account yet?{" "}
                 <Link to={"/register"} className="underline text-blue-500">
-                  Register
+                  Signup
                 </Link>
               </p>
             </div>

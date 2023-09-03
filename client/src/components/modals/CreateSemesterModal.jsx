@@ -4,6 +4,7 @@ import { SemesterContext } from "../../context/SemesterContext";
 import { Alert } from "../../utils/Alert";
 import ErrorModal from "./ErrorModal";
 import UpperCaseWords from "../../utils/UpperCaseWords";
+import ValidationMessage from "../typography//ValidationMessage";
 
 const CreateSemesterModal = ({ toggleModal }) => {
   const [semester, setSemester] = useState("1");
@@ -24,6 +25,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
   const years = Array.from({ length: 2 }, (_, index) => currentYear + index);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isVerificationChecked, setIsVerificationChecked] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   const { semesters, dispatch } = useContext(SemesterContext);
 
@@ -39,7 +41,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           setShowErrorModal(true);
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     };
 
@@ -117,7 +119,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           Alert("Semester Created");
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     }
   };
@@ -136,7 +138,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-      style={{ minHeight: "100vh"}}
+      style={{ minHeight: "100vh" }}
     >
       <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4 py-3">
@@ -198,7 +200,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
               {tracks.length > 0 &&
                 tracks[currentTrackIndex] &&
                 tracks[currentTrackIndex].strand.length > 0 && (
-                  <div>
+                  <div className="relative">
                     <div
                       className={
                         !errorStrand
@@ -230,14 +232,12 @@ const CreateSemesterModal = ({ toggleModal }) => {
                       </div>
                     </div>
                     {errorStrand && (
-                      <p className="text-sm absolute text-red-500">
-                        Must select strand.
-                      </p>
+                      <ValidationMessage message="Must select strand." />
                     )}
                   </div>
                 )}
               {/* SECTION */}
-              <div>
+              <div className="relative">
                 <div className="flex space-x-3">
                   <div className="w-full">
                     <label>Section</label>
@@ -254,9 +254,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
                   </div>
                 </div>
                 {errorSection && (
-                  <p className="text-sm absolute text-red-500">
-                    Section is required.
-                  </p>
+                  <ValidationMessage message="Section is required." />
                 )}
               </div>
               {/* SCHOOL YEAR */}
@@ -326,6 +324,8 @@ const CreateSemesterModal = ({ toggleModal }) => {
           title={"Something went wrong!"}
         />
       )}
+
+      {errorModalMessage && <ErrorModal title={errorModalMessage} />}
     </div>
   );
 };

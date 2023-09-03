@@ -12,6 +12,7 @@ import CreateStudentModal from "../components/students/CreateStudentModal";
 import { StudentContext } from "../context/StudentContext";
 import EditStudentModal from "../components/students/EditStudentModal";
 import StudentParentDetailsModal from "../components/modals/StudentParentDetailsModal";
+import ErrorModal from "../components/modals/ErrorModal";
 
 export default function Students() {
   const location = useLocation();
@@ -35,6 +36,7 @@ export default function Students() {
   const [currentSemester, setCurrentSemester] = useState(null);
   const [selectedStudentIdEdit, setSelectedStudentIdEdit] = useState("");
   const [selectedStudentIdDetails, setSelecedStudentIdDetails] = useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -44,7 +46,7 @@ export default function Students() {
           dispatch({ type: "SET_SEMESTERS", payload: response.data });
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     };
     getAllSemester();
@@ -71,7 +73,7 @@ export default function Students() {
             setCurrentSemester(() => res.data);
           }
         } catch (error) {
-          console.log(error);
+          setErrorModalMessage(error.message);
         }
       }
     };
@@ -96,14 +98,15 @@ export default function Students() {
         <div className="hidden md:block">
           <Sidebar menu={location.pathname} />
         </div>
-        <div className="p-12 w-full space-y-6">
+        <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
             {!showStudentList && (
-              <div className="flex justify-end w-full">
+              <div className="flex justify-between w-full">
+                <Header title="Semesters" />
                 <button
                   onClick={() => setShowSemesterModal(true)}
-                  className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
+                  className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                 >
                   {" "}
                   <span className="me-1">
@@ -125,13 +128,13 @@ export default function Students() {
                   <Header title="Students" />
                   {currentSemester && currentSemester.active ? (
                     <p className="mt-2">
-                      <span className="p-1 font-semibold text-xs rounded-md bg-green-300">
+                      <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
                         Active
                       </span>
                     </p>
                   ) : (
                     <p className="mt-2">
-                      <span className="p-1 font-semibold text-xs rounded-md bg-red-300">
+                      <span className="p-1 font-semibold text-xs rounded-md text-white bg-red-400">
                         Inactive
                       </span>
                     </p>
@@ -146,7 +149,7 @@ export default function Students() {
                   {currentSemester && currentSemester.active && (
                     <button
                       onClick={() => setShowCreateStudentModal(true)}
-                      className="px-2 flex py-2 text-sm rounded-md text-gray-700 bg-green-400 hover:bg-green-300"
+                      className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                     >
                       {" "}
                       <span className="me-2">
@@ -177,18 +180,16 @@ export default function Students() {
             </div>
           </div>
           <div className="w-full">
-            <div className="overflow-x-auto">
-              {/* STUDENTS LIST */}
-              {showStudentList && (
-                <StudentListTable
-                  toggleEditStudentModal={toggleEditStudentModal}
-                  students={studentContext.students}
-                  setSelectedStudentIdEdit={setSelectedStudentIdEdit}
-                  setSelecedStudentIdDetails={setSelecedStudentIdDetails}
-                  setShowStudentDetailsModal={setShowStudentDetailsModal}
-                />
-              )}
-            </div>
+            {/* STUDENTS LIST */}
+            {showStudentList && (
+              <StudentListTable
+                toggleEditStudentModal={toggleEditStudentModal}
+                students={studentContext.students}
+                setSelectedStudentIdEdit={setSelectedStudentIdEdit}
+                setSelecedStudentIdDetails={setSelecedStudentIdDetails}
+                setShowStudentDetailsModal={setShowStudentDetailsModal}
+              />
+            )}
           </div>
 
           {showSemesterModal && (
@@ -228,6 +229,8 @@ export default function Students() {
               studentId={selectedStudentIdDetails}
             />
           )}
+
+          {errorModalMessage && <ErrorModal title={errorModalMessage} />}
         </div>
       </div>
     </div>
