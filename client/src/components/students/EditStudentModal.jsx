@@ -46,6 +46,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
   const [errorFields, setErrorFields] = useState([]);
   const [contactNumberErrorMessage, setContactNumberErrorMessage] =
     useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -59,8 +60,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           setShowErrorModal(true);
         }
       } catch (error) {
-        console.log(error);
-        setShowErrorModal(true);
+        setErrorModalMessage(error.message);
       }
     };
 
@@ -172,7 +172,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           toggleModal(false);
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     } else {
       setErrorFields(() => errors);
@@ -193,7 +193,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center px-4 justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-      style={{ minHeight: "100vh"}}
+      style={{ minHeight: "100vh" }}
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
@@ -207,10 +207,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
         </header>
 
         <main className="px-4 h-96 overflow-y-auto">
-          <form
-            id="semester-form"
-            onSubmit={handleFormSubmit}
-          >
+          <form id="semester-form" onSubmit={handleFormSubmit}>
             <p className="text-lg">Student Details</p>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">
@@ -549,6 +546,8 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           title={"Something went wrong!"}
         />
       )}
+
+      {errorModalMessage && <ErrorModal title={errorModalMessage} />}
     </div>
   );
 };

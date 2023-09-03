@@ -12,6 +12,7 @@ import CreateStudentModal from "../components/students/CreateStudentModal";
 import { StudentContext } from "../context/StudentContext";
 import EditStudentModal from "../components/students/EditStudentModal";
 import StudentParentDetailsModal from "../components/modals/StudentParentDetailsModal";
+import ErrorModal from "../components/modals/ErrorModal";
 
 export default function Students() {
   const location = useLocation();
@@ -35,6 +36,7 @@ export default function Students() {
   const [currentSemester, setCurrentSemester] = useState(null);
   const [selectedStudentIdEdit, setSelectedStudentIdEdit] = useState("");
   const [selectedStudentIdDetails, setSelecedStudentIdDetails] = useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -44,7 +46,7 @@ export default function Students() {
           dispatch({ type: "SET_SEMESTERS", payload: response.data });
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     };
     getAllSemester();
@@ -71,7 +73,7 @@ export default function Students() {
             setCurrentSemester(() => res.data);
           }
         } catch (error) {
-          console.log(error);
+          setErrorModalMessage(error.message);
         }
       }
     };
@@ -226,6 +228,8 @@ export default function Students() {
               studentId={selectedStudentIdDetails}
             />
           )}
+
+          {errorModalMessage && <ErrorModal title={errorModalMessage} />}
         </div>
       </div>
     </div>

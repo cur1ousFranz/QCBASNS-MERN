@@ -46,6 +46,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
   const [errorFields, setErrorFields] = useState([]);
   const [contactNumberErrorMessage, setContactNumberErrorMessage] =
     useState("");
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -57,7 +58,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
         } else {
           setShowErrorModal(true);
         }
-      } catch (error) {}
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
     };
 
     getAllBarangays();
@@ -137,7 +140,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
           }
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     } else {
       setErrorFields(() => errors);
@@ -158,7 +161,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center px-4 justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-      style={{ minHeight: "100vh"}}
+      style={{ minHeight: "100vh" }}
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
@@ -521,6 +524,8 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
           title={"Something went wrong!"}
         />
       )}
+
+      {errorModalMessage && <ErrorModal title={errorModalMessage} />}
     </div>
   );
 };

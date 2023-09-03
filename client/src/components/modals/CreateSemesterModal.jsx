@@ -25,6 +25,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
   const years = Array.from({ length: 2 }, (_, index) => currentYear + index);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isVerificationChecked, setIsVerificationChecked] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   const { semesters, dispatch } = useContext(SemesterContext);
 
@@ -40,7 +41,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           setShowErrorModal(true);
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     };
 
@@ -118,7 +119,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
           Alert("Semester Created");
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     }
   };
@@ -323,6 +324,8 @@ const CreateSemesterModal = ({ toggleModal }) => {
           title={"Something went wrong!"}
         />
       )}
+
+      {errorModalMessage && <ErrorModal title={errorModalMessage} />}
     </div>
   );
 };

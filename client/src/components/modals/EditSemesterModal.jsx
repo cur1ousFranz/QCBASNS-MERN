@@ -4,6 +4,7 @@ import { Alert } from "../../utils/Alert";
 import { SemesterContext } from "../../context/SemesterContext";
 import UpperCaseWords from "../../utils/UpperCaseWords";
 import ValidationMessage from "../typography//ValidationMessage";
+import ErrorModal from "./ErrorModal";
 
 export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [semester, setSemester] = useState("1st Semester");
@@ -21,6 +22,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const { semesters, dispatch } = useContext(SemesterContext);
+  const [errorModalMessage, setErrorModalMessage] = useState("");
 
   useEffect(() => {
     const getAllTracks = async () => {
@@ -32,7 +34,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
           setTrack(() => firstTrack.name);
         }
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     };
 
@@ -102,7 +104,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
         }
         console.log(updatedSemester);
       } catch (error) {
-        console.log(error);
+        setErrorModalMessage(error.message);
       }
     }
   };
@@ -278,6 +280,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
           </button>
         </footer>
       </div>
+      {errorModalMessage && <ErrorModal title={errorModalMessage} />}
     </div>
   );
 }
