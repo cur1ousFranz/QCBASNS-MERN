@@ -97,7 +97,6 @@ const CreateSemesterModal = ({ toggleModal }) => {
           latestSemester = semesters[0];
         }
 
-        // POP PROMPT WARNING
         const response = await axiosClient.post("/semester", newSemester);
         if (response.status === 200) {
           dispatch({ type: "ADD_SEMESTER", payload: response.data });

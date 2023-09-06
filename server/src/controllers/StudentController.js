@@ -1,6 +1,12 @@
 const { isValidObjectId } = require("mongoose");
 const Student = require("./../models/StudentModel");
 
+const getAllStudents = async (req, res) => {
+  const students = await Student.find();
+
+  return res.status(200).json(students);
+};
+
 const createStudent = async (req, res) => {
   const {
     school_id,
@@ -70,6 +76,7 @@ const updateStudent = async (req, res) => {
   return res.status(200).json(student);
 };
 module.exports = {
+  getAllStudents,
   createStudent,
   updateStudent,
 };

@@ -13,6 +13,8 @@ import { StudentContext } from "../context/StudentContext";
 import EditStudentModal from "../components/students/EditStudentModal";
 import StudentParentDetailsModal from "../components/modals/StudentParentDetailsModal";
 import ErrorModal from "../components/modals/ErrorModal";
+import StudentListModal from "../components/students/StudentListModal";
+import { Alert } from "../utils/Alert";
 
 export default function Students() {
   const location = useLocation();
@@ -28,6 +30,7 @@ export default function Students() {
   const [showCreateStudentModal, setShowCreateStudentModal] = useState(false);
   const [showEditStudentModal, setShowEditStudentModal] = useState(false);
   const [showStudentDetailsModal, setShowStudentDetailsModal] = useState(false);
+  const [showStudentListModal, setShowStudentListModal] = useState(false);
 
   // Used to fetch all students from specific semester
   const [showStudentSemesterId, setShowSudentSemesterId] = useState("");
@@ -38,17 +41,18 @@ export default function Students() {
   const [selectedStudentIdDetails, setSelecedStudentIdDetails] = useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
-  useEffect(() => {
-    const getAllSemester = async () => {
-      try {
-        const response = await axiosClient.get("/semester");
-        if (response.status === 200) {
-          dispatch({ type: "SET_SEMESTERS", payload: response.data });
-        }
-      } catch (error) {
-        setErrorModalMessage(error.message);
+  const getAllSemester = async () => {
+    try {
+      const response = await axiosClient.get("/semester");
+      if (response.status === 200) {
+        dispatch({ type: "SET_SEMESTERS", payload: response.data });
       }
-    };
+    } catch (error) {
+      setErrorModalMessage(error.message);
+    }
+  };
+
+  useEffect(() => {
     getAllSemester();
   }, []);
 
@@ -86,11 +90,34 @@ export default function Students() {
     setShowEditSemesterModal(true);
   };
 
+  const handleAddExistingStudents = async (studentsId) => {
+    if (studentsId) {
+      try {
+        const response = await axiosClient.put(
+          `/semester/${showStudentSemesterId}/existing`,
+          { students: studentsId }
+        );
+        if (response.status === 200) {
+          studentContext.dispatch({
+            type: "SET_SEMESTER_STUDENTS",
+            payload: response.data,
+          });
+          toggleStudentListModal(false);
+          Alert("Added students successfully");
+          getAllSemester();
+        }
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
+    }
+  };
+
   const toggleEditSemesterModal = (value) => setShowEditSemesterModal(value);
   const toggleCreateStudentModal = (value) => setShowCreateStudentModal(value);
   const toggleEditStudentModal = (value) => setShowEditStudentModal(value);
   const toggleStudentParentDetailsModal = (value) =>
     setShowStudentDetailsModal(value);
+  const toggleStudentListModal = (value) => setShowStudentListModal(value);
 
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
@@ -140,12 +167,13 @@ export default function Students() {
                     </p>
                   )}
                 </div>
-                <div className="space-x-3">
-                  {/* <button
-                    className="px-2 py-2 text-xs rounded-md text-gray-700 bg-yellow-300"
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => setShowStudentListModal(true)}
+                    className="px-2 py-2 text-xs rounded-md text-white bg-blue-400 hover:bg-blue-300"
                   >
                     Existing Student
-                  </button> */}
+                  </button>
                   {currentSemester && currentSemester.active && (
                     <button
                       onClick={() => setShowCreateStudentModal(true)}
@@ -231,6 +259,14 @@ export default function Students() {
           )}
 
           {errorModalMessage && <ErrorModal title={errorModalMessage} />}
+
+          {showStudentListModal && (
+            <StudentListModal
+              toggleModal={toggleStudentListModal}
+              addExisitingStudents={handleAddExistingStudents}
+              currentSemesterId={showStudentSemesterId}
+            />
+          )}
         </div>
       </div>
     </div>

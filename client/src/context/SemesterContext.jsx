@@ -24,7 +24,7 @@ const semesterReducer = (state, action) => {
 
 const SemesterContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(semesterReducer, {
-    semesters: null,
+    semesters: [],
   });
 
   return (

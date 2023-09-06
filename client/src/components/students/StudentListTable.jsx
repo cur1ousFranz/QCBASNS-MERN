@@ -19,8 +19,8 @@ export default function StudentListTable({
 
   return (
     <>
-      <table className="w-full overflow-x-auto text-sm text-left mx-auto">
-        <thead className=" text-xs text-gray-700 uppercase bg-gray-50">
+      <table className="semester-student-list-table w-full overflow-x-auto text-sm text-left mx-auto overflow-y-auto border">
+        <thead className="semester-student-list-thead text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3">
               ID No.
@@ -39,12 +39,20 @@ export default function StudentListTable({
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody
+          className="semester-student-list-body"
+          style={{
+            maxHeight: "70vh",
+            overflowY: "scroll",
+            display: "block",
+            width: "100%",
+          }}
+        >
           {students &&
             students.map((student, index) => (
               <tr
                 key={student._id}
-                className="border-b cursor-pointer bg-white hover:bg-green-50"
+                className="semester-student-list-tr border-b cursor-pointer bg-white hover:bg-green-50"
               >
                 <th
                   onClick={() => {
@@ -96,7 +104,9 @@ export default function StudentListTable({
                               ? student.middle_name
                               : ""
                           } ${student.last_name}${
-                            student.suffix !== "N/A" ? ", " + student.suffix : ""
+                            student.suffix !== "N/A"
+                              ? ", " + student.suffix
+                              : ""
                           }`
                       );
                       setSelectedStudent(() => student);

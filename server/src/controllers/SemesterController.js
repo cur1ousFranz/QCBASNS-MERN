@@ -115,6 +115,39 @@ const addStudentToSemester = async (req, res) => {
   }
 };
 
+const addExistingStudentsToSemester = async (req, res) => {
+  const { id } = req.params;
+  const { students } = req.body;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such semeester" });
+  }
+
+  try {
+    const sem = await Semester.findById({ _id: id });
+    const existingStudents = sem.students;
+
+    for (const studentId of students) {
+      const newStudents = [
+        ...existingStudents,
+        { student_id: new ObjectId(studentId) },
+      ];
+      await Semester.findByIdAndUpdate({ _id: id }, { students: newStudents });
+    }
+
+    const semester = await Semester.findById({ _id: id });
+    const semesterStudents = semester.students;
+    const studentList = [];
+    for (const student of semesterStudents) {
+      const result = await Student.findById({ _id: student.student_id });
+      studentList.push(result);
+    }
+    return res.status(200).json(studentList);
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
+
 const getSemesterStudents = async (req, res) => {
   const { id } = req.params;
 
@@ -135,4 +168,5 @@ module.exports = {
   updateSemester,
   getSemesterStudents,
   addStudentToSemester,
+  addExistingStudentsToSemester,
 };
