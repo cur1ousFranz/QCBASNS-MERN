@@ -7,6 +7,7 @@ const studentSchema = new Schema(
     school_id: {
       type: String,
       required: true,
+      unique: true
     },
     first_name: {
       type: String,

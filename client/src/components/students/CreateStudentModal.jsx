@@ -48,6 +48,8 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
+  const [studentIdErrorMessage, setStudentIdErrorMessage] = useState("School ID is required.")
+
   useEffect(() => {
     const getAllBarangays = async () => {
       try {
@@ -71,6 +73,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     const errors = [];
     setErrorFields(() => errors);
     setContactNumberErrorMessage("");
+    setStudentIdErrorMessage("School ID is required.")
 
     // Student details
     if (!schoolId) errors.push("schoolId");
@@ -140,7 +143,14 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
           }
         }
       } catch (error) {
-        setErrorModalMessage(error.message);
+        if (error.response.status === 400) {
+          if (error.response.data.errorFields.includes("school_id")) {
+            setStudentIdErrorMessage(error.response.data.error)
+            errors.push("schoolId");
+          }
+        } else {
+          setErrorModalMessage(error.message);
+        }
       }
     } else {
       setErrorFields(() => errors);
@@ -196,7 +206,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                     }
                   />
                   {errorFields.includes("schoolId") && (
-                    <ValidationMessage message="School ID is required." />
+                    <ValidationMessage message={studentIdErrorMessage} />
                   )}
                 </div>
                 <div className="w-full relative">

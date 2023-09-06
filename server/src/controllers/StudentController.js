@@ -16,7 +16,7 @@ const createStudent = async (req, res) => {
   } = req.body;
 
   const errorFields = [];
-  const errorMessage = "Please fill in all fields";
+  let errorMessage = "Please fill in all fields";
   if (!school_id) errorFields.push("school_id");
   if (!first_name) errorFields.push("first_name");
   if (!last_name) errorFields.push("last_name");
@@ -24,6 +24,14 @@ const createStudent = async (req, res) => {
   if (!birthdate) errorFields.push("birthdate");
   if (!parent) errorFields.push("parent");
   if (!address) errorFields.push("address");
+
+  const student = await Student.findOne({ school_id });
+
+  if (student) {
+    errorFields.push("school_id");
+    errorMessage = "Student ID already exist.";
+  }
+
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
