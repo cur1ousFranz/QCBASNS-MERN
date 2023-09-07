@@ -7,6 +7,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
 
   useEffect(() => {
     const qrValue = {
+      _id: student._id,
       school_id: student.school_id,
       first_name: student.first_name,
       middle_name: student.middle_name,

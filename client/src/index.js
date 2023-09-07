@@ -5,6 +5,7 @@ import App from "./App";
 import AuthContextProvider from "./context/AuthContext";
 import SemesterContextProvider from "./context/SemesterContext";
 import StudentContextProvider from "./context/StudentContext";
+import AttendanceContextProvider from "./context/AttendanceContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -12,7 +13,9 @@ root.render(
     <AuthContextProvider>
       <SemesterContextProvider>
         <StudentContextProvider>
-          <App />
+          <AttendanceContextProvider>
+            <App />
+          </AttendanceContextProvider>
         </StudentContextProvider>
       </SemesterContextProvider>
     </AuthContextProvider>

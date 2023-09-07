@@ -48,7 +48,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
 
-  const [studentIdErrorMessage, setStudentIdErrorMessage] = useState("School ID is required.")
+  const [studentIdErrorMessage, setStudentIdErrorMessage] = useState(
+    "School ID is required."
+  );
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -73,7 +75,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     const errors = [];
     setErrorFields(() => errors);
     setContactNumberErrorMessage("");
-    setStudentIdErrorMessage("School ID is required.")
+    setStudentIdErrorMessage("School ID is required.");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
@@ -145,7 +147,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
       } catch (error) {
         if (error.response.status === 400) {
           if (error.response.data.errorFields.includes("school_id")) {
-            setStudentIdErrorMessage(error.response.data.error)
+            setStudentIdErrorMessage(error.response.data.error);
             errors.push("schoolId");
           }
         } else {
@@ -175,13 +177,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     >
       <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
-          <p className="text-lg">
-            {" "}
-            <span className="inline-block me-2">
-              <img src="/img/person-plus.svg" alt="" />
-            </span>
-            {title}
-          </p>
+          <p className="text-lg">{title}</p>
         </header>
 
         <main className="px-4 h-96 overflow-y-auto">

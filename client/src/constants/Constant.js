@@ -1,8 +1,8 @@
 export const SIDEBAR_LIST_STYLE =
-  "flex items-center px-2 py-1 text-gray-900 rounded-sm hover:bg-green-50 ";
+  "flex items-center cursor-pointer px-2 py-1 text-gray-900 rounded-sm hover:bg-green-50 ";
 
 export const SELECTED_SIDEBAR_LIST_STYLE =
-  "flex items-center px-2 py-1 text-gray-900 rounded-sm bg-green-100 ";
+  "flex items-center cursor-pointer px-2 py-1 text-gray-900 rounded-sm bg-green-100 ";
 
 export const PATHNAME = {
   STUDENT: "/student",
