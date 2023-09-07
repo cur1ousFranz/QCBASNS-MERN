@@ -124,10 +124,10 @@ const addExistingStudentsToSemester = async (req, res) => {
   }
 
   try {
-    const sem = await Semester.findById({ _id: id });
-    const existingStudents = sem.students;
-
     for (const studentId of students) {
+      const sem = await Semester.findById({ _id: id });
+      const existingStudents = sem.students;
+      s
       const newStudents = [
         ...existingStudents,
         { student_id: new ObjectId(studentId) },

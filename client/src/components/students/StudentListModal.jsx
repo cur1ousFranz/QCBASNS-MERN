@@ -95,17 +95,17 @@ export default function StudentListModal({
                         toggleCheckbox(e.target.checked, student._id)
                       }
                       type="checkbox"
-                      className={CHECKBOX_DEFAULT_STYLE}
+                      className={`${CHECKBOX_DEFAULT_STYLE} w-4 h-4`}
                       disabled={checkIfStudentExist(student._id)}
                     />
-                    <p className={checkIfStudentExist(student._id) ? "inline-block mt-1 text-gray-500" : "inline-block mt-1"}>
+                    <p className={checkIfStudentExist(student._id) ? "inline-block mt-1 text-gray-400" : "inline-block mt-1"}>
                       {student.last_name}, {student.first_name}{" "}
                       {student.middle_name !== "N/A" ? student.middle_name : ""}
                       {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                     </p>
                   </div>
                   <div className="w-full flex justify-center space-x-4">
-                    <p className="inline-block mt-1">{student.school_id}</p>
+                    <p className={checkIfStudentExist(student._id) ? "inline-block mt-1 text-gray-400" : "inline-block mt-1" }>{student.school_id}</p>
                   </div>
                 </li>
               ))}
