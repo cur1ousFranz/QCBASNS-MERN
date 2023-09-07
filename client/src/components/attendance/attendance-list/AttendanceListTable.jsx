@@ -32,12 +32,12 @@ export default function AttendanceListTable({ attendances, toggleTable }) {
                   {HumanReadableDate(new Date(attendance.createdAt))}
                 </p>
               </th>
-              <td className="px-6 py-4">
+              <td onClick={() => toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)} className="px-6 py-4">
                 SY {attendance.semester.start_year} -{" "}
                 {attendance.semester.end_year}
               </td>
 
-              <td className="px-6 py-4 flex justify-between">
+              <td onClick={() => toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)} className="px-6 py-4 flex justify-between">
                 {attendance.status ? (
                   <p className="mt-2">
                     <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
