@@ -2,6 +2,8 @@ const { isValidObjectId, default: mongoose } = require("mongoose");
 const AdviserModel = require("../models/AdviserModel");
 const extractUserID = require("../utils/ExtractUserId");
 const AttendanceModel = require("../models/AttendanceModel");
+const SemesterModel = require("../models/SemesterModel");
+const StudentModel = require("../models/StudentModel");
 
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
@@ -42,16 +44,7 @@ const getAllSemesterAttendances = async (req, res) => {
 };
 
 const createAttendance = async (req, res) => {
-  const { semester_id, students } = req.body;
-
-  const errorFields = [];
-  const errorMessage = "Please fill in all fields";
-  if (!semester_id) errorFields.push("semester_id");
-  if (!students) errorFields.push("students");
-
-  if (errorFields.length > 0) {
-    return res.status(400).json({ error: errorMessage, errorFields });
-  }
+  const { semester_id } = req.body;
 
   if (!isValidObjectId(semester_id)) {
     return res.status(404).json({ error: "No such semester" });
@@ -59,10 +52,27 @@ const createAttendance = async (req, res) => {
   const userId = extractUserID(req);
   const adviser = await AdviserModel.findOne({ user_id: userId });
 
+  const studentsList = [];
+  const semester = await SemesterModel.findById(semester_id);
+  for (const student of semester.students) {
+    const stud = await StudentModel.findById(student.student_id);
+    studentsList.push({
+      student_id: stud._id,
+      school_id: stud.school_id,
+      full_name: `${stud.last_name}, ${stud.first_name} ${
+        stud.middle_name !== "N/A" ? stud.middle_name : ""
+      } ${stud.suffix !== "N/A" ? stud.suffix : ""}`,
+      time_in: "",
+      time_out: "",
+    });
+  }
+
   const createdAttendance = await AttendanceModel.create({
     semester_id,
     adviser_id: adviser._id,
     status: true,
+    is_timein: true,
+    students: studentsList,
   });
 
   const attendance = await AttendanceModel.aggregate([
@@ -126,12 +136,113 @@ const updateAttendance = async (req, res) => {
       $limit: 1, // Limit the result to one document
     },
   ]);
-  
+
   return res.status(200).json(attendance[0]);
+};
+
+const createStudentAttendance = async (req, res) => {
+  const { id, studentId: student_id } = req.params;
+  const { semester_id } = req.body;
+
+  if (!isValidObjectId(id)) {
+    return res.status(404).json({ error: "No such attendance" });
+  }
+  if (!isValidObjectId(student_id)) {
+    return res.status(404).json({ error: "No such student" });
+  }
+  if (!isValidObjectId(semester_id)) {
+    return res.status(404).json({ error: "No such semester" });
+  }
+
+  const attendance = await AttendanceModel.findById({ _id: id });
+  const semester = await SemesterModel.findById({ _id: semester_id });
+  const AttendanceStudents = attendance.students;
+  const SemesterStudents = semester.students;
+
+  // Return error if student not exist in Semester
+  let existInSemester = false;
+  for (const student of SemesterStudents) {
+    if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
+      existInSemester = true;
+    }
+  }
+  if (!existInSemester) {
+    return res.status(400).json({ error: "student", message: "Student not exist in Semester." });
+  }
+
+  if (attendance.is_timein) {
+    for (const student of AttendanceStudents) {
+      if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
+        if (!student.time_in) {
+          await AttendanceModel.findOneAndUpdate(
+            {
+              _id: attendance._id,
+              "students.student_id": student_id, // Match the student_id
+            },
+            {
+              $set: {
+                "students.$.time_in": new Date(), // Update the time_in property
+              },
+            }
+          );
+        } else {
+          return res.status(400).json({ error: "time_in", message: "Time In already exist." });
+        }
+      }
+    }
+    // TIME OUT
+  } else {
+    for (const student of AttendanceStudents) {
+      if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
+        if (!student.time_out) {
+          await AttendanceModel.findOneAndUpdate(
+            {
+              _id: attendance._id,
+              "students.student_id": student_id, // Match the student_id
+            },
+            {
+              $set: {
+                "students.$.time_out": new Date(), // Update the time_in property
+              },
+            }
+          );
+        } else {
+          return res.status(400).json({ error: "time_out", message: "Time Out already exist." });
+        }
+      }
+    }
+  }
+
+  const latestAttendance = await AttendanceModel.aggregate([
+    {
+      $lookup: {
+        from: "semesters",
+        localField: "semester_id",
+        foreignField: "_id",
+        as: "semester",
+      },
+    },
+    {
+      $unwind: "$semester", // Unwind the array created by $lookup (optional)
+    },
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(attendance._id),
+        semester_id: new mongoose.Types.ObjectId(semester_id),
+        adviser_id: new mongoose.Types.ObjectId(attendance.adviser_id),
+      },
+    },
+    {
+      $limit: 1, // Limit the result to one document
+    },
+  ]);
+
+  return res.status(200).json(latestAttendance[0]);
 };
 
 module.exports = {
   getAllSemesterAttendances,
   createAttendance,
-  updateAttendance
+  updateAttendance,
+  createStudentAttendance,
 };
