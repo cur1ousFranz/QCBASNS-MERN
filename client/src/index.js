@@ -9,15 +9,13 @@ import AttendanceContextProvider from "./context/AttendanceContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <AuthContextProvider>
-      <SemesterContextProvider>
-        <StudentContextProvider>
-          <AttendanceContextProvider>
-            <App />
-          </AttendanceContextProvider>
-        </StudentContextProvider>
-      </SemesterContextProvider>
-    </AuthContextProvider>
-  </React.StrictMode>
+  <AuthContextProvider>
+    <SemesterContextProvider>
+      <StudentContextProvider>
+        <AttendanceContextProvider>
+          <App />
+        </AttendanceContextProvider>
+      </StudentContextProvider>
+    </SemesterContextProvider>
+  </AuthContextProvider>
 );
