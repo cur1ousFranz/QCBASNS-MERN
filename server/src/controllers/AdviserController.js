@@ -4,6 +4,13 @@ const Adviser = require("../models/AdviserModel");
 const createToken = require("../utils/CreateToken");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const extractUserID = require("../utils/ExtractUserId");
+
+const getAdviser = async (req, res) => {
+  const userId = extractUserID(req);
+  const adviser = await Adviser.findOne({ user_id: userId });
+  return res.status(200).json(adviser);
+};
 
 const createAdviser = async (req, res) => {
   const {
@@ -73,4 +80,5 @@ const createAdviser = async (req, res) => {
 
 module.exports = {
   createAdviser,
+  getAdviser,
 };

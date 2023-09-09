@@ -17,6 +17,10 @@ import { Alert } from "../utils/Alert";
 import StudentListTable from "../components/attendance/student-list/StudentListTable";
 import QrCodeScannerModal from "../components/attendance/student-list/QrCodeScannerModal";
 import ConvertDate from "../utils/ConvertDate";
+import {
+  ADVISER_CONTEXT_TYPES,
+  AdviserContext,
+} from "../context/AdviserContext";
 
 // TODO:: SEND SMS AFTER SCANNING (SERVER)
 export default function Attendance() {
@@ -41,6 +45,7 @@ export default function Attendance() {
     useState(false);
   const [isTimeIn, setIsTimeIn] = useState(false);
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
+  const { dispatch: dispatchAdviser } = useContext(AdviserContext);
 
   useEffect(() => {
     // Get the attendance of latest semester (active)
@@ -77,42 +82,64 @@ export default function Attendance() {
     }, 3000);
   }, [showScannerError, showScannerSuccess, showScannerDefault]);
 
+  useEffect(() => {
+    const getAdviser = async () => {
+      try {
+        const response = await axiosClient.get("/adviser");
+        if (response.status === 200) {
+          dispatchAdviser({
+            type: ADVISER_CONTEXT_TYPES.SET_ADVISER,
+            payload: response.data,
+          });
+        }
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
+    };
+    getAdviser();
+  }, []);
+
   const handleCreateAttendance = async () => {
     let latestAttendance;
     if (attendances.length) {
       latestAttendance = attendances[0];
     }
-    try {
-      const newAttendance = {
-        semester_id: currentSelectedSemester._id,
-      };
-      const response = await axiosClient.post("/attendance", newAttendance);
-      if (response.status === 200) {
-        dispatch({
-          type: ATTENDANCE_CONTEXT_TYPES.ADD_SEMESTER_ATTENDANCE,
-          payload: response.data,
-        });
-        Alert("Created successfully");
 
-        // Update lastest attendance to inactive
-        if (latestAttendance) {
-          const res = await axiosClient.put(
-            `/attendance/${latestAttendance._id}`,
-            {
-              status: false,
+    if (currentSelectedSemester) {
+      try {
+        const newAttendance = {
+          semester_id: currentSelectedSemester._id,
+        };
+        const response = await axiosClient.post("/attendance", newAttendance);
+        if (response.status === 200) {
+          dispatch({
+            type: ATTENDANCE_CONTEXT_TYPES.ADD_SEMESTER_ATTENDANCE,
+            payload: response.data,
+          });
+          Alert("Created successfully");
+
+          // Update lastest attendance to inactive
+          if (latestAttendance) {
+            const res = await axiosClient.put(
+              `/attendance/${latestAttendance._id}`,
+              {
+                status: false,
+              }
+            );
+
+            if (res.status === 200) {
+              dispatch({
+                type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
+                payload: res.data,
+              });
             }
-          );
-
-          if (res.status === 200) {
-            dispatch({
-              type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
-              payload: res.data,
-            });
           }
         }
+      } catch (error) {
+        setErrorModalMessage(error.message);
       }
-    } catch (error) {
-      setErrorModalMessage(error.message);
+    } else {
+      Alert("You don't have active semester yet.", "error");
     }
   };
 
@@ -297,49 +324,63 @@ export default function Attendance() {
                   )}
                 </div>
               </div>
-              <div>
-                {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
-                  selectedAttendance.status && (
-                    <div className="flex space-x-3">
-                      <p className="text-gray-600">Time</p>
-                      <div className="flex border rounded-md">
-                        <p
-                          onClick={
-                            !selectedAttendance.is_timein
-                              ? () => {
-                                  toggleConfirmTimeInModal(true);
-                                  setIsTimeIn(true);
-                                }
-                              : null
-                          }
-                          className={
-                            selectedAttendance.is_timein
-                              ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
-                              : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
-                          }
-                        >
-                          In
-                        </p>
-                        <p
-                          onClick={
-                            selectedAttendance.is_timein
-                              ? () => {
-                                  toggleConfirmTimeInModal(true);
-                                  setIsTimeIn(false);
-                                }
-                              : null
-                          }
-                          className={
-                            !selectedAttendance.is_timein
-                              ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
-                              : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
-                          }
-                        >
-                          Out
-                        </p>
+              <div className="flex space-x-3">
+                <div>
+                  {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
+                    selectedAttendance.status && (
+                      <div className="flex space-x-3">
+                        <p className="text-gray-600">Time</p>
+                        <div className="flex border rounded-md">
+                          <p
+                            onClick={
+                              !selectedAttendance.is_timein
+                                ? () => {
+                                    toggleConfirmTimeInModal(true);
+                                    setIsTimeIn(true);
+                                  }
+                                : null
+                            }
+                            className={
+                              selectedAttendance.is_timein
+                                ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
+                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
+                            }
+                          >
+                            In
+                          </p>
+                          <p
+                            onClick={
+                              selectedAttendance.is_timein
+                                ? () => {
+                                    toggleConfirmTimeInModal(true);
+                                    setIsTimeIn(false);
+                                  }
+                                : null
+                            }
+                            className={
+                              !selectedAttendance.is_timein
+                                ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
+                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
+                            }
+                          >
+                            Out
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                </div>
+                <div>
+                  {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
+                    !showScanner &&
+                    selectedAttendance.status && (
+                      <div
+                        onClick={() => setShowScanner(true)}
+                        className="p-2 w-8 rounded-lg cursor-pointer bg-green-400 text-white  hover:bg-green-300"
+                      >
+                        <img src="/img/qrcode-scan.svg" alt="" />
+                      </div>
+                    )}
+                </div>
               </div>
             </div>
             {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
