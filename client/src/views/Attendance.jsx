@@ -15,18 +15,15 @@ import AttendanceListTable from "../components/attendance/attendance-list/Attend
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { Alert } from "../utils/Alert";
 import StudentListTable from "../components/attendance/student-list/StudentListTable";
-import { QrScanner } from "@yudiel/react-qr-scanner";
 import QrCodeScannerModal from "../components/attendance/student-list/QrCodeScannerModal";
+import ConvertDate from "../utils/ConvertDate";
 
-// TODO:: ADD STUDENT IF EXISTING IN DATABSE
+// TODO::
 export default function Attendance() {
   const location = useLocation();
   const { semesters } = useContext(SemesterContext);
   const { attendances, dispatch } = useContext(AttendanceContext);
-  // const [showSemesterListTable, setShowSemesterListTable] = useState(false); // Toggle this for semester list table
-  // const [showAttendanceListTable, setShowAttendanceListTable] = useState(false); // Toggle this for attendance list table
-  // const [showStudentsAttendanceListTable, setShowStudentsAttendanceListTable] =
-  useState(false); // Toggle this for students attendance list table
+  useState(false);
   const [showCreateAttendanceModal, setShowCreateAttendanceModal] =
     useState(false);
   const [currentShowedTable, setCurrentShowedTable] = useState(
@@ -36,6 +33,14 @@ export default function Attendance() {
   const [errorModalMessage, setErrorModalMessage] = useState("");
   const [selectedAttendance, setSelectedAttendance] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
+  const [lastScannedStudentId, setLastScannedStudentId] = useState("");
+  const [showScannerError, setShowScannerError] = useState(false);
+  const [showScannerSuccess, setShowScannerSuccess] = useState(false);
+  const [showScannerDefault, setShowScannerDefault] = useState(true);
+  const [showConfirmToggleTimeInModal, setShowConfirmToggleTimeInModal] =
+    useState(false);
+  const [isTimeIn, setIsTimeIn] = useState(false);
+  const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
 
   useEffect(() => {
     // Get the attendance of latest semester (active)
@@ -64,6 +69,14 @@ export default function Attendance() {
     getAllSemesterAttendances();
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setShowScannerError(false);
+      setShowScannerSuccess(false);
+      setShowScannerDefault(true);
+    }, 3000);
+  }, [showScannerError, showScannerSuccess, showScannerDefault]);
+
   const handleCreateAttendance = async () => {
     let latestAttendance;
     if (attendances.length) {
@@ -72,7 +85,6 @@ export default function Attendance() {
     try {
       const newAttendance = {
         semester_id: currentSelectedSemester._id,
-        students: {},
       };
       const response = await axiosClient.post("/attendance", newAttendance);
       if (response.status === 200) {
@@ -80,7 +92,7 @@ export default function Attendance() {
           type: ATTENDANCE_CONTEXT_TYPES.ADD_SEMESTER_ATTENDANCE,
           payload: response.data,
         });
-        Alert("Attendance successfully");
+        Alert("Created successfully");
 
         // Update lastest attendance to inactive
         if (latestAttendance) {
@@ -104,16 +116,117 @@ export default function Attendance() {
     }
   };
 
+  useEffect(() => {
+    if (currentSelectedSemester) {
+      const school_year = `S.Y ${currentSelectedSemester.start_year}-${currentSelectedSemester.end_year}`;
+      const semester =
+        currentSelectedSemester.semester === "1"
+          ? "1st Semester"
+          : "2nd Semester";
+      const track = currentSelectedSemester.track;
+      const strand =
+        currentSelectedSemester.strand !== "N/A"
+          ? currentSelectedSemester.strand
+          : "";
+
+      const tableDetails = [school_year, semester, track];
+      if (strand) tableDetails.push(strand);
+      setStudentTableDetailsList(() => tableDetails);
+    }
+  }, [currentSelectedSemester, selectedAttendance]);
+
   const toggleCreateAttendanceModal = (value) =>
     setShowCreateAttendanceModal(value);
+  const toggleConfirmTimeInModal = (value) =>
+    setShowConfirmToggleTimeInModal(value);
 
   const handleSelectAttendance = async (table, attendance) => {
     setCurrentShowedTable(() => table);
     setSelectedAttendance(() => attendance);
   };
 
-  const handleQrScanned = (student) => {
-    console.log(student);
+  const handleQrScanned = async (student) => {
+    // Validate qr code is valid
+    let isQrValid = true;
+    if (!student._id) {
+      Alert("Invalid Qr Code", "error");
+      isQrValid = false;
+    }
+
+    if (isQrValid) {
+      setLastScannedStudentId(() => student._id);
+      // Avoid call request when qr used was previously scanned
+      if (student._id !== lastScannedStudentId) {
+        const studentDetails = {
+          semester_id: currentSelectedSemester._id,
+        };
+        try {
+          const response = await axiosClient.put(
+            `/attendance/${selectedAttendance._id}/student/${student._id}`,
+            studentDetails
+          );
+
+          if (response.status === 200) {
+            Alert(
+              `${
+                selectedAttendance.is_timein
+                  ? "Time-in Success!"
+                  : "Time-out Success!"
+              }`
+            );
+            setSelectedAttendance(() => response.data);
+            dispatch({
+              type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
+              payload: response.data,
+            });
+
+            setShowScannerSuccess(true);
+            setShowScannerDefault(false);
+          }
+        } catch (error) {
+          setShowScannerError(true);
+          setShowScannerDefault(false);
+          if (error.response.data.error === "student") {
+            Alert(error.response.data.message, "error");
+          }
+          if (error.response.data.error === "time_in") {
+            Alert(error.response.data.message, "error");
+          }
+          if (error.response.data.error === "time_out") {
+            Alert(error.response.data.message, "error");
+          }
+        }
+      } else {
+        setShowScannerError(true);
+        setShowScannerDefault(false);
+      }
+    }
+  };
+
+  const handleToggleAttendanceTimeIn = async () => {
+    try {
+      const response = await axiosClient.put(
+        `/attendance/${selectedAttendance._id}`,
+        {
+          is_timein: isTimeIn,
+        }
+      );
+
+      if (response.status === 200) {
+        dispatch({
+          type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
+          payload: response.data,
+        });
+        setSelectedAttendance(() => response.data);
+        Alert(
+          `Switched to ${
+            selectedAttendance.is_timein ? "Time Out" : "Time In"
+          }!`
+        );
+      }
+    } catch (error) {
+      setErrorModalMessage(error.message);
+    }
   };
 
   return (
@@ -124,57 +237,118 @@ export default function Attendance() {
         </div>
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex justify-between">
-            <div className="flex flex-col md:flex-row md:space-x-6">
-              <div className="flex space-x-2">
-                {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
-                  <img
-                    onClick={() => {
-                      setCurrentShowedTable(() => ATTENDANCE_TABLES.ATTENDANCE);
-                      setShowScanner(false);
-                    }}
-                    className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
-                    src="/img/arrow-back.svg"
-                    alt=""
-                  />
-                )}
+            <div className="flex flex-col w-full md:flex-row md:justify-between md:space-x-6">
+              <div className="">
+                <div className="flex space-x-2">
+                  {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
+                    <img
+                      onClick={() => {
+                        setCurrentShowedTable(
+                          () => ATTENDANCE_TABLES.ATTENDANCE
+                        );
+                        setShowScanner(false);
+                        setSelectedAttendance(null);
+                      }}
+                      className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
+                      src="/img/arrow-back.svg"
+                      alt=""
+                    />
+                  )}
 
-                <Header title={`Attendance`} />
-              </div>
-              {currentSelectedSemester && (
-                <div className="hidden md:flex flex-col md:flex-row md:space-x-1">
-                  <p className="mt-2">
-                    <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
-                      {currentSelectedSemester.semester}
-                      {currentSelectedSemester.semester === "1"
-                        ? "st Semester"
-                        : "nd Semester"}
+                  <Header title={`Attendance`} />
+                  {selectedAttendance && (
+                    <span
+                      className={
+                        selectedAttendance.status
+                          ? "text-xs py-1 px-2 h-fit rounded-md text-white bg-green-400"
+                          : "text-xs py-1 px-2 h-fit rounded-md text-white bg-red-400"
+                      }
+                    >
+                      {selectedAttendance.status ? "Active" : "Inactive"}
                     </span>
-                  </p>
-
-                  <p className="mt-2">
-                    <span className="p-1 font-semibold text-xs rounded-md text-white bg-yellow-500">
-                      {currentSelectedSemester.track}
-                    </span>
-                  </p>
-                  {currentSelectedSemester.strand !== "N/A" && (
-                    <p className="mt-2">
-                      <span className="p-1 font-semibold text-xs rounded-md text-white bg-orange-500">
-                        {currentSelectedSemester.strand}
-                      </span>
-                    </p>
                   )}
                 </div>
-              )}
+                <div className="flex justify-between">
+                  {currentSelectedSemester && (
+                    <div className="hidden md:flex flex-col md:flex-row md:space-x-1">
+                      <div className="flex">
+                        {studentTableDetailsList &&
+                          studentTableDetailsList.map((list, index) => (
+                            <div className="flex" key={index}>
+                              <p className="p-1 italic text-sm text-gray-500">
+                                {list}
+                              </p>
+                              {studentTableDetailsList.length - 1 !== index && (
+                                <p className="mt-1 px-2 text-gray-300">/</p>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedAttendance && (
+                    <div className="flex">
+                      <p className="mt-1 px-2 text-gray-300">/</p>
+                      <p className="p-1 italic text-sm text-gray-500">
+                        {ConvertDate(selectedAttendance.createdAt)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div>
+                {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
+                  selectedAttendance.status && (
+                    <div className="flex space-x-3">
+                      <p className="text-gray-600">Time</p>
+                      <div className="flex border rounded-md">
+                        <p
+                          onClick={
+                            !selectedAttendance.is_timein
+                              ? () => {
+                                  toggleConfirmTimeInModal(true);
+                                  setIsTimeIn(true);
+                                }
+                              : null
+                          }
+                          className={
+                            selectedAttendance.is_timein
+                              ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
+                              : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
+                          }
+                        >
+                          In
+                        </p>
+                        <p
+                          onClick={
+                            selectedAttendance.is_timein
+                              ? () => {
+                                  toggleConfirmTimeInModal(true);
+                                  setIsTimeIn(false);
+                                }
+                              : null
+                          }
+                          className={
+                            !selectedAttendance.is_timein
+                              ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
+                              : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
+                          }
+                        >
+                          Out
+                        </p>
+                      </div>
+                    </div>
+                  )}
+              </div>
             </div>
             {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
               <button
                 onClick={() => toggleCreateAttendanceModal(true)}
-                className="px-2 uppercase flex w-fit py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                className="px-2 flex h-fit py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
               >
-                <span className="me-1 mt-0.5">
-                  <img src="/img/plus.svg" alt="" />
-                </span>
-                ATTENDANCE
+                <img src="/img/plus.svg" alt="" />
+                <p className="me-2">ATTENDANCE</p>
               </button>
             )}
           </div>
@@ -187,13 +361,11 @@ export default function Attendance() {
             </div>
           )}
 
-          {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
-            <div className="w-full">
-              <div className="overflow-x-auto">
-                <StudentListTable attendance={selectedAttendance} />
-              </div>
-            </div>
-          )}
+          <div className="w-full">
+            {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
+              <StudentListTable attendance={selectedAttendance} />
+            )}
+          </div>
 
           {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
             <div className="w-full">
@@ -220,21 +392,39 @@ export default function Attendance() {
         />
       )}
 
-      {currentShowedTable === ATTENDANCE_TABLES.STUDENT && !showScanner && (
-        <div
-          onClick={() => setShowScanner(true)}
-          className="fixed bottom-8 right-6"
-        >
-          <div className="p-4 rounded-lg shadow-lg cursor-pointer bg-green-400 text-white  hover:bg-green-300">
-            <img src="/img/qrcode-scan.svg" alt="" />
+      {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
+        !showScanner &&
+        selectedAttendance.status && (
+          <div
+            onClick={() => setShowScanner(true)}
+            className="fixed bottom-8 right-6"
+          >
+            <div className="p-4 rounded-lg shadow-lg cursor-pointer bg-green-400 text-white  hover:bg-green-300">
+              <img src="/img/qrcode-scan.svg" alt="" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {currentShowedTable === ATTENDANCE_TABLES.STUDENT && showScanner && (
         <QrCodeScannerModal
           toggleModal={setShowScanner}
           handleQrScanned={handleQrScanned}
+          showScannerError={showScannerError}
+          showScannerSuccess={showScannerSuccess}
+          showScannerDefault={showScannerSuccess}
+          setShowScannerError={setShowScannerError}
+          setLastScannedStudentId={setLastScannedStudentId}
+        />
+      )}
+
+      {showConfirmToggleTimeInModal && (
+        <ConfirmModal
+          title={""}
+          body={`Switch QR Scanning to ${
+            selectedAttendance.is_timein ? "Time Out" : "Time In"
+          }?`}
+          toggleModal={toggleConfirmTimeInModal}
+          submit={handleToggleAttendanceTimeIn}
         />
       )}
     </div>
