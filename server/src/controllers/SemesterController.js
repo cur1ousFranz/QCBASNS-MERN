@@ -8,11 +8,15 @@ const Student = require("../models/StudentModel");
 
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
-  const adviser = await Adviser.findOne({ user_id: userId });
-  const semesters = await Semester.find({ adviser_id: adviser._id }).sort({
-    createdAt: -1,
-  });
-  return res.status(200).json(semesters);
+  try {
+    const adviser = await Adviser.findOne({ user_id: userId });
+    const semesters = await Semester.find({ adviser_id: adviser._id }).sort({
+      createdAt: -1,
+    });
+    return res.status(200).json(semesters);
+  } catch (error) {
+    return res.status(400).json({ error: "Something went wrong!" });
+  }
 };
 
 const getSemester = async (req, res) => {
@@ -127,7 +131,6 @@ const addExistingStudentsToSemester = async (req, res) => {
     for (const studentId of students) {
       const sem = await Semester.findById({ _id: id });
       const existingStudents = sem.students;
-      s
       const newStudents = [
         ...existingStudents,
         { student_id: new ObjectId(studentId) },
