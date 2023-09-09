@@ -25,7 +25,7 @@ import {
 // TODO:: SEND SMS AFTER SCANNING (SERVER)
 export default function Attendance() {
   const location = useLocation();
-  const { semesters } = useContext(SemesterContext);
+  const { semesters, dispatch: semesterDispatch } = useContext(SemesterContext);
   const { attendances, dispatch } = useContext(AttendanceContext);
   useState(false);
   const [showCreateAttendanceModal, setShowCreateAttendanceModal] =
@@ -46,6 +46,21 @@ export default function Attendance() {
   const [isTimeIn, setIsTimeIn] = useState(false);
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
   const { dispatch: dispatchAdviser } = useContext(AdviserContext);
+
+  useEffect(() => {
+    const getAllSemester = async () => {
+      try {
+        const response = await axiosClient.get("/semester");
+        if (response.status === 200) {
+          semesterDispatch({ type: "SET_SEMESTERS", payload: response.data });
+        }
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
+    };
+
+    getAllSemester();
+  }, []);
 
   useEffect(() => {
     // Get the attendance of latest semester (active)
@@ -70,9 +85,8 @@ export default function Attendance() {
         }
       }
     };
-
     getAllSemesterAttendances();
-  }, []);
+  }, [semesters]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -168,8 +182,8 @@ export default function Attendance() {
     setShowConfirmToggleTimeInModal(value);
 
   const handleSelectAttendance = async (table, attendance) => {
-    setCurrentShowedTable(() => table);
     setSelectedAttendance(() => attendance);
+    setCurrentShowedTable(() => table);
   };
 
   const handleQrScanned = async (student) => {
@@ -433,7 +447,7 @@ export default function Attendance() {
         />
       )}
 
-      {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
+      {/* {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
         !showScanner &&
         selectedAttendance.status && (
           <div
@@ -444,7 +458,7 @@ export default function Attendance() {
               <img src="/img/qrcode-scan.svg" alt="" />
             </div>
           </div>
-        )}
+        )} */}
 
       {currentShowedTable === ATTENDANCE_TABLES.STUDENT && showScanner && (
         <QrCodeScannerModal
