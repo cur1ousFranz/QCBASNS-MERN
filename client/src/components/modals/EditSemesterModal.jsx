@@ -266,13 +266,13 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
         <footer className="modal-footer p-4 flex justify-end space-x-3">
           <button
             onClick={handleCancel}
-            className="px-3 py-2 border border-gray-900 text-gray-900 text-sm"
+            className="px-2 uppercase flex py-2 text-sm rounded-md border border-gray-900 hover:bg-gray-100 text-gray-900"
             type="button"
           >
             Cancel
           </button>
           <button
-            className="px-3 py-2 bg-green-500 hover:bg-green-400 text-white text-sm"
+            className="px-2 uppercase flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
             type="submit"
             form="semester-form"
           >

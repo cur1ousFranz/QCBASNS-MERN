@@ -98,17 +98,39 @@ export default function StudentListModal({
                       className={`${CHECKBOX_DEFAULT_STYLE} w-4 h-4`}
                       disabled={checkIfStudentExist(student._id)}
                     />
-                    <p className={checkIfStudentExist(student._id) ? "inline-block mt-1 text-gray-400" : "inline-block mt-1"}>
+                    <p
+                      className={
+                        checkIfStudentExist(student._id)
+                          ? "inline-block mt-1 text-gray-400"
+                          : "inline-block mt-1"
+                      }
+                    >
                       {student.last_name}, {student.first_name}{" "}
                       {student.middle_name !== "N/A" ? student.middle_name : ""}
                       {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                     </p>
                   </div>
                   <div className="w-full flex justify-center space-x-4">
-                    <p className={checkIfStudentExist(student._id) ? "inline-block mt-1 text-gray-400" : "inline-block mt-1" }>{student.school_id}</p>
+                    <p
+                      className={
+                        checkIfStudentExist(student._id)
+                          ? "inline-block mt-1 text-gray-400"
+                          : "inline-block mt-1"
+                      }
+                    >
+                      {student.school_id}
+                    </p>
                   </div>
                 </li>
               ))}
+
+            {studentList && studentList.length === 0 && (
+              <li>
+                <p className="text-center text-xl text-gray-400">
+                  No students yet.
+                </p>
+              </li>
+            )}
           </ul>
         </main>
 

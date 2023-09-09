@@ -133,7 +133,7 @@ export default function Students() {
                 <Header title="Semesters" />
                 <button
                   onClick={() => setShowSemesterModal(true)}
-                  className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                  className="px-2 uppercase flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                 >
                   {" "}
                   <span className="me-1">
@@ -170,20 +170,24 @@ export default function Students() {
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setShowStudentListModal(true)}
-                    className="px-2 py-2 text-xs rounded-md text-white bg-blue-400 hover:bg-blue-300"
+                    className="px-2 uppercase flex py-2 text-xs rounded-md text-white bg-blue-400 hover:bg-blue-300"
                   >
-                    Existing Student
+                    {" "}
+                    <span className="me-2">
+                      <img src="/img/person-check.svg" alt="" />
+                    </span>
+                    Existing
                   </button>
                   {currentSemester && currentSemester.active && (
                     <button
                       onClick={() => setShowCreateStudentModal(true)}
-                      className="px-2 flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                      className="px-2 uppercase flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                     >
                       {" "}
                       <span className="me-2">
                         <img src="/img/person-plus.svg" alt="" />
                       </span>
-                      New Student
+                      New
                     </button>
                   )}
                 </div>
