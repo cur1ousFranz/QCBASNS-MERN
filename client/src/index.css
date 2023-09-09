@@ -11,37 +11,3 @@
 ::-webkit-scrollbar-thumb {
   background-color: #c2bdbd;
 }
-
-.semester-student-list-body {
-  max-height: 100vh;
-  overflow-y: scroll;
-}
-
-.semester-student-list-thead {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.semester-student-list-tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-/* .semester-list-body {
-  max-height: 100vh;
-  overflow-y: scroll;
-}
-
-.semester-list-thead {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.semester-list-tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-} */
