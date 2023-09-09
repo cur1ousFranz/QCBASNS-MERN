@@ -18,7 +18,7 @@ import StudentListTable from "../components/attendance/student-list/StudentListT
 import QrCodeScannerModal from "../components/attendance/student-list/QrCodeScannerModal";
 import ConvertDate from "../utils/ConvertDate";
 
-// TODO::
+// TODO:: SEND SMS AFTER SCANNING (SERVER)
 export default function Attendance() {
   const location = useLocation();
   const { semesters } = useContext(SemesterContext);
