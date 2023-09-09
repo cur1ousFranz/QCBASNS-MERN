@@ -118,7 +118,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
           last_name: UpperCaseWords(parentLastName),
           suffix: parentSuff,
           gender: parentGender,
-          contact_number: parentContactNumber,
+          contact_number: `+63${parentContactNumber}`,
           relationship: UpperCaseWords(relationship),
         },
         address: {
@@ -315,6 +315,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                     onChange={(e) => setContactNumber(e.target.value)}
                     className={INPUT_DEFAULT_STYLE}
                     maxLength={11}
+                    placeholder="09XXXXXXXXX"
                   />
                 </div>
               </div>
@@ -416,6 +417,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                         : INPUT_ERROR_STYLE
                     }
                     maxLength={11}
+                    placeholder="09XXXXXXXXX"
                   />
                   {errorFields.includes("parentContactNumber") && (
                     <ValidationMessage message={contactNumberErrorMessage} />
