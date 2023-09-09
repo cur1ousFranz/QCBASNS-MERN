@@ -39,19 +39,6 @@ export default function Sidebar({ menu }) {
         <ul className="space-y-2 font-medium">
           <li>
             <Link
-              to={"/student"}
-              className={
-                menu === PATHNAME.STUDENT
-                  ? SELECTED_SIDEBAR_LIST_STYLE
-                  : SIDEBAR_LIST_STYLE
-              }
-            >
-              <img src="/img/students.svg" alt="" />
-              <span className="flex-1 ml-3 whitespace-nowrap">Students</span>
-            </Link>
-          </li>
-          <li>
-            <Link
               to={"/attendance"}
               className={
                 menu === PATHNAME.ATTENDANCE
@@ -63,6 +50,20 @@ export default function Sidebar({ menu }) {
               <span className="flex-1 ml-3 whitespace-nowrap">Attendance</span>
             </Link>
           </li>
+          <li>
+            <Link
+              to={"/student"}
+              className={
+                menu === PATHNAME.STUDENT
+                  ? SELECTED_SIDEBAR_LIST_STYLE
+                  : SIDEBAR_LIST_STYLE
+              }
+            >
+              <img src="/img/students.svg" alt="" />
+              <span className="flex-1 ml-3 whitespace-nowrap">Students</span>
+            </Link>
+          </li>
+
           <li>
             <Link
               to={"/report"}
