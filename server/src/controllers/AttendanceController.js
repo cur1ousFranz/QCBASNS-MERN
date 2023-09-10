@@ -4,6 +4,8 @@ const extractUserID = require("../utils/ExtractUserId");
 const AttendanceModel = require("../models/AttendanceModel");
 const SemesterModel = require("../models/SemesterModel");
 const StudentModel = require("../models/StudentModel");
+const { messageBody } = require("../constants/MessageBody");
+const { sendSms } = require("../utils/SendSMS");
 
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
@@ -155,6 +157,7 @@ const createStudentAttendance = async (req, res) => {
   }
 
   const attendance = await AttendanceModel.findById({ _id: id });
+  const adviser = await AdviserModel.findById({ _id: attendance.adviser_id });
   const semester = await SemesterModel.findById({ _id: semester_id });
   const AttendanceStudents = attendance.students;
   const SemesterStudents = semester.students;
@@ -167,26 +170,50 @@ const createStudentAttendance = async (req, res) => {
     }
   }
   if (!existInSemester) {
-    return res.status(400).json({ error: "student", message: "Student not exist in Semester." });
+    return res
+      .status(400)
+      .json({ error: "student", message: "Student not exist in Semester." });
   }
 
   if (attendance.is_timein) {
     for (const student of AttendanceStudents) {
       if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
         if (!student.time_in) {
+          const timeIn = new Date();
           await AttendanceModel.findOneAndUpdate(
             {
               _id: attendance._id,
-              "students.student_id": student_id, // Match the student_id
+              "students.student_id": student_id,
             },
             {
               $set: {
-                "students.$.time_in": new Date(), // Update the time_in property
+                "students.$.time_in": timeIn,
               },
             }
           );
+
+          const currentStudent = await StudentModel.findOne({
+            _id: student_id,
+          });
+          sendSms(
+            messageBody(
+              true,
+              `${currentStudent.parent.first_name} ${
+                currentStudent.parent.middle_name !== "N/A"
+                  ? currentStudent.parent.middle_name
+                  : ""
+              }`,
+              student.full_name,
+              timeIn,
+              semester.section,
+              adviser.last_name
+            )
+            // Add phone number here as 2nd parameter
+          );
         } else {
-          return res.status(400).json({ error: "time_in", message: "Time In already exist." });
+          return res
+            .status(400)
+            .json({ error: "time_in", message: "You time-in already." });
         }
       }
     }
@@ -194,20 +221,48 @@ const createStudentAttendance = async (req, res) => {
   } else {
     for (const student of AttendanceStudents) {
       if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
+        // Check if student if its not time-in
+        if (!student.time_in) {
+          return res
+            .status(400)
+            .json({ error: "time_out", message: "You don't have time-in record." });
+        }
         if (!student.time_out) {
+          const timeOut = new Date();
           await AttendanceModel.findOneAndUpdate(
             {
               _id: attendance._id,
-              "students.student_id": student_id, // Match the student_id
+              "students.student_id": student_id,
             },
             {
               $set: {
-                "students.$.time_out": new Date(), // Update the time_in property
+                "students.$.time_out": timeOut,
               },
             }
           );
+
+          const currentStudent = await StudentModel.findOne({
+            _id: student_id,
+          });
+          sendSms(
+            messageBody(
+              false,
+              `${currentStudent.parent.first_name} ${
+                currentStudent.parent.middle_name !== "N/A"
+                  ? currentStudent.parent.middle_name
+                  : ""
+              }`,
+              student.full_name,
+              timeOut,
+              semester.section,
+              adviser.last_name
+            )
+            // Add phone number here as 2nd parameter
+          );
         } else {
-          return res.status(400).json({ error: "time_out", message: "Time Out already exist." });
+          return res
+            .status(400)
+            .json({ error: "time_out", message: "You time-out already." });
         }
       }
     }
