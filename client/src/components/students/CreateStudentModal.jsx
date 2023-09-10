@@ -109,7 +109,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
         gender,
         suffix: studentSuff,
         birthdate: birthDate,
-        contact_number: contactNumber ? contactNumber : "N/A",
+        contact_number: contactNumber ? `+63${contactNumber}` : "N/A",
         parent: {
           first_name: UpperCaseWords(parentFirstName),
           middle_name: parentMiddleName

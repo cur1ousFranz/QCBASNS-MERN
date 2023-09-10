@@ -400,10 +400,10 @@ export default function Attendance() {
             {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
               <button
                 onClick={() => toggleCreateAttendanceModal(true)}
-                className="px-2 flex h-fit py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                className="px-2 flex w-fit h-fit p-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
               >
                 <img src="/img/plus.svg" alt="" />
-                <p className="me-2">ATTENDANCE</p>
+                <p className="uppercase me-4">Attendance</p>
               </button>
             )}
           </div>
