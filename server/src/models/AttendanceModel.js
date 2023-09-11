@@ -20,8 +20,10 @@ const attendanceSchema = new Schema(
           student_id: { type: mongoose.Schema.Types.ObjectId },
           school_id: { type: String },
           full_name: { type: String },
-          time_in: { type: String },
-          time_out: { type: String },
+          time_in_am: { type: String },
+          time_out_am: { type: String },
+          time_in_pm: { type: String },
+          time_out_pm: { type: String },
         },
       ],
       required: true,
@@ -30,7 +32,19 @@ const attendanceSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    is_timein: {
+    is_timein_am: {
+      type: Boolean,
+      required: true,
+    },
+    is_timeout_am: {
+      type: Boolean,
+      required: true,
+    },
+    is_timein_pm: {
+      type: Boolean,
+      required: true,
+    },
+    is_timeout_pm: {
       type: Boolean,
       required: true,
     },
