@@ -22,10 +22,16 @@ export default function StudentListTable({ attendance }) {
                 Full Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Time In
+                Time In (AM)
               </th>
               <th scope="col" className="px-6 py-3">
-                Time Out
+                Time Out (AM)
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time In (PM)
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Time Out (PM)
               </th>
             </tr>
           </thead>
@@ -41,13 +47,23 @@ export default function StudentListTable({ attendance }) {
                   </th>
                   <td className="px-6 py-4">{student.full_name}</td>
                   <td className="px-6 py-4">
-                    {student.time_in !== ""
-                      ? ConvertTime(student.time_in)
+                    {student.time_in_am !== ""
+                      ? ConvertTime(student.time_in_am)
                       : "--:--"}
                   </td>
                   <td className="px-6 py-4">
-                    {student.time_out !== ""
-                      ? ConvertTime(student.time_out)
+                    {student.time_out_am !== ""
+                      ? ConvertTime(student.time_out_am)
+                      : "--:--"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {student.time_in_pm !== ""
+                      ? ConvertTime(student.time_in_pm)
+                      : "--:--"}
+                  </td>
+                  <td className="px-6 py-4">
+                    {student.time_out_pm !== ""
+                      ? ConvertTime(student.time_out_pm)
                       : "--:--"}
                   </td>
                 </tr>
