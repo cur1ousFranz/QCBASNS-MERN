@@ -64,8 +64,10 @@ const createAttendance = async (req, res) => {
       full_name: `${stud.last_name}, ${stud.first_name} ${
         stud.middle_name !== "N/A" ? stud.middle_name : ""
       } ${stud.suffix !== "N/A" ? stud.suffix : ""}`,
-      time_in: "",
-      time_out: "",
+      time_in_am: "",
+      time_out_am: "",
+      time_in_pm: "",
+      time_out_pm: "",
     });
   }
 
@@ -73,7 +75,10 @@ const createAttendance = async (req, res) => {
     semester_id,
     adviser_id: adviser._id,
     status: true,
-    is_timein: true,
+    is_timein_am: true,
+    is_timeout_am: false,
+    is_timein_pm: false,
+    is_timeout_pm: false,
     students: studentsList,
   });
 
@@ -175,96 +180,112 @@ const createStudentAttendance = async (req, res) => {
       .json({ error: "student", message: "Student not exist in Semester." });
   }
 
-  if (attendance.is_timein) {
-    for (const student of AttendanceStudents) {
-      if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
-        if (!student.time_in) {
-          const timeIn = new Date();
-          await AttendanceModel.findOneAndUpdate(
-            {
-              _id: attendance._id,
-              "students.student_id": student_id,
-            },
-            {
-              $set: {
-                "students.$.time_in": timeIn,
-              },
-            }
-          );
-
-          const currentStudent = await StudentModel.findOne({
-            _id: student_id,
-          });
-          sendSms(
-            messageBody(
-              true,
-              `${currentStudent.parent.first_name} ${
-                currentStudent.parent.middle_name !== "N/A"
-                  ? currentStudent.parent.middle_name
-                  : ""
-              }`,
-              student.full_name,
-              timeIn,
-              semester.section,
-              adviser.last_name
-            )
-            // Add phone number here as 2nd parameter
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ error: "time_in", message: "You time-in already." });
+  const student = getStudentInAttendance(AttendanceStudents, student_id);
+  const currentStudent = await StudentModel.findOne({
+    _id: student_id,
+  });
+  // TIME_IN_AM
+  if (attendance.is_timein_am) {
+    if (!student.time_in_am) {
+      const time = new Date();
+      await AttendanceModel.findOneAndUpdate(
+        {
+          _id: attendance._id,
+          "students.student_id": student_id,
+        },
+        {
+          $set: {
+            "students.$.time_in_am": time,
+          },
         }
-      }
+      );
+      sendSMS(true, currentStudent, student, time, semester, adviser);
+    } else {
+      return res.status(400).json({
+        error: "time_in_am",
+        message: "You already have Time In (AM).",
+      });
     }
-    // TIME OUT
-  } else {
-    for (const student of AttendanceStudents) {
-      if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
-        // Check if student if its not time-in
-        if (!student.time_in) {
-          return res
-            .status(400)
-            .json({ error: "time_out", message: "You don't have time-in record." });
+  }
+  // TIME_OUT_AM
+  if (attendance.is_timeout_am) {
+    if (!student.time_in_am) {
+      return res.status(400).json({
+        error: "time_in_am",
+        message: "You don't have Time In (AM) record.",
+      });
+    }
+    if (!student.time_out_am) {
+      const time = new Date();
+      await AttendanceModel.findOneAndUpdate(
+        {
+          _id: attendance._id,
+          "students.student_id": student_id,
+        },
+        {
+          $set: {
+            "students.$.time_out_am": time,
+          },
         }
-        if (!student.time_out) {
-          const timeOut = new Date();
-          await AttendanceModel.findOneAndUpdate(
-            {
-              _id: attendance._id,
-              "students.student_id": student_id,
-            },
-            {
-              $set: {
-                "students.$.time_out": timeOut,
-              },
-            }
-          );
-
-          const currentStudent = await StudentModel.findOne({
-            _id: student_id,
-          });
-          sendSms(
-            messageBody(
-              false,
-              `${currentStudent.parent.first_name} ${
-                currentStudent.parent.middle_name !== "N/A"
-                  ? currentStudent.parent.middle_name
-                  : ""
-              }`,
-              student.full_name,
-              timeOut,
-              semester.section,
-              adviser.last_name
-            )
-            // Add phone number here as 2nd parameter
-          );
-        } else {
-          return res
-            .status(400)
-            .json({ error: "time_out", message: "You time-out already." });
+      );
+      sendSMS(false, currentStudent, student, time, semester, adviser);
+    } else {
+      return res.status(400).json({
+        error: "time_out_am",
+        message: "You already have Time Out (AM).",
+      });
+    }
+  }
+  // TIME_IN_PM
+  if (attendance.is_timein_pm) {
+    if (!student.time_in_pm) {
+      const time = new Date();
+      await AttendanceModel.findOneAndUpdate(
+        {
+          _id: attendance._id,
+          "students.student_id": student_id,
+        },
+        {
+          $set: {
+            "students.$.time_in_pm": time,
+          },
         }
-      }
+      );
+      sendSMS(true, currentStudent, student, time, semester, adviser);
+    } else {
+      return res.status(400).json({
+        error: "time_in_pm",
+        message: "You already have Time In (PM).",
+      });
+    }
+  }
+  // TIME_OUT_PM
+  if (attendance.is_timeout_pm) {
+    if (!student.time_in_pm) {
+      return res.status(400).json({
+        error: "time_in_pm",
+        message: "You don't have Time In (PM) record.",
+      });
+    }
+    if (!student.time_out_pm) {
+      const time = new Date();
+      await AttendanceModel.findOneAndUpdate(
+        {
+          _id: attendance._id,
+          "students.student_id": student_id,
+        },
+        {
+          $set: {
+            "students.$.time_out_pm": time,
+          },
+        }
+      );
+      sendSMS(false, currentStudent, student, time, semester, adviser);
+    } else {
+      return res.status(400).json({
+        error: "time_out_pm",
+        message: "You already have Time Out (AM).",
+      });
     }
   }
 
@@ -293,6 +314,39 @@ const createStudentAttendance = async (req, res) => {
   ]);
 
   return res.status(200).json(latestAttendance[0]);
+};
+
+const getStudentInAttendance = (AttendanceStudents, student_id) => {
+  for (const student of AttendanceStudents) {
+    if (student.student_id.equals(new mongoose.Types.ObjectId(student_id))) {
+      return student;
+    }
+  }
+};
+
+const sendSMS = (
+  scanTime,
+  currentStudent,
+  student,
+  time,
+  semester,
+  adviser
+) => {
+  sendSms(
+    messageBody(
+      scanTime,
+      `${currentStudent.parent.first_name} ${
+        currentStudent.parent.middle_name !== "N/A"
+          ? currentStudent.parent.middle_name
+          : ""
+      }`,
+      student.full_name,
+      time,
+      semester.section,
+      adviser.last_name
+    )
+    // Add phone number here as 2nd parameter
+  );
 };
 
 module.exports = {
