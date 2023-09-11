@@ -21,6 +21,7 @@ import {
   ADVISER_CONTEXT_TYPES,
   AdviserContext,
 } from "../context/AdviserContext";
+import { SCAN_TIME } from "../constants/ScanTime";
 
 // TODO:: SEND SMS AFTER SCANNING (SERVER)
 export default function Attendance() {
@@ -43,9 +44,9 @@ export default function Attendance() {
   const [showScannerDefault, setShowScannerDefault] = useState(true);
   const [showConfirmToggleTimeInModal, setShowConfirmToggleTimeInModal] =
     useState(false);
-  const [isTimeIn, setIsTimeIn] = useState(false);
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
   const { dispatch: dispatchAdviser } = useContext(AdviserContext);
+  const [scanTime, setScanTime] = useState("");
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -208,11 +209,12 @@ export default function Attendance() {
           );
 
           if (response.status === 200) {
+            
             Alert(
               `${
-                selectedAttendance.is_timein
-                  ? "Time-in Success!"
-                  : "Time-out Success!"
+                selectedAttendance.is_timein_am || selectedAttendance.is_timein_pm
+                  ? "Time In Success!"
+                  : "Time Out Success!"
               }`
             );
             setSelectedAttendance(() => response.data);
@@ -230,10 +232,16 @@ export default function Attendance() {
           if (error.response.data.error === "student") {
             Alert(error.response.data.message, "error");
           }
-          if (error.response.data.error === "time_in") {
+          if (error.response.data.error === "time_in_am") {
             Alert(error.response.data.message, "error");
           }
-          if (error.response.data.error === "time_out") {
+          if (error.response.data.error === "time_out_am") {
+            Alert(error.response.data.message, "error");
+          }
+          if (error.response.data.error === "time_in_pm") {
+            Alert(error.response.data.message, "error");
+          }
+          if (error.response.data.error === "time_out_pm") {
             Alert(error.response.data.message, "error");
           }
         }
@@ -244,26 +252,45 @@ export default function Attendance() {
     }
   };
 
-  const handleToggleAttendanceTimeIn = async () => {
+  const changeNewScanTime = (timein_am, timeout_am, timein_pm, timeout_pm) => {
+    return {
+      is_timein_am: timein_am,
+      is_timeout_am: timeout_am,
+      is_timein_pm: timein_pm,
+      is_timeout_pm: timeout_pm,
+    };
+  };
+
+  const handleToggleScanAttendance = async () => {
+    let newScanTime;
+    // eslint-disable-next-line default-case
+    switch (scanTime) {
+      case SCAN_TIME.TIME_IN_AM:
+        newScanTime = changeNewScanTime(true, false, false, false);
+        break;
+      case SCAN_TIME.TIME_OUT_AM:
+        newScanTime = changeNewScanTime(false, true, false, false);
+        break;
+      case SCAN_TIME.TIME_IN_PM:
+        newScanTime = changeNewScanTime(false, false, true, false);
+        break;
+      case SCAN_TIME.TIME_OUT_PM:
+        newScanTime = changeNewScanTime(false, false, false, true);
+        break;
+    }
+
     try {
       const response = await axiosClient.put(
         `/attendance/${selectedAttendance._id}`,
-        {
-          is_timein: isTimeIn,
-        }
+        newScanTime
       );
-
       if (response.status === 200) {
         dispatch({
           type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
           payload: response.data,
         });
         setSelectedAttendance(() => response.data);
-        Alert(
-          `Switched to ${
-            selectedAttendance.is_timein ? "Time Out" : "Time In"
-          }!`
-        );
+        Alert(`Switched to ${scanTime}`);
       }
     } catch (error) {
       setErrorModalMessage(error.message);
@@ -343,19 +370,19 @@ export default function Attendance() {
                   {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
                     selectedAttendance.status && (
                       <div className="flex space-x-3">
-                        <p className="text-gray-600">Time</p>
+                        <p className="font-semibold text-gray-600">AM</p>
                         <div className="flex border rounded-md">
                           <p
                             onClick={
-                              !selectedAttendance.is_timein
+                              !selectedAttendance.is_timein_am
                                 ? () => {
+                                    setScanTime(() => SCAN_TIME.TIME_IN_AM);
                                     toggleConfirmTimeInModal(true);
-                                    setIsTimeIn(true);
                                   }
                                 : null
                             }
                             className={
-                              selectedAttendance.is_timein
+                              selectedAttendance.is_timein_am
                                 ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
                                 : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
                             }
@@ -364,15 +391,52 @@ export default function Attendance() {
                           </p>
                           <p
                             onClick={
-                              selectedAttendance.is_timein
+                              !selectedAttendance.is_timeout_am
                                 ? () => {
+                                    setScanTime(() => SCAN_TIME.TIME_OUT_AM);
                                     toggleConfirmTimeInModal(true);
-                                    setIsTimeIn(false);
                                   }
                                 : null
                             }
                             className={
-                              !selectedAttendance.is_timein
+                              selectedAttendance.is_timeout_am
+                                ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
+                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
+                            }
+                          >
+                            Out
+                          </p>
+                        </div>
+                        <p className="font-semibold text-gray-600">PM</p>
+                        <div className="flex border rounded-md">
+                          <p
+                            onClick={
+                              !selectedAttendance.is_timein_pm
+                                ? () => {
+                                    setScanTime(() => SCAN_TIME.TIME_IN_PM);
+                                    toggleConfirmTimeInModal(true);
+                                  }
+                                : null
+                            }
+                            className={
+                              selectedAttendance.is_timein_pm
+                                ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
+                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
+                            }
+                          >
+                            In
+                          </p>
+                          <p
+                            onClick={
+                              !selectedAttendance.is_timeout_pm
+                                ? () => {
+                                    setScanTime(() => SCAN_TIME.TIME_OUT_PM);
+                                    toggleConfirmTimeInModal(true);
+                                  }
+                                : null
+                            }
+                            className={
+                              selectedAttendance.is_timeout_pm
                                 ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
                                 : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
                             }
@@ -475,11 +539,9 @@ export default function Attendance() {
       {showConfirmToggleTimeInModal && (
         <ConfirmModal
           title={""}
-          body={`Switch QR Scanning to ${
-            selectedAttendance.is_timein ? "Time Out" : "Time In"
-          }?`}
+          body={`Switch QR Scanning to ${scanTime}?`}
           toggleModal={toggleConfirmTimeInModal}
-          submit={handleToggleAttendanceTimeIn}
+          submit={handleToggleScanAttendance}
         />
       )}
     </div>
