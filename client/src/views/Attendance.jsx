@@ -170,8 +170,8 @@ export default function Attendance() {
         currentSelectedSemester.strand !== "N/A"
           ? currentSelectedSemester.strand
           : "";
-
-      const tableDetails = [school_year, semester, track];
+      const section = currentSelectedSemester.section
+      const tableDetails = [school_year, semester, section, track];
       if (strand) tableDetails.push(strand);
       setStudentTableDetailsList(() => tableDetails);
     }
@@ -209,10 +209,10 @@ export default function Attendance() {
           );
 
           if (response.status === 200) {
-            
             Alert(
               `${
-                selectedAttendance.is_timein_am || selectedAttendance.is_timein_pm
+                selectedAttendance.is_timein_am ||
+                selectedAttendance.is_timein_pm
                   ? "Time In Success!"
                   : "Time Out Success!"
               }`
@@ -291,6 +291,7 @@ export default function Attendance() {
         });
         setSelectedAttendance(() => response.data);
         Alert(`Switched to ${scanTime}`);
+        setLastScannedStudentId("");
       }
     } catch (error) {
       setErrorModalMessage(error.message);
@@ -384,7 +385,7 @@ export default function Attendance() {
                             className={
                               selectedAttendance.is_timein_am
                                 ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
+                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
                             }
                           >
                             In
@@ -401,7 +402,7 @@ export default function Attendance() {
                             className={
                               selectedAttendance.is_timeout_am
                                 ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
+                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
                             }
                           >
                             Out
@@ -421,7 +422,7 @@ export default function Attendance() {
                             className={
                               selectedAttendance.is_timein_pm
                                 ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200"
+                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
                             }
                           >
                             In
@@ -438,7 +439,7 @@ export default function Attendance() {
                             className={
                               selectedAttendance.is_timeout_pm
                                 ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200"
+                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
                             }
                           >
                             Out
