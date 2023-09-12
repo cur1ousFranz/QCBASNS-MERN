@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ConvertTime from "../../../utils/ConvertTime";
 
-export default function StudentListTable({ attendance }) {
+export default function StudentListTable({
+  attendance,
+  totalAmScanned,
+  totalPmScanned,
+}) {
   const [sortedStudents, setSortedStudents] = useState([]);
 
   useEffect(() => {
@@ -83,8 +87,13 @@ export default function StudentListTable({ attendance }) {
               )}
           </tbody>
         </table>
-        <div className="mt-2">
-          <h1 className="text-sm text-gray-600">Total: {attendance.students.length}</h1>
+        <div className="mt-2 flex space-x-3">
+          <h1 className="text-sm text-gray-600">
+            Scanned (AM): {totalAmScanned} / {attendance.students.length}
+          </h1>
+          <h1 className="text-sm text-gray-600">
+            Scanned (PM): {totalPmScanned} / {attendance.students.length}
+          </h1>
         </div>
       </div>
     </>

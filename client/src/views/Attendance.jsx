@@ -47,6 +47,8 @@ export default function Attendance() {
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
   const { dispatch: dispatchAdviser } = useContext(AdviserContext);
   const [scanTime, setScanTime] = useState("");
+  const [totalAmScanned, setTotalAmScanned] = useState(0);
+  const [totalPmScanned, setTotalPmScanned] = useState(0);
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -170,12 +172,31 @@ export default function Attendance() {
         currentSelectedSemester.strand !== "N/A"
           ? currentSelectedSemester.strand
           : "";
-      const section = currentSelectedSemester.section
+      const section = currentSelectedSemester.section;
       const tableDetails = [school_year, semester, section, track];
       if (strand) tableDetails.push(strand);
       setStudentTableDetailsList(() => tableDetails);
     }
   }, [currentSelectedSemester, selectedAttendance]);
+
+  // Count total AM scanned students
+  useEffect(() => {
+    if (selectedAttendance) {
+      let amCount = 0;
+      let pmCount = 0;
+      selectedAttendance.students.forEach((student) => {
+        if (student.time_in_am) {
+          amCount++;
+        }
+        if (student.time_in_pm) {
+          pmCount++;
+        }
+      });
+
+      setTotalAmScanned(() => amCount);
+      setTotalPmScanned(() => pmCount);
+    }
+  }, [selectedAttendance]);
 
   const toggleCreateAttendanceModal = (value) =>
     setShowCreateAttendanceModal(value);
@@ -483,7 +504,11 @@ export default function Attendance() {
 
           <div className="w-full">
             {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
-              <StudentListTable attendance={selectedAttendance} />
+              <StudentListTable
+                attendance={selectedAttendance}
+                totalAmScanned={totalAmScanned}
+                totalPmScanned={totalPmScanned}
+              />
             )}
           </div>
 
