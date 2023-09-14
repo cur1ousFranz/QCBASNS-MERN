@@ -82,7 +82,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
               )}
             </div>
             <p className="text-sm mt-2 font-semibold text-center">
-              ID: {student.school_id}
+              LRN: {student.school_id}
             </p>
             <p className="text-sm font-semibold text-center">{title}</p>
           </div>
