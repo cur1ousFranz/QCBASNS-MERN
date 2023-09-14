@@ -35,7 +35,7 @@ export default function QrCodeScannerModal({
             <div className="flex justify-end">
               <p
                 onClick={handleCancel}
-                className="cursor-pointer font-bold rounded-sm text-2xl me-2 text-gray-800 text-end hover:bg-gray-300 px-2"
+                className="cursor-pointer font-bold rounded-sm text-2xl me-2 text-gray-800 text-end bg-gray-300 px-2"
               >
                 X
               </p>

@@ -328,7 +328,7 @@ export default function Attendance() {
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex justify-between">
             <div className="flex flex-col w-full md:flex-row md:justify-between md:space-x-6">
-              <div className="">
+              <div className="w-full">
                 <div className="flex space-x-2">
                   {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
                     <img
@@ -356,34 +356,6 @@ export default function Attendance() {
                     >
                       {selectedAttendance.status ? "Active" : "Inactive"}
                     </span>
-                  )}
-                </div>
-                <div className="flex justify-between">
-                  {currentSelectedSemester && (
-                    <div className="hidden md:flex flex-col md:flex-row md:space-x-1">
-                      <div className="flex">
-                        {studentTableDetailsList &&
-                          studentTableDetailsList.map((list, index) => (
-                            <div className="flex" key={index}>
-                              <p className="p-1 italic text-sm text-gray-500">
-                                {list}
-                              </p>
-                              {studentTableDetailsList.length - 1 !== index && (
-                                <p className="mt-1 px-2 text-gray-300">/</p>
-                              )}
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedAttendance && (
-                    <div className="flex">
-                      <p className="mt-1 px-2 text-gray-300">/</p>
-                      <p className="p-1 italic text-sm text-gray-500">
-                        {ConvertDate(selectedAttendance.createdAt)}
-                      </p>
-                    </div>
                   )}
                 </div>
               </div>
@@ -493,7 +465,36 @@ export default function Attendance() {
               </button>
             )}
           </div>
+          <div className="flex justify-between w-full">
+            <div className="flex">
+              {currentSelectedSemester && (
+                <div className="hidden md:flex flex-col md:flex-row md:space-x-1">
+                  <div className="flex">
+                    {studentTableDetailsList &&
+                      studentTableDetailsList.map((list, index) => (
+                        <div className="flex" key={index}>
+                          <p className="p-1 italic text-sm text-gray-500">
+                            {list}
+                          </p>
+                          {studentTableDetailsList.length - 1 !== index && (
+                            <p className="mt-1 px-2 text-gray-300">/</p>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
 
+              {selectedAttendance && (
+                <div className="flex">
+                  <p className="mt-1 px-2 text-gray-300">/</p>
+                  <p className="p-1 italic text-sm text-gray-500">
+                    {ConvertDate(selectedAttendance.createdAt)}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
           {currentShowedTable === ATTENDANCE_TABLES.SEMESTER && (
             <div className="w-full">
               <div className="overflow-x-auto">
