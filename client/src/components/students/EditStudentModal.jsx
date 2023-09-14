@@ -212,7 +212,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">
                 <div className="w-full relative">
-                  <label>School ID</label>
+                  <label>LRN</label>
                   <input
                     type="text"
                     value={schoolId}
@@ -222,9 +222,10 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                         ? INPUT_DEFAULT_STYLE
                         : INPUT_ERROR_STYLE
                     }
+                    onKeyDown={numbersOnly}
                   />
                   {errorFields.includes("schoolId") && (
-                    <ValidationMessage message="School ID is required." />
+                    <ValidationMessage message="LRN is required." />
                   )}
                 </div>
                 <div className="w-full relative">

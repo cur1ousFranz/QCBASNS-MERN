@@ -75,7 +75,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     const errors = [];
     setErrorFields(() => errors);
     setContactNumberErrorMessage("");
-    setStudentIdErrorMessage("School ID is required.");
+    setStudentIdErrorMessage("LRN is required.");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
@@ -190,7 +190,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">
                 <div className="w-full relative">
-                  <label>School ID</label>
+                  <label>LRN</label>
                   <input
                     type="text"
                     value={schoolId}
@@ -200,6 +200,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                         ? INPUT_DEFAULT_STYLE
                         : INPUT_ERROR_STYLE
                     }
+                    onKeyDown={numbersOnly}
                   />
                   {errorFields.includes("schoolId") && (
                     <ValidationMessage message={studentIdErrorMessage} />

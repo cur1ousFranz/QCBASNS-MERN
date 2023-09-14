@@ -78,7 +78,7 @@ export default function StudentListModal({
         <main className="px-4 h-96 overflow-y-auto">
           <div className="w-full flex rounded-md bg-gray-50">
             <p className="w-full text-center text-lg">Name</p>
-            <p className="w-full text-center text-lg">ID</p>
+            <p className="w-full text-center text-lg">LRN</p>
           </div>
           <ul className="my-6">
             {studentList.length > 0 &&

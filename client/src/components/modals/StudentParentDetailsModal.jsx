@@ -77,7 +77,7 @@ export default function StudentParentDetailsModal({ toggleModal, studentId }) {
               <p className="py-1 px-2 rounded-md text-center text-gray-700 bg-gray-100">
                 Student
               </p>
-              <InputLayout label="School ID" value={schoolId} />
+              <InputLayout label="LRN" value={schoolId} />
               <hr />
               <InputLayout label="First Name" value={firstName} />
               <hr />
