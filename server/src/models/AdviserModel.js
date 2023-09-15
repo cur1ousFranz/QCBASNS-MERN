@@ -13,7 +13,6 @@ const adviserSchema = new Schema(
     },
     middle_name: {
       type: String,
-      required: true,
     },
     last_name: {
       type: String,
