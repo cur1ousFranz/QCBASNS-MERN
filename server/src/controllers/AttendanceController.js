@@ -64,6 +64,7 @@ const createAttendance = async (req, res) => {
       full_name: `${stud.last_name}, ${stud.first_name} ${
         stud.middle_name !== "N/A" ? stud.middle_name : ""
       } ${stud.suffix !== "N/A" ? stud.suffix : ""}`,
+      gender: stud.gender,
       time_in_am: "",
       time_out_am: "",
       time_in_pm: "",
