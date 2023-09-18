@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QrCodeModal from "../modals/QrCodeModal";
 
 export default function StudentListTable({
@@ -14,6 +14,15 @@ export default function StudentListTable({
 
   const [showOptionMenu, setShowOptionMenu] = useState(false);
   const [selectedOptionIndex, setSeletedOptionIndex] = useState(null);
+  const [sortedStudents, setSortedStudents] = useState([]);
+
+  useEffect(() => {
+    if (students) {
+      setSortedStudents(() =>
+        students.sort((a, b) => a.last_name.localeCompare(b.last_name))
+      );
+    }
+  }, [students]);
 
   const toggleQrCodeModal = (value = false) => setShowQrCodeModal(value);
 
@@ -41,8 +50,8 @@ export default function StudentListTable({
             </tr>
           </thead>
           <tbody>
-            {students &&
-              students.map((student, index) => (
+            {sortedStudents &&
+              sortedStudents.map((student, index) => (
                 <tr
                   key={student._id}
                   className="border-b cursor-pointer bg-white hover:bg-green-50"
@@ -64,9 +73,9 @@ export default function StudentListTable({
                     }}
                     className="px-6 py-4"
                   >
+                    {student.last_name},{" "}
                     {student.first_name}{" "}
                     {student.middle_name !== "N/A" ? student.middle_name : ""}{" "}
-                    {student.last_name}
                     {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                   </td>
                   <td
