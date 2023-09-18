@@ -29,16 +29,16 @@ export default function StudentListTable({
                 Gender
               </th>
               <th scope="col" className="px-6 py-3">
-                Time In (AM)
+                In (AM)
               </th>
               <th scope="col" className="px-6 py-3">
-                Time Out (AM)
+                Out (AM)
               </th>
               <th scope="col" className="px-6 py-3">
-                Time In (PM)
+                In (PM)
               </th>
               <th scope="col" className="px-6 py-3">
-                Time Out (PM)
+                Out (PM)
               </th>
             </tr>
           </thead>
@@ -91,14 +91,14 @@ export default function StudentListTable({
               )}
           </tbody>
         </table>
-        <div className="mt-2 flex space-x-3">
-          <h1 className="text-sm text-gray-600">
-            Scanned (AM): {totalAmScanned} / {attendance.students.length}
-          </h1>
-          <h1 className="text-sm text-gray-600">
-            Scanned (PM): {totalPmScanned} / {attendance.students.length}
-          </h1>
-        </div>
+      </div>
+      <div className="mt-2 flex space-x-3">
+        <h1 className="text-sm text-gray-600">
+          Scanned (AM): {totalAmScanned} / {attendance.students.length}
+        </h1>
+        <h1 className="text-sm text-gray-600">
+          Scanned (PM): {totalPmScanned} / {attendance.students.length}
+        </h1>
       </div>
     </>
   );

@@ -73,8 +73,7 @@ export default function StudentListTable({
                     }}
                     className="px-6 py-4"
                   >
-                    {student.last_name},{" "}
-                    {student.first_name}{" "}
+                    {student.last_name}, {student.first_name}{" "}
                     {student.middle_name !== "N/A" ? student.middle_name : ""}{" "}
                     {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                   </td>
@@ -157,12 +156,12 @@ export default function StudentListTable({
             )}
           </tbody>
         </table>
-        {students && (
-          <div className="mt-2">
-            <h1 className="text-sm text-gray-600">Total: {students.length}</h1>
-          </div>
-        )}
       </div>
+      {students && (
+        <div className="mt-2">
+          <h1 className="text-sm text-gray-600">Total: {students.length}</h1>
+        </div>
+      )}
 
       {showQrCodeModal && (
         <QrCodeModal
