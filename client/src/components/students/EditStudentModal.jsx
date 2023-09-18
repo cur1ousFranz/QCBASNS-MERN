@@ -206,7 +206,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           </p>
         </header>
 
-        <main className="px-4 h-96 overflow-y-auto">
+        <main className="px-4 h-80 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <p className="text-lg">Student Details</p>
             <div className="py-6 space-y-5">

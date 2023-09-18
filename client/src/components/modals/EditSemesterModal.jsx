@@ -136,7 +136,7 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
           </p>
         </header>
 
-        <main className="px-4 h-96 overflow-y-auto">
+        <main className="px-4 h-80 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">

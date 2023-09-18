@@ -66,7 +66,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
           />
         </header>
 
-        <main className="px-4 shadow-sm py-6">
+        <main className="px-4 shadow-sm py-6 h-80 overflow-y-auto">
           <div ref={qrContentRef} className="print-center">
             <div className="flex justify-center mx-auto w-full">
               {studentQrValue && (
@@ -77,7 +77,7 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
                   value={JSON.stringify(studentQrValue)}
                   bgColor="#FFFFFF"
                   fgColor="#000000"
-                  size={256}
+                  size={200}
                 />
               )}
             </div>

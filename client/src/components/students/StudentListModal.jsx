@@ -75,7 +75,7 @@ export default function StudentListModal({
           <p className="text-lg">Exisitng Students</p>
         </header>
 
-        <main className="px-4 h-96 overflow-y-auto">
+        <main className="px-4 h-80 overflow-y-auto">
           <div className="w-full flex rounded-md bg-gray-50">
             <p className="w-full text-center text-lg">Name</p>
             <p className="w-full text-center text-lg">LRN</p>

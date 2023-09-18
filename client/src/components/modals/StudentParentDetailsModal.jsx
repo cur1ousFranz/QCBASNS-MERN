@@ -71,7 +71,7 @@ export default function StudentParentDetailsModal({ toggleModal, studentId }) {
           </p>
         </header>
 
-        <main className="px-8 pb-4 h-96 overflow-y-auto">
+        <main className="px-8 pb-4 h-80 overflow-y-auto">
           <div className="max-h-96 px-2 flex space-x-6">
             <div className="py-6 w-full space-y-4">
               <p className="py-1 px-2 rounded-md text-center text-gray-700 bg-gray-100">
