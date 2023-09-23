@@ -49,6 +49,7 @@ export default function Attendance() {
   const [scanTime, setScanTime] = useState("");
   const [totalAmScanned, setTotalAmScanned] = useState(0);
   const [totalPmScanned, setTotalPmScanned] = useState(0);
+  const [hasAttendanceToday, setHasAttendanceToday] = useState(true);
 
   useEffect(() => {
     const getAllSemester = async () => {
@@ -197,6 +198,40 @@ export default function Attendance() {
       setTotalPmScanned(() => pmCount);
     }
   }, [selectedAttendance]);
+
+  useEffect(() => {
+    const matchAttendanceDate = async () => {
+      try {
+        const response = await axiosClient.get("/attendance");
+        if (response.status === 200) {
+          const attendancesData = response.data;
+          if (attendancesData.length) {
+            const attendance = attendancesData[attendancesData.length - 1];
+            const givenDate = new Date(attendance.createdAt);
+            const currentDate = new Date();
+
+            const givenYear = givenDate.getFullYear();
+            const givenMonth = givenDate.getMonth();
+            const givenDay = givenDate.getDate();
+
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const currentDay = currentDate.getDate();
+            const matched =
+              givenYear === currentYear &&
+              givenMonth === currentMonth &&
+              givenDay === currentDay;
+            setHasAttendanceToday(() => matched);
+          } else {
+            setHasAttendanceToday(() => true);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    matchAttendanceDate();
+  }, [attendances]);
 
   const toggleCreateAttendanceModal = (value) =>
     setShowCreateAttendanceModal(value);
@@ -457,8 +492,16 @@ export default function Attendance() {
             </div>
             {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
               <button
-                onClick={() => toggleCreateAttendanceModal(true)}
-                className="px-2 flex w-fit h-fit p-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                onClick={() => {
+                  if (!hasAttendanceToday) {
+                    toggleCreateAttendanceModal(true);
+                  }
+                }}
+                className={
+                  hasAttendanceToday
+                    ? "flex w-fit h-fit p-2 text-sm rounded-md cursor-not-allowed text-white bg-gray-300"
+                    : "flex w-fit h-fit p-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+                }
               >
                 <img src="/img/plus.svg" alt="" />
                 <p className="uppercase me-4">Attendance</p>

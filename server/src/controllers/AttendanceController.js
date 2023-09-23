@@ -7,6 +7,11 @@ const StudentModel = require("../models/StudentModel");
 const { messageBody } = require("../constants/MessageBody");
 const { sendSms } = require("../utils/SendSMS");
 
+const getAllAttendances = async (req, res) => {
+  const attendances = await AttendanceModel.find();
+  return res.status(200).json(attendances);
+};
+
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
 
@@ -351,6 +356,7 @@ const sendSMS = (
 };
 
 module.exports = {
+  getAllAttendances,
   getAllSemesterAttendances,
   createAttendance,
   updateAttendance,
