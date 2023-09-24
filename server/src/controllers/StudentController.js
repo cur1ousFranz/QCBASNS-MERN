@@ -63,6 +63,15 @@ const createStudent = async (req, res) => {
   }
 };
 
+const getStudent = async (req, res) => {
+  const { id } = req.params;
+  const student = await Student.findById({ _id: id });
+  if (!student) {
+    return res.status(404).json({ error: "No such student" });
+  }
+  return res.status(200).json(student);
+};
+
 const updateStudent = async (req, res) => {
   const { id } = req.params;
   const updated = req.body;
@@ -79,4 +88,5 @@ module.exports = {
   getAllStudents,
   createStudent,
   updateStudent,
+  getStudent,
 };

@@ -44,9 +44,16 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
 
   //Error fields
   const [errorFields, setErrorFields] = useState([]);
-  const [contactNumberErrorMessage, setContactNumberErrorMessage] =
+  const [
+    studentContactNumberErrorMessage,
+    setStudentContactNumberErrorMessage,
+  ] = useState("");
+  const [parentContactNumberErrorMessage, setParentContactNumberErrorMessage] =
     useState("");
   const [errorModalMessage, setErrorModalMessage] = useState("");
+  const [studentIdErrorMessage, setStudentIdErrorMessage] = useState(
+    "School ID is required."
+  );
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -67,6 +74,11 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     getAllBarangays();
   }, []);
 
+  const formatContactNumber = (number) => {
+    const contactArray = number.split("");
+    return contactArray.slice(3).join("");
+  };
+
   // Get the current details of student
   const setDefaultValues = () => {
     const student = students.filter((student) => student._id === studentId)[0];
@@ -83,10 +95,14 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     setGender(() => student.gender);
     setBirthDate(() => student.birthdate);
     setContactNumber(() =>
-      student.contact_number !== "N/A" ? student.contact_number : ""
+      student.contact_number !== "N/A"
+        ? formatContactNumber(student.contact_number)
+        : ""
     );
     setVillage(() => student.address.village);
-    setStreet(() => student.address.street);
+    setStreet(() =>
+      student.address.street !== "N/A" ? student.address.street : ""
+    );
     setBarangay(() => student.address.barangay);
     setCity(() => student.address.city);
     setParentFirstname(() => student.parent.first_name);
@@ -99,7 +115,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
       setShowParentSuffix(true);
     }
     setParentGender(() => student.parent.gender);
-    setParentContactNumber(() => student.parent.contact_number);
+    setParentContactNumber(() =>
+      formatContactNumber(student.parent.contact_number)
+    );
     setRelationship(() => student.parent.relationship);
   };
 
@@ -107,26 +125,57 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     e.preventDefault();
     const errors = [];
     setErrorFields(() => errors);
-    setContactNumberErrorMessage("");
+    setParentContactNumberErrorMessage("");
+    setStudentIdErrorMessage("LRN is required.");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
+    if (schoolId && schoolId.length < 12) {
+      errors.push("schoolId");
+      setStudentIdErrorMessage("LRN must be 12 numbers");
+    }
     if (!firstName) errors.push("firstName");
     if (!lastName) errors.push("lastName");
+    // Validate contact number of student if not empty
+    if (contactNumber) {
+      if (contactNumber.length < 11) {
+        setStudentContactNumberErrorMessage(
+          "Contact number must be 11 digits."
+        );
+        errors.push("studentContactNumber");
+      }
+      // Check if contact number starts with 09
+      if (contactNumber.length === 11) {
+        const numberArr = contactNumber.split("");
+        const firstTwoDigit = [numberArr[0], numberArr[1]];
+        if (firstTwoDigit.join("") !== "09") {
+          setStudentContactNumberErrorMessage("Invalid contact number.");
+          errors.push("studentContactNumber");
+        }
+      }
+    }
     if (!birthDate) errors.push("birthDate");
     if (!village) errors.push("village");
-    if (!street) errors.push("street");
     // Parent details
     if (!parentFirstName) errors.push("parentFirstName");
     if (!parentLastName) errors.push("parentLastName");
     if (!parentGender) errors.push("parentGender");
     if (parentContactNumber.length < 11) {
-      setContactNumberErrorMessage("Contact number must be 11 digits.");
+      setParentContactNumberErrorMessage("Contact number must be 11 digits.");
       errors.push("parentContactNumber");
     }
     if (!parentContactNumber) {
-      setContactNumberErrorMessage(() => "Contact number is required.");
+      setParentContactNumberErrorMessage(() => "Contact number is required.");
       errors.push("parentContactNumber");
+    }
+    // Check if contact number starts with 09
+    if (parentContactNumber.length === 11) {
+      const numberArr = parentContactNumber.split("");
+      const firstTwoDigit = [numberArr[0], numberArr[1]];
+      if (firstTwoDigit.join("") !== "09") {
+        setParentContactNumberErrorMessage("Invalid contact number.");
+        errors.push("parentContactNumber");
+      }
     }
     if (!relationship) errors.push("relationship");
     if (errors.length === 0) {
@@ -141,7 +190,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
         gender,
         suffix: studentSuff,
         birthdate: birthDate,
-        contact_number: contactNumber ? contactNumber : "N/A",
+        contact_number: contactNumber ? `+63${contactNumber}` : "N/A",
         parent: {
           first_name: UpperCaseWords(parentFirstName),
           middle_name: parentMiddleName
@@ -150,12 +199,12 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           last_name: UpperCaseWords(parentLastName),
           suffix: parentSuff,
           gender: parentGender,
-          contact_number: parentContactNumber,
+          contact_number: `+63${parentContactNumber}`,
           relationship: UpperCaseWords(relationship),
         },
         address: {
           village: UpperCaseWords(village),
-          street: UpperCaseWords(street),
+          street: street ? UpperCaseWords(street) : "N/A",
           barangay,
           city,
         },
@@ -195,7 +244,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
       className="fixed inset-0 flex items-center px-4 justify-center modal-backdrop bg-opacity-50 bg-gray-50"
       style={{ minHeight: "100vh" }}
     >
-      <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
+      <div className="modal w-full md:w-8/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
           <p className="text-lg">
             {" "}
@@ -206,7 +255,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
           </p>
         </header>
 
-        <main className="px-4 h-80 overflow-y-auto">
+        <main className="px-4 h-96 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <p className="text-lg">Student Details</p>
             <div className="py-6 space-y-5">
@@ -223,9 +272,10 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                         : INPUT_ERROR_STYLE
                     }
                     onKeyDown={numbersOnly}
+                    maxLength={12}
                   />
                   {errorFields.includes("schoolId") && (
-                    <ValidationMessage message="LRN is required." />
+                    <ValidationMessage message={studentIdErrorMessage} />
                   )}
                 </div>
                 <div className="w-full relative">
@@ -245,10 +295,10 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     <ValidationMessage message="First Name is required." />
                   )}
                 </div>
-              </div>
-              <div className="flex space-x-3">
                 <div className="w-full relative">
-                  <label>Middle Name (Optional)</label>
+                  <label>
+                    Middle Name <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     name="middle_name"
                     type="text"
@@ -257,6 +307,8 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     className={INPUT_DEFAULT_STYLE}
                   />
                 </div>
+              </div>
+              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>Last Name</label>
                   <input
@@ -274,11 +326,11 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     <ValidationMessage message="Last Name is required." />
                   )}
                 </div>
-              </div>
-              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <div className="flex justify-between">
-                    <label>Suffix (Optional)</label>
+                    <label>
+                      Suffix <span className="text-xs">(Optional)</span>
+                    </label>
                     <input
                       onChange={() => setShowStudentSuffix(!showStudentSuffix)}
                       type="checkbox"
@@ -294,6 +346,11 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                   >
                     <option value="Jr">Jr</option>
                     <option value="Sr">Sr</option>
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
                   </select>
                 </div>
                 <div className="w-full relative">
@@ -326,7 +383,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Contact Number (Optional)</label>
+                  <label>
+                    Contact Number <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     onKeyDown={numbersOnly}
                     type="text"
@@ -335,10 +394,15 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     className={INPUT_DEFAULT_STYLE}
                     maxLength={11}
                   />
+                  {errorFields.includes("studentContactNumber") && (
+                    <ValidationMessage
+                      message={studentContactNumberErrorMessage}
+                    />
+                  )}
                 </div>
               </div>
               <hr />
-              <p className="text-lg">Parent Details</p>
+              <p className="text-lg">Parent/Guardian Details</p>
               <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>First Name</label>
@@ -358,7 +422,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Middle Name (Optional)</label>
+                  <label>
+                    Middle Name <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     name="middle_name"
                     type="text"
@@ -367,8 +433,6 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     className={INPUT_DEFAULT_STYLE}
                   />
                 </div>
-              </div>
-              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>Last Name</label>
                   <input
@@ -386,9 +450,13 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     <ValidationMessage message="Last Name is required." />
                   )}
                 </div>
+              </div>
+              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <div className="flex justify-between">
-                    <label>Suffix (Optional)</label>
+                    <label>
+                      Suffix <span className="text-xs">(Optional)</span>
+                    </label>
                     <input
                       onChange={() =>
                         setShowParentSuffix(() => !showParentSuffix)
@@ -406,10 +474,13 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                   >
                     <option value="Jr">Jr</option>
                     <option value="Sr">Sr</option>
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
                   </select>
                 </div>
-              </div>
-              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>Gender</label>
                   <select
@@ -435,7 +506,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     maxLength={11}
                   />
                   {errorFields.includes("parentContactNumber") && (
-                    <ValidationMessage message={contactNumberErrorMessage} />
+                    <ValidationMessage
+                      message={parentContactNumberErrorMessage}
+                    />
                   )}
                 </div>
               </div>
@@ -478,7 +551,9 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Street</label>
+                  <label>
+                    Street <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     type="text"
                     value={street}
@@ -493,8 +568,6 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     <ValidationMessage message="Street is required." />
                   )}
                 </div>
-              </div>
-              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>Barangay</label>
                   <select
@@ -510,6 +583,8 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                       ))}
                   </select>
                 </div>
+              </div>
+              <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>City/Municipality</label>
                   <input

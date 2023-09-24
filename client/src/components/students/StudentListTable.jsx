@@ -39,6 +39,9 @@ export default function StudentListTable({
                 Full Name
               </th>
               <th scope="col" className="px-6 py-3">
+                Suffix
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Gender
               </th>
               <th scope="col" className="px-6 py-3">
@@ -74,8 +77,16 @@ export default function StudentListTable({
                     className="px-6 py-4"
                   >
                     {student.last_name}, {student.first_name}{" "}
-                    {student.middle_name !== "N/A" ? student.middle_name : ""}{" "}
-                    {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
+                    {student.middle_name !== "N/A" ? student.middle_name : ""}
+                  </td>
+                  <td
+                    onClick={() => {
+                      setShowStudentDetailsModal(true);
+                      setSelecedStudentIdDetails(() => student._id);
+                    }}
+                    className="px-6 py-4"
+                  >
+                    {student.suffix !== "N/A" ? student.suffix : ""}
                   </td>
                   <td
                     onClick={() => {

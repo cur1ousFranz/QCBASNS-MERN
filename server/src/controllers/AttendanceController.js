@@ -68,7 +68,8 @@ const createAttendance = async (req, res) => {
       school_id: stud.school_id,
       full_name: `${stud.last_name}, ${stud.first_name} ${
         stud.middle_name !== "N/A" ? stud.middle_name : ""
-      } ${stud.suffix !== "N/A" ? stud.suffix : ""}`,
+      }`,
+      suffix: stud.suffix,
       gender: stud.gender,
       time_in_am: "",
       time_out_am: "",
@@ -338,21 +339,21 @@ const sendSMS = (
   semester,
   adviser
 ) => {
-  sendSms(
-    messageBody(
-      scanTime,
-      `${currentStudent.parent.first_name} ${
-        currentStudent.parent.middle_name !== "N/A"
-          ? currentStudent.parent.middle_name
-          : ""
-      }`,
-      student.full_name,
-      time,
-      semester.section,
-      adviser.last_name
-    )
-    // Add phone number here as 2nd parameter
-  );
+  // sendSms(
+  //   messageBody(
+  //     scanTime,
+  //     `${currentStudent.parent.first_name} ${
+  //       currentStudent.parent.middle_name !== "N/A"
+  //         ? currentStudent.parent.middle_name
+  //         : ""
+  //     }`,
+  //     student.full_name,
+  //     time,
+  //     semester.section,
+  //     adviser.last_name
+  //   )
+  //   // Add phone number here as 2nd parameter
+  // );
 };
 
 module.exports = {

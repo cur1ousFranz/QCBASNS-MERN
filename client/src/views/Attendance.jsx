@@ -223,7 +223,7 @@ export default function Attendance() {
               givenDay === currentDay;
             setHasAttendanceToday(() => matched);
           } else {
-            setHasAttendanceToday(() => true);
+            setHasAttendanceToday(false);
           }
         }
       } catch (error) {

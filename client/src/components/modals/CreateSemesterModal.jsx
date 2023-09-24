@@ -138,7 +138,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
     >
-      <div className="modal w-full my-auto md:w-1/3 bg-white rounded-lg shadow-lg">
+      <div className="modal w-full my-auto md:w-8/12 lg:w-6/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header mt-4 py-3">
           <p className="text-lg">
             <span className="inline-block me-1">

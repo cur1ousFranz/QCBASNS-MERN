@@ -5,6 +5,7 @@ const extractUserID = require("../utils/ExtractUserId");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const Student = require("../models/StudentModel");
+const AttendanceModel = require("../models/AttendanceModel");
 
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
@@ -113,6 +114,36 @@ const addStudentToSemester = async (req, res) => {
     await Semester.findByIdAndUpdate({ _id: id }, { students: newStudents });
     const semester = await Semester.findById({ _id: id });
 
+    // Insert the student in Active attendance if there is
+    const attendance = await AttendanceModel.find({
+      semester_id: id,
+      status: true,
+    });
+    if (attendance) {
+      const student = await Student.findById({ _id: student_id });
+      const students = attendance[0].students;
+      const newStudents = [
+        ...students,
+        {
+          student_id: student._id,
+          school_id: student.school_id,
+          full_name: `${student.last_name}, ${student.first_name} ${
+            student.middle_name !== "N/A" ? student.middle_name : ""
+          } ${student.suffix !== "N/A" ? student.suffix : ""}`,
+          gender: student.gender,
+          time_in_am: "",
+          time_out_am: "",
+          time_in_pm: "",
+          time_out_pm: "",
+        },
+      ];
+
+      await AttendanceModel.findByIdAndUpdate(
+        { _id: attendance[0]._id },
+        { students: newStudents }
+      );
+    }
+
     return res.status(200).json(semester);
   } catch (error) {
     return res.status(400).json(error);
@@ -136,6 +167,36 @@ const addExistingStudentsToSemester = async (req, res) => {
         { student_id: new ObjectId(studentId) },
       ];
       await Semester.findByIdAndUpdate({ _id: id }, { students: newStudents });
+
+      // Insert the student in Active attendance if there is
+      const attendance = await AttendanceModel.find({
+        semester_id: id,
+        status: true,
+      });
+      if (attendance[0]) {
+        const student = await Student.findById({ _id: studentId });
+        const students = attendance[0].students;
+        const newStudents = [
+          ...students,
+          {
+            student_id: student._id,
+            school_id: student.school_id,
+            full_name: `${student.last_name}, ${student.first_name} ${
+              student.middle_name !== "N/A" ? student.middle_name : ""
+            } ${student.suffix !== "N/A" ? student.suffix : ""}`,
+            gender: student.gender,
+            time_in_am: "",
+            time_out_am: "",
+            time_in_pm: "",
+            time_out_pm: "",
+          },
+        ];
+
+        await AttendanceModel.findByIdAndUpdate(
+          { _id: attendance[0]._id },
+          { students: newStudents }
+        );
+      }
     }
 
     const semester = await Semester.findById({ _id: id });

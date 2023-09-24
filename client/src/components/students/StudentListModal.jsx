@@ -46,8 +46,24 @@ export default function StudentListModal({
     }
   };
 
+  const toggleCheckAll = (checked) => {
+    if (checked) {
+      const currentSelected = [];
+      for (const student of studentList) {
+        if (!checkIfStudentExist(student._id)) {
+          currentSelected.push(student._id);
+        }
+      }
+      setSelectedStudentList(() => currentSelected);
+    } else {
+      setSelectedStudentList(() => []);
+    }
+  };
+
   const handleAddStudents = () => {
-    addExisitingStudents(selectedStudentList);
+    if (selectedStudentList) {
+      addExisitingStudents(selectedStudentList);
+    }
   };
 
   const handleCancel = () => {
@@ -70,17 +86,25 @@ export default function StudentListModal({
       className="fixed inset-0 flex items-center px-4 justify-center modal-backdrop bg-opacity-50 bg-gray-50"
       style={{ minHeight: "100vh" }}
     >
-      <div className="modal w-full md:w-5/12 bg-white rounded-lg shadow-lg">
+      <div className="modal w-full md:w-8/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
           <p className="text-lg">Exisitng Students</p>
         </header>
 
-        <main className="px-4 h-80 overflow-y-auto">
+        <main className="px-4 h-96 overflow-y-auto">
           <div className="w-full flex rounded-md bg-gray-50">
-            <p className="w-full text-center text-lg">Name</p>
-            <p className="w-full text-center text-lg">LRN</p>
+            <p className="w-full text-center">Name</p>
+            <p className="w-full text-center">LRN</p>
           </div>
           <ul className="my-6">
+            <li className="px-2 py-1 flex space-x-3">
+              <input
+                onChange={(e) => toggleCheckAll(e.target.checked)}
+                type="checkbox"
+                className={`${CHECKBOX_DEFAULT_STYLE}`}
+              />
+              <p className="text-sm mt-1">Check All</p>
+            </li>
             {studentList.length > 0 &&
               studentList.map((student) => (
                 <li
@@ -94,8 +118,9 @@ export default function StudentListModal({
                       onChange={(e) =>
                         toggleCheckbox(e.target.checked, student._id)
                       }
+                      checked={selectedStudentList.includes(student._id)}
                       type="checkbox"
-                      className={`${CHECKBOX_DEFAULT_STYLE} w-4 h-4`}
+                      className={`${CHECKBOX_DEFAULT_STYLE}`}
                       disabled={checkIfStudentExist(student._id)}
                     />
                     <p
@@ -144,9 +169,14 @@ export default function StudentListModal({
           </button>
           <button
             onClick={handleAddStudents}
-            className="px-2 uppercase flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+            className={
+              !selectedStudentList.length
+                ? "px-2 uppercase flex py-2 text-sm rounded-md cursor-not-allowed text-gray-700 bg-gray-200"
+                : "px-2 uppercase flex py-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
+            }
             type="submit"
             form="semester-form"
+            disabled={!selectedStudentList.length}
           >
             Add Students
           </button>

@@ -20,6 +20,7 @@ const attendanceSchema = new Schema(
           student_id: { type: mongoose.Schema.Types.ObjectId },
           school_id: { type: String },
           full_name: { type: String },
+          suffix: { type: String },
           gender: { type: String },
           time_in_am: { type: String },
           time_out_am: { type: String },
