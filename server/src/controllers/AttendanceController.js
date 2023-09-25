@@ -339,21 +339,21 @@ const sendSMS = (
   semester,
   adviser
 ) => {
-  // sendSms(
-  //   messageBody(
-  //     scanTime,
-  //     `${currentStudent.parent.first_name} ${
-  //       currentStudent.parent.middle_name !== "N/A"
-  //         ? currentStudent.parent.middle_name
-  //         : ""
-  //     }`,
-  //     student.full_name,
-  //     time,
-  //     semester.section,
-  //     adviser.last_name
-  //   )
-  //   // Add phone number here as 2nd parameter
-  // );
+  sendSms(
+    messageBody(
+      scanTime,
+      `${currentStudent.parent.first_name} ${
+        currentStudent.parent.middle_name !== "N/A"
+          ? currentStudent.parent.middle_name
+          : ""
+      }`,
+      student.full_name,
+      time,
+      semester.section,
+      adviser.last_name
+    )
+    // Add phone number here as 2nd parameter
+  );
 };
 
 module.exports = {
