@@ -5,6 +5,7 @@ import { registerAdviser } from "../lib/registerAdviser";
 import { Alert } from "../utils/Alert";
 import ValidationMessage from "../components/typography/ValidationMessage";
 import numbersOnly from "../utils/NumberKeys";
+import calculateAge from "../utils/CalculateAge";
 
 export const Register = () => {
   const { dispatch } = useContext(AuthContext);
@@ -72,6 +73,23 @@ export const Register = () => {
       setBirthDateErrorMessage(() => "Birthdate is required.");
       setErrorBirthDate(true);
     }
+    if (birthDate) {
+      const age = calculateAge(birthDate);
+      if (age < 22) {
+        setBirthDateErrorMessage(() => "Age must be 22 years old and above.");
+        setErrorBirthDate(true);
+        setHasErrors(true);
+      } else {
+        setBirthDateErrorMessage("");
+        setHasErrors(false);
+      }
+    }
+
+    if(!email) {
+      setErrorMessage(() => "Email is required.")
+      setErrorEmail(true);
+      setHasErrors(true);
+    }
 
     if (password && password !== confirmPassword) {
       setErrorPassword(true);
@@ -86,7 +104,7 @@ export const Register = () => {
     }
 
     if (contactNumber.length < 11) {
-      setContactNumberErrorMessage("Contact number must be 11 digits.");
+      setContactNumberErrorMessage("Contact must be 11 digits.");
       setErrorContactNumber(true);
       setHasErrors(true);
     }
@@ -95,6 +113,17 @@ export const Register = () => {
       setContactNumberErrorMessage(() => "Contact number is required.");
       setErrorContactNumber(true);
       setHasErrors(true);
+    }
+
+    // Check if contact number starts with 09
+    if (contactNumber.length === 11) {
+      const numberArr = contactNumber.split("");
+      const firstTwoDigit = [numberArr[0], numberArr[1]];
+      if (firstTwoDigit.join("") !== "09") {
+        setContactNumberErrorMessage("Invalid contact number.");
+        setErrorContactNumber(true);
+        setHasErrors(true);
+      }
     }
 
     const currentSuffix = showSuffix === false ? suffix : "";
@@ -135,6 +164,19 @@ export const Register = () => {
         }
         setIsLoading(false);
       }
+    }
+  };
+
+  const onChangeBirthDate = (value) => {
+    setBirthDate(() => value);
+    const age = calculateAge(value);
+    if (age < 22) {
+      setBirthDateErrorMessage(() => "Age must be 22 years old and above.");
+      setErrorBirthDate(true);
+      setHasErrors(true);
+    } else {
+      setBirthDateErrorMessage("");
+      setHasErrors(false);
     }
   };
 
@@ -230,7 +272,7 @@ export const Register = () => {
                 <div className="w-full">
                   <label>Birthdate</label>
                   <input
-                    onChange={(e) => setBirthDate(e.target.value)}
+                    onChange={(e) => onChangeBirthDate(e.target.value)}
                     value={birthDate}
                     type="date"
                     className={

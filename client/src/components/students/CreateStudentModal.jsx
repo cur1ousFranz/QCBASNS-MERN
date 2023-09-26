@@ -11,6 +11,7 @@ import {
 } from "../../constants/Constant";
 import ErrorModal from "../modals/ErrorModal";
 import UpperCaseWords from "../../utils/UpperCaseWords";
+import calculateAge from "../../utils/CalculateAge";
 
 const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
   const { dispatch } = useContext(StudentContext);
@@ -55,6 +56,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
   const [studentIdErrorMessage, setStudentIdErrorMessage] = useState(
     "School ID is required."
   );
+  const [birthDatteErrorMessage, setBirthDateErrorMessage] = useState("");
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -80,12 +82,17 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     setErrorFields(() => errors);
     setParentContactNumberErrorMessage("");
     setStudentIdErrorMessage("LRN is required.");
+    setBirthDateErrorMessage("");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
     if (schoolId && schoolId.length < 12) {
       errors.push("schoolId");
       setStudentIdErrorMessage("LRN must be 12 numbers");
+    }
+    if (schoolId && schoolId.length === 12 && !Number.isInteger(schoolId)) {
+      errors.push("schoolId");
+      setStudentIdErrorMessage("Invalid LRN.");
     }
     if (!firstName) errors.push("firstName");
     if (!lastName) errors.push("lastName");
@@ -108,7 +115,17 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
       }
     }
 
-    if (!birthDate) errors.push("birthDate");
+    if (!birthDate) {
+      errors.push("birthDate");
+      setBirthDateErrorMessage(() => "Birthdate is required.");
+    }
+    if (birthDate) {
+      const age = calculateAge(birthDate);
+      if (age < 15) {
+        setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
+        errors.push("birthDate");
+      }
+    }
     if (!village) errors.push("village");
     // Parent details
     if (!parentFirstName) errors.push("parentFirstName");
@@ -204,6 +221,20 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     }
   };
 
+  const onChangeBirthDate = (value) => {
+    setBirthDate(() => value);
+    const age = calculateAge(value);
+    const errors = [];
+    if (age < 15) {
+      setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
+      errors.push("birthDate");
+      setErrorFields(() => errors);
+    } else {
+      setBirthDateErrorMessage("");
+      setErrorFields(() => []);
+    }
+  };
+
   return (
     <div
       onClick={handleBackdropCancel}
@@ -255,7 +286,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Middle Name <span className="text-xs">(Optional)</span></label>
+                  <label>
+                    Middle Name <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     name="middle_name"
                     type="text"
@@ -285,7 +318,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                 </div>
                 <div className="w-full relative">
                   <div className="flex justify-between">
-                    <label>Suffix <span className="text-xs">(Optional)</span></label>
+                    <label>
+                      Suffix <span className="text-xs">(Optional)</span>
+                    </label>
                     <input
                       onChange={() =>
                         setShowStudentSuffix(() => !showStudentSuffix)
@@ -328,7 +363,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                 <div className="w-full relative">
                   <label>Birthdate</label>
                   <input
-                    onChange={(e) => setBirthDate(e.target.value)}
+                    onChange={(e) => onChangeBirthDate(e.target.value)}
                     value={birthDate}
                     type="date"
                     className={
@@ -338,17 +373,23 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                     }
                   />
                   {errorFields.includes("birthDate") && (
-                    <ValidationMessage message="Birthdate is required." />
+                    <ValidationMessage message={birthDatteErrorMessage} />
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Contact Number <span className="text-xs">(Optional)</span></label>
+                  <label>
+                    Contact Number <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     onKeyDown={numbersOnly}
                     type="text"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
-                    className={INPUT_DEFAULT_STYLE}
+                    className={
+                      !errorFields.includes("studentContactNumber")
+                        ? INPUT_DEFAULT_STYLE
+                        : INPUT_ERROR_STYLE
+                    }
                     maxLength={11}
                   />
                   {errorFields.includes("studentContactNumber") && (
@@ -379,7 +420,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Middle Name <span className="text-xs">(Optional)</span></label>
+                  <label>
+                    Middle Name <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     name="middle_name"
                     type="text"
@@ -409,7 +452,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
               <div className="flex space-x-3">
                 <div className="w-full relative">
                   <div className="flex justify-between">
-                    <label>Suffix <span className="text-xs">(Optional)</span></label>
+                    <label>
+                      Suffix <span className="text-xs">(Optional)</span>
+                    </label>
                     <input
                       onChange={() =>
                         setShowParentSuffix(() => !showParentSuffix)
@@ -459,7 +504,6 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                         : INPUT_ERROR_STYLE
                     }
                     maxLength={11}
-                    placeholder="09XXXXXXXXX"
                   />
                   {errorFields.includes("parentContactNumber") && (
                     <ValidationMessage
@@ -507,7 +551,9 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
                   )}
                 </div>
                 <div className="w-full relative">
-                  <label>Street <span className="text-xs">(Optional)</span></label>
+                  <label>
+                    Street <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     type="text"
                     value={street}
