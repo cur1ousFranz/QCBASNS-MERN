@@ -11,6 +11,7 @@ import {
 } from "../../constants/Constant";
 import ErrorModal from "../modals/ErrorModal";
 import UpperCaseWords from "../../utils/UpperCaseWords";
+import calculateAge from "../../utils/CalculateAge";
 
 const EditStudentModal = ({ toggleModal, studentId, title }) => {
   const { students, dispatch } = useContext(StudentContext);
@@ -54,6 +55,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
   const [studentIdErrorMessage, setStudentIdErrorMessage] = useState(
     "School ID is required."
   );
+  const [birthDatteErrorMessage, setBirthDateErrorMessage] = useState("");
 
   useEffect(() => {
     const getAllBarangays = async () => {
@@ -127,6 +129,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
     setErrorFields(() => errors);
     setParentContactNumberErrorMessage("");
     setStudentIdErrorMessage("LRN is required.");
+    setBirthDateErrorMessage("");
 
     // Student details
     if (!schoolId) errors.push("schoolId");
@@ -154,7 +157,17 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
         }
       }
     }
-    if (!birthDate) errors.push("birthDate");
+    if (!birthDate) {
+      errors.push("birthDate");
+      setBirthDateErrorMessage(() => "Birthdate is required.");
+    }
+    if (birthDate) {
+      const age = calculateAge(birthDate);
+      if (age <= 14) {
+        setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
+        errors.push("birthDate");
+      }
+    }
     if (!village) errors.push("village");
     // Parent details
     if (!parentFirstName) errors.push("parentFirstName");
@@ -235,6 +248,20 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
   const handleBackdropCancel = (e) => {
     if (e.target.classList.contains("modal-backdrop")) {
       toggleModal(false);
+    }
+  };
+
+  const onChangeBirthDate = (value) => {
+    setBirthDate(() => value);
+    const age = calculateAge(value);
+    const errors = [];
+    if (age <= 14) {
+      setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
+      errors.push("birthDate");
+      setErrorFields(() => errors);
+    } else {
+      setBirthDateErrorMessage("");
+      setErrorFields(() => []);
     }
   };
 
@@ -369,7 +396,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                 <div className="w-full relative">
                   <label>Birthdate</label>
                   <input
-                    onChange={(e) => setBirthDate(e.target.value)}
+                    onChange={(e) => onChangeBirthDate(e.target.value)}
                     value={birthDate}
                     type="date"
                     className={
@@ -379,7 +406,7 @@ const EditStudentModal = ({ toggleModal, studentId, title }) => {
                     }
                   />
                   {errorFields.includes("birthDate") && (
-                    <ValidationMessage message="Birthdate is required." />
+                    <ValidationMessage message={birthDatteErrorMessage} />
                   )}
                 </div>
                 <div className="w-full relative">

@@ -24,7 +24,7 @@ export default function Login() {
       }
       setIsLoading(false);
     } catch (error) {
-      if (error.response.data.error) {
+      if (error.response) {
         setError(error.response.data.error);
         setIsLoading(false);
       }

@@ -75,7 +75,7 @@ export const Register = () => {
     }
     if (birthDate) {
       const age = calculateAge(birthDate);
-      if (age < 22) {
+      if (age <= 21) {
         setBirthDateErrorMessage(() => "Age must be 22 years old and above.");
         setErrorBirthDate(true);
         setHasErrors(true);

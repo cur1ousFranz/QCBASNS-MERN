@@ -121,7 +121,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     }
     if (birthDate) {
       const age = calculateAge(birthDate);
-      if (age < 15) {
+      if (age <= 14) {
         setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
         errors.push("birthDate");
       }
@@ -225,7 +225,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
     setBirthDate(() => value);
     const age = calculateAge(value);
     const errors = [];
-    if (age < 15) {
+    if (age <= 14) {
       setBirthDateErrorMessage(() => "Age must be 15 years old and above.");
       errors.push("birthDate");
       setErrorFields(() => errors);
