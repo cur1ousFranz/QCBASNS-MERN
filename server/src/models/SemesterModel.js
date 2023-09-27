@@ -46,7 +46,23 @@ const semesterSchema = new Schema(
     active: {
       type: Boolean,
       required: true
-    }
+    },
+    timein_am: {
+      type: String,
+      required: true,
+    },
+    timeout_am: {
+      type: String,
+      required: true,
+    },
+    timein_pm: {
+      type: String,
+      required: true,
+    },
+    timeout_pm: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

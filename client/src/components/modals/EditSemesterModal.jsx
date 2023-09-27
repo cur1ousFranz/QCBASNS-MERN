@@ -14,6 +14,10 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [section, setSection] = useState("");
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
+  const [timein_am, setTimeinAm] = useState("");
+  const [timeout_am, setTimeoutAm] = useState("");
+  const [timein_pm, setTimeinPm] = useState("");
+  const [timeout_pm, setTimeoutPm] = useState("");
 
   const [errorStrand, setErrorStrand] = useState(false);
   const [errorSection, setErrorSection] = useState(false);
@@ -23,6 +27,11 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
   const { semesters, dispatch } = useContext(SemesterContext);
   const [errorModalMessage, setErrorModalMessage] = useState("");
+  const [amTimeInErrorMessage, setAmTimeInErrorMessage] = useState("");
+  const [amTimeOutErrorMessage, setAmTimeOutErrorMessage] = useState("");
+  const [pmTimeInErrorMessage, setPmTimeInErrorMessage] = useState("");
+  const [pmTimeOutErrorMessage, setPmTimeOutErrorMessage] = useState("");
+  const [lastSelectedMeridiem, setLastSelectedMeridiem] = useState("");
 
   useEffect(() => {
     const getAllTracks = async () => {
@@ -60,6 +69,10 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
     setSection(() => selectedSemester.section);
     setStartYear(() => selectedSemester.start_year);
     setEndYear(() => selectedSemester.end_year);
+    setTimeinAm(() => selectedSemester.timein_am);
+    setTimeoutAm(() => selectedSemester.timeout_am);
+    setTimeinPm(() => selectedSemester.timein_pm);
+    setTimeoutPm(() => selectedSemester.timeout_pm);
   }, []);
 
   const handleFormSubmit = async (e) => {
@@ -76,9 +89,24 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
       setErrorStrand(true);
       hasError = true;
     }
-
     if (!section) {
       setErrorSection(true);
+      hasError = true;
+    }
+    if (!timein_am) {
+      setAmTimeInErrorMessage("Time-in is required.");
+      hasError = true;
+    }
+    if (!timeout_am) {
+      setAmTimeOutErrorMessage("Time-out is required.");
+      hasError = true;
+    }
+    if (!timein_pm) {
+      setPmTimeInErrorMessage("Time-in is required.");
+      hasError = true;
+    }
+    if (!timeout_pm) {
+      setPmTimeOutErrorMessage("Time-out is required.");
       hasError = true;
     }
 
@@ -119,13 +147,105 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
     }
   };
 
+  // AM TIME ONCHANGE
+  const handleAmTimeChange = (e, meridiem, time) => {
+    if (time === "timein") {
+      setTimeinAm(e.target.value);
+    } else {
+      setTimeoutAm(e.target.value);
+    }
+
+    setLastSelectedMeridiem(meridiem);
+    setAmTimeInErrorMessage("");
+    setAmTimeOutErrorMessage("");
+
+    const selectedTime = e.target.value;
+    const [hours] = selectedTime.split(":").map((value) => parseInt(value, 10));
+
+    if (hours >= 12) {
+      if (time === "timein") {
+        setAmTimeInErrorMessage("Time must be AM.");
+      } else {
+        setAmTimeOutErrorMessage("Time must be AM.");
+      }
+      e.target.value = "";
+    }
+  };
+
+  // PM TIME ONCHANGE
+  const handlePmTimeChange = (e, meridiem, time) => {
+    setLastSelectedMeridiem(meridiem);
+    setPmTimeInErrorMessage("");
+    setPmTimeOutErrorMessage("");
+
+    if (time === "timein") {
+      setTimeinPm(e.target.value);
+    } else {
+      setTimeoutPm(e.target.value);
+    }
+
+    const selectedTime = e.target.value;
+    const [hours] = selectedTime.split(":").map((value) => parseInt(value, 10));
+
+    if (hours < 12) {
+      if (time === "timein") {
+        setPmTimeInErrorMessage("Time must be PM.");
+      } else {
+        setPmTimeOutErrorMessage("Time must be PM.");
+      }
+      e.target.value = "";
+    }
+  };
+
+  // AM TIME EFFECT
+  useEffect(() => {
+    if (lastSelectedMeridiem === "AM") {
+      const [timeinHour, timeinMinutes] = timein_am
+        .split(":")
+        .map((value) => parseInt(value, 10));
+      const [timeoutHour, timeoutMinutes] = timeout_am
+        .split(":")
+        .map((value) => parseInt(value, 10));
+
+      if (timeinHour > timeoutHour) {
+        setAmTimeInErrorMessage("Time-in must be early.");
+      }
+      if (timeinHour === timeoutHour) {
+        if (timeinMinutes >= timeoutMinutes) {
+          setAmTimeInErrorMessage("Time-in must be early.");
+        }
+      }
+    }
+  }, [timein_am, timeout_am]);
+
+  // PM TIME EFFECT
+  useEffect(() => {
+    if (lastSelectedMeridiem === "PM") {
+      const [timeinHour, timeinMinutes] = timein_pm
+        .split(":")
+        .map((value) => parseInt(value, 10));
+      const [timeoutHour, timeoutMinutes] = timeout_pm
+        .split(":")
+        .map((value) => parseInt(value, 10));
+
+      if (timeinHour > timeoutHour) {
+        setPmTimeInErrorMessage("Time-in must be early.");
+      }
+      if (timeinHour === timeoutHour) {
+        if (timeinMinutes > timeoutMinutes) {
+          setPmTimeInErrorMessage("Time-in must be early.");
+        }
+      }
+    }
+  }, [timein_pm, timeout_pm]);
+
   return (
     <div
       onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
       style={{ minHeight: "100vh" }}
     >
-      <div className="modal w-full md:w-1/3 bg-white rounded-lg shadow-lg">
+      <div className="modal w-full my-auto md:w-8/12 lg:w-6/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 py-3 mt-4">
           <p className="text-xl">
             {" "}
@@ -136,9 +256,81 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
           </p>
         </header>
 
-        <main className="px-4 h-80 overflow-y-auto">
+        <main className="px-4 h-96 overflow-y-auto">
           <form id="semester-form" onSubmit={handleFormSubmit}>
             <div className="py-6 space-y-5">
+              <div className="flex space-x-3">
+                {/* TIMEIN AM */}
+                <div className="w-full relative">
+                  <label>Time In (AM)</label>
+                  <input
+                    value={timein_am}
+                    onChange={(e) => handleAmTimeChange(e, "AM", "timein")}
+                    type="time"
+                    className={
+                      !amTimeInErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
+                  />
+                  {amTimeInErrorMessage && (
+                    <ValidationMessage message={amTimeInErrorMessage} />
+                  )}
+                </div>
+                {/* TIMEOUT AM */}
+                <div className="w-full relative">
+                  <label>Time Out (AM)</label>
+                  <input
+                    value={timeout_am}
+                    onChange={(e) => handleAmTimeChange(e, "AM", "timeout")}
+                    type="time"
+                    className={
+                      !amTimeOutErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
+                  />
+                  {amTimeOutErrorMessage && (
+                    <ValidationMessage message={amTimeOutErrorMessage} />
+                  )}
+                </div>
+              </div>
+              <div className="flex space-x-3">
+                {/* TIMEIN PM */}
+                <div className="w-full relative">
+                  <label>Time In (PM)</label>
+                  <input
+                    value={timein_pm}
+                    onChange={(e) => handlePmTimeChange(e, "PM", "timein")}
+                    type="time"
+                    className={
+                      !pmTimeInErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
+                  />
+                  {pmTimeInErrorMessage && (
+                    <ValidationMessage message={pmTimeInErrorMessage} />
+                  )}
+                </div>
+                {/* TIMEOUT PM */}
+                <div className="w-full relative">
+                  <label>Time Out (PM)</label>
+                  <input
+                    value={timeout_pm}
+                    onChange={(e) => handlePmTimeChange(e, "PM", "timeout")}
+                    type="time"
+                    className={
+                      !pmTimeOutErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                    }
+                  />
+                  {pmTimeOutErrorMessage && (
+                    <ValidationMessage message={pmTimeOutErrorMessage} />
+                  )}
+                </div>
+              </div>
               <div className="flex space-x-3">
                 <div className="w-full">
                   {/* SEMESTER */}

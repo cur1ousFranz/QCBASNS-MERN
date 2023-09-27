@@ -42,6 +42,10 @@ const createSemester = async (req, res) => {
     start_year,
     end_year,
     active,
+    timein_am,
+    timeout_am,
+    timein_pm,
+    timeout_pm
   } = req.body;
 
   const errorFields = [];
@@ -53,6 +57,10 @@ const createSemester = async (req, res) => {
   if (!start_year) errorFields.push("school_year");
   if (!end_year) errorFields.push("school_year");
   if (!active) errorFields.push("active");
+  if (!timein_am) errorFields.push("timein_am");
+  if (!timeout_am) errorFields.push("timeout_am");
+  if (!timein_pm) errorFields.push("timein_pm");
+  if (!timeout_pm) errorFields.push("timeout_pm");
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
@@ -69,6 +77,10 @@ const createSemester = async (req, res) => {
     start_year,
     end_year,
     active,
+    timein_am,
+    timeout_am,
+    timein_pm,
+    timeout_pm
   };
   const result = await Semester.create(newSemester);
   return res.status(200).json(result);
