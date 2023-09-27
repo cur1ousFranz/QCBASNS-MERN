@@ -67,7 +67,9 @@ const createAttendance = async (req, res) => {
       student_id: stud._id,
       school_id: stud.school_id,
       full_name: `${stud.last_name}, ${stud.first_name} ${
-        stud.middle_name !== "N/A" ? stud.middle_name : ""
+        stud.middle_name !== "N/A"
+          ? stud.middle_name[0].toUpperCase() + "."
+          : ""
       }`,
       suffix: stud.suffix,
       gender: stud.gender,
@@ -82,10 +84,6 @@ const createAttendance = async (req, res) => {
     semester_id,
     adviser_id: adviser._id,
     status: true,
-    is_timein_am: true,
-    is_timeout_am: false,
-    is_timein_pm: false,
-    is_timeout_pm: false,
     students: studentsList,
   });
 
@@ -191,109 +189,104 @@ const createStudentAttendance = async (req, res) => {
   const currentStudent = await StudentModel.findOne({
     _id: student_id,
   });
-  // TIME_IN_AM
-  if (attendance.is_timein_am) {
-    if (!student.time_in_am) {
-      const time = new Date();
-      await AttendanceModel.findOneAndUpdate(
-        {
-          _id: attendance._id,
-          "students.student_id": student_id,
+
+  const time = new Date();
+  // TIME IN AM
+  if (!student.time_in_am) {
+    await AttendanceModel.findOneAndUpdate(
+      {
+        _id: attendance._id,
+        "students.student_id": student_id,
+      },
+      {
+        $set: {
+          "students.$.time_in_am": time,
         },
-        {
-          $set: {
-            "students.$.time_in_am": time,
-          },
-        }
-      );
-      sendSMS(true, currentStudent, student, time, semester, adviser);
-    } else {
-      return res.status(400).json({
-        error: "time_in_am",
-        message: "You already have Time In (AM).",
-      });
-    }
+      }
+    );
+    sendSMS(true, currentStudent, student, time, semester, adviser);
   }
-  // TIME_OUT_AM
-  if (attendance.is_timeout_am) {
-    if (!student.time_in_am) {
+
+  // TIME OUT AM
+  if (student.time_in_am && !student.time_out_am) {
+    if (!isFiveMinutesPassed(student.time_in_am, time)) {
       return res.status(400).json({
-        error: "time_in_am",
-        message: "You don't have Time In (AM) record.",
+        message: "You can scan again after 5 minutes.",
       });
     }
-    if (!student.time_out_am) {
-      const time = new Date();
-      await AttendanceModel.findOneAndUpdate(
-        {
-          _id: attendance._id,
-          "students.student_id": student_id,
+
+    await AttendanceModel.findOneAndUpdate(
+      {
+        _id: attendance._id,
+        "students.student_id": student_id,
+      },
+      {
+        $set: {
+          "students.$.time_out_am": time,
         },
-        {
-          $set: {
-            "students.$.time_out_am": time,
-          },
-        }
-      );
-      sendSMS(false, currentStudent, student, time, semester, adviser);
-    } else {
-      return res.status(400).json({
-        error: "time_out_am",
-        message: "You already have Time Out (AM).",
-      });
-    }
+      }
+    );
+    sendSMS(false, currentStudent, student, time, semester, adviser);
   }
-  // TIME_IN_PM
-  if (attendance.is_timein_pm) {
-    if (!student.time_in_pm) {
-      const time = new Date();
-      await AttendanceModel.findOneAndUpdate(
-        {
-          _id: attendance._id,
-          "students.student_id": student_id,
-        },
-        {
-          $set: {
-            "students.$.time_in_pm": time,
-          },
-        }
-      );
-      sendSMS(true, currentStudent, student, time, semester, adviser);
-    } else {
+
+  // TIME IN PM
+  if (student.time_in_am && student.time_out_am && !student.time_in_pm) {
+    if (!isFiveMinutesPassed(student.time_out_am, time)) {
       return res.status(400).json({
-        error: "time_in_pm",
-        message: "You already have Time In (PM).",
+        message: "You can scan again after 5 minutes.",
       });
     }
+
+    await AttendanceModel.findOneAndUpdate(
+      {
+        _id: attendance._id,
+        "students.student_id": student_id,
+      },
+      {
+        $set: {
+          "students.$.time_in_pm": time,
+        },
+      }
+    );
+    sendSMS(true, currentStudent, student, time, semester, adviser);
   }
-  // TIME_OUT_PM
-  if (attendance.is_timeout_pm) {
-    if (!student.time_in_pm) {
+
+  // TIME OUT PM
+  if (
+    student.time_in_am &&
+    student.time_out_am &&
+    student.time_in_pm &&
+    !student.time_out_pm
+  ) {
+    if (!isFiveMinutesPassed(student.time_in_pm, time)) {
       return res.status(400).json({
-        error: "time_in_pm",
-        message: "You don't have Time In (PM) record.",
+        message: "You can scan again after 5 minutes.",
       });
     }
-    if (!student.time_out_pm) {
-      const time = new Date();
-      await AttendanceModel.findOneAndUpdate(
-        {
-          _id: attendance._id,
-          "students.student_id": student_id,
+
+    await AttendanceModel.findOneAndUpdate(
+      {
+        _id: attendance._id,
+        "students.student_id": student_id,
+      },
+      {
+        $set: {
+          "students.$.time_out_pm": time,
         },
-        {
-          $set: {
-            "students.$.time_out_pm": time,
-          },
-        }
-      );
-      sendSMS(false, currentStudent, student, time, semester, adviser);
-    } else {
-      return res.status(400).json({
-        error: "time_out_pm",
-        message: "You already have Time Out (AM).",
-      });
-    }
+      }
+    );
+    sendSMS(false, currentStudent, student, time, semester, adviser);
+  }
+
+  if (
+    student.time_in_am &&
+    student.time_out_am &&
+    student.time_in_pm &&
+    student.time_out_pm
+  ) {
+    return res.status(400).json({
+      message: "Time out already exist.",
+    });
   }
 
   const latestAttendance = await AttendanceModel.aggregate([
@@ -331,6 +324,14 @@ const getStudentInAttendance = (AttendanceStudents, student_id) => {
   }
 };
 
+const isFiveMinutesPassed = (previousTime, time) => {
+  const time1 = new Date(previousTime);
+  const time2 = new Date(time);
+  const timeDifference = Math.abs(time1 - time2);
+  const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+  return timeDifference >= fiveMinutesInMilliseconds;
+};
+
 const sendSMS = (
   scanTime,
   currentStudent,
@@ -339,21 +340,21 @@ const sendSMS = (
   semester,
   adviser
 ) => {
-  sendSms(
-    messageBody(
-      scanTime,
-      `${currentStudent.parent.first_name} ${
-        currentStudent.parent.middle_name !== "N/A"
-          ? currentStudent.parent.middle_name
-          : ""
-      }`,
-      student.full_name,
-      time,
-      semester.section,
-      adviser.last_name
-    )
-    // Add phone number here as 2nd parameter
-  );
+  // sendSms(
+  //   messageBody(
+  //     scanTime,
+  //     `${currentStudent.parent.first_name} ${
+  //       currentStudent.parent.middle_name !== "N/A"
+  //         ? currentStudent.parent.middle_name
+  //         : ""
+  //     }`,
+  //     student.full_name,
+  //     time,
+  //     semester.section,
+  //     adviser.last_name
+  //   )
+  //   // Add phone number here as 2nd parameter
+  // );
 };
 
 module.exports = {
