@@ -140,7 +140,7 @@ const addStudentToSemester = async (req, res) => {
           student_id: student._id,
           school_id: student.school_id,
           full_name: `${student.last_name}, ${student.first_name} ${
-            student.middle_name !== "N/A" ? student.middle_name : ""
+            student.middle_name !== "N/A" ? student.middle_name[0].toUpperCase() + "." : ""
           } ${student.suffix !== "N/A" ? student.suffix : ""}`,
           gender: student.gender,
           time_in_am: "",
@@ -194,7 +194,7 @@ const addExistingStudentsToSemester = async (req, res) => {
             student_id: student._id,
             school_id: student.school_id,
             full_name: `${student.last_name}, ${student.first_name} ${
-              student.middle_name !== "N/A" ? student.middle_name : ""
+              student.middle_name !== "N/A" ? student.middle_name[0].toUpperCase() + "." : ""
             } ${student.suffix !== "N/A" ? student.suffix : ""}`,
             gender: student.gender,
             time_in_am: "",
