@@ -34,22 +34,6 @@ const attendanceSchema = new Schema(
       type: Boolean,
       required: true,
     },
-    is_timein_am: {
-      type: Boolean,
-      required: true,
-    },
-    is_timeout_am: {
-      type: Boolean,
-      required: true,
-    },
-    is_timein_pm: {
-      type: Boolean,
-      required: true,
-    },
-    is_timeout_pm: {
-      type: Boolean,
-      required: true,
-    },
   },
   { timestamps: true }
 );
