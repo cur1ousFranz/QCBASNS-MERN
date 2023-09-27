@@ -21,9 +21,7 @@ import {
   ADVISER_CONTEXT_TYPES,
   AdviserContext,
 } from "../context/AdviserContext";
-import { SCAN_TIME } from "../constants/ScanTime";
 
-// TODO:: SEND SMS AFTER SCANNING (SERVER)
 export default function Attendance() {
   const location = useLocation();
   const { semesters, dispatch: semesterDispatch } = useContext(SemesterContext);
@@ -42,11 +40,8 @@ export default function Attendance() {
   const [showScannerError, setShowScannerError] = useState(false);
   const [showScannerSuccess, setShowScannerSuccess] = useState(false);
   const [showScannerDefault, setShowScannerDefault] = useState(true);
-  const [showConfirmToggleTimeInModal, setShowConfirmToggleTimeInModal] =
-    useState(false);
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
   const { dispatch: dispatchAdviser } = useContext(AdviserContext);
-  const [scanTime, setScanTime] = useState("");
   const [totalAmScanned, setTotalAmScanned] = useState(0);
   const [totalPmScanned, setTotalPmScanned] = useState(0);
   const [hasAttendanceToday, setHasAttendanceToday] = useState(true);
@@ -235,8 +230,6 @@ export default function Attendance() {
 
   const toggleCreateAttendanceModal = (value) =>
     setShowCreateAttendanceModal(value);
-  const toggleConfirmTimeInModal = (value) =>
-    setShowConfirmToggleTimeInModal(value);
 
   const handleSelectAttendance = async (table, attendance) => {
     setSelectedAttendance(() => attendance);
@@ -265,14 +258,7 @@ export default function Attendance() {
           );
 
           if (response.status === 200) {
-            Alert(
-              `${
-                selectedAttendance.is_timein_am ||
-                selectedAttendance.is_timein_pm
-                  ? "Time In Success!"
-                  : "Time Out Success!"
-              }`
-            );
+            Alert("Scanned success!");
             setSelectedAttendance(() => response.data);
             dispatch({
               type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
@@ -285,19 +271,7 @@ export default function Attendance() {
         } catch (error) {
           setShowScannerError(true);
           setShowScannerDefault(false);
-          if (error.response.data.error === "student") {
-            Alert(error.response.data.message, "error");
-          }
-          if (error.response.data.error === "time_in_am") {
-            Alert(error.response.data.message, "error");
-          }
-          if (error.response.data.error === "time_out_am") {
-            Alert(error.response.data.message, "error");
-          }
-          if (error.response.data.error === "time_in_pm") {
-            Alert(error.response.data.message, "error");
-          }
-          if (error.response.data.error === "time_out_pm") {
+          if (error.response.data) {
             Alert(error.response.data.message, "error");
           }
         }
@@ -308,52 +282,15 @@ export default function Attendance() {
     }
   };
 
-  const changeNewScanTime = (timein_am, timeout_am, timein_pm, timeout_pm) => {
-    return {
-      is_timein_am: timein_am,
-      is_timeout_am: timeout_am,
-      is_timein_pm: timein_pm,
-      is_timeout_pm: timeout_pm,
-    };
-  };
-
-  const handleToggleScanAttendance = async () => {
-    let newScanTime;
-    // eslint-disable-next-line default-case
-    switch (scanTime) {
-      case SCAN_TIME.TIME_IN_AM:
-        newScanTime = changeNewScanTime(true, false, false, false);
-        break;
-      case SCAN_TIME.TIME_OUT_AM:
-        newScanTime = changeNewScanTime(false, true, false, false);
-        break;
-      case SCAN_TIME.TIME_IN_PM:
-        newScanTime = changeNewScanTime(false, false, true, false);
-        break;
-      case SCAN_TIME.TIME_OUT_PM:
-        newScanTime = changeNewScanTime(false, false, false, true);
-        break;
-    }
-
-    try {
-      const response = await axiosClient.put(
-        `/attendance/${selectedAttendance._id}`,
-        newScanTime
-      );
-      if (response.status === 200) {
-        dispatch({
-          type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
-          payload: response.data,
-        });
-        setSelectedAttendance(() => response.data);
-        Alert(`Switched to ${scanTime}`);
+  useEffect(() => {
+    if (lastScannedStudentId) {
+      setTimeout(() => {
         setLastScannedStudentId("");
-      }
-    } catch (error) {
-      setErrorModalMessage(error.message);
+      }, 10000);
     }
-  };
+  }, [lastScannedStudentId]);
 
+  // TODO:: ADD NOTE IN ATTENDANCE
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
@@ -397,87 +334,6 @@ export default function Attendance() {
               <div className="flex space-x-3">
                 <div>
                   {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
-                    selectedAttendance.status && (
-                      <div className="flex space-x-3">
-                        <p className="font-semibold text-gray-600">AM</p>
-                        <div className="flex border rounded-md">
-                          <p
-                            onClick={
-                              !selectedAttendance.is_timein_am
-                                ? () => {
-                                    setScanTime(() => SCAN_TIME.TIME_IN_AM);
-                                    toggleConfirmTimeInModal(true);
-                                  }
-                                : null
-                            }
-                            className={
-                              selectedAttendance.is_timein_am
-                                ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
-                            }
-                          >
-                            In
-                          </p>
-                          <p
-                            onClick={
-                              !selectedAttendance.is_timeout_am
-                                ? () => {
-                                    setScanTime(() => SCAN_TIME.TIME_OUT_AM);
-                                    toggleConfirmTimeInModal(true);
-                                  }
-                                : null
-                            }
-                            className={
-                              selectedAttendance.is_timeout_am
-                                ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
-                            }
-                          >
-                            Out
-                          </p>
-                        </div>
-                        <p className="font-semibold text-gray-600">PM</p>
-                        <div className="flex border rounded-md">
-                          <p
-                            onClick={
-                              !selectedAttendance.is_timein_pm
-                                ? () => {
-                                    setScanTime(() => SCAN_TIME.TIME_IN_PM);
-                                    toggleConfirmTimeInModal(true);
-                                  }
-                                : null
-                            }
-                            className={
-                              selectedAttendance.is_timein_pm
-                                ? "px-3 rounded-l-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-l-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
-                            }
-                          >
-                            In
-                          </p>
-                          <p
-                            onClick={
-                              !selectedAttendance.is_timeout_pm
-                                ? () => {
-                                    setScanTime(() => SCAN_TIME.TIME_OUT_PM);
-                                    toggleConfirmTimeInModal(true);
-                                  }
-                                : null
-                            }
-                            className={
-                              selectedAttendance.is_timeout_pm
-                                ? "px-3 rounded-r-md cursor-pointer text-white bg-green-500"
-                                : "px-3 rounded-r-md cursor-pointer text-gray-600 bg-gray-200 hover:bg-gray-100"
-                            }
-                          >
-                            Out
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                </div>
-                <div>
-                  {currentShowedTable === ATTENDANCE_TABLES.STUDENT &&
                     !showScanner &&
                     selectedAttendance.status && (
                       <div
@@ -491,21 +347,23 @@ export default function Attendance() {
               </div>
             </div>
             {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE && (
-              <button
-                onClick={() => {
-                  if (!hasAttendanceToday) {
-                    toggleCreateAttendanceModal(true);
+              <div>
+                <button
+                  onClick={() => {
+                    if (!hasAttendanceToday) {
+                      toggleCreateAttendanceModal(true);
+                    }
+                  }}
+                  className={
+                    hasAttendanceToday
+                      ? "flex w-fit h-fit p-2 text-sm rounded-md cursor-not-allowed text-white bg-gray-300"
+                      : "flex w-fit h-fit p-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
                   }
-                }}
-                className={
-                  hasAttendanceToday
-                    ? "flex w-fit h-fit p-2 text-sm rounded-md cursor-not-allowed text-white bg-gray-300"
-                    : "flex w-fit h-fit p-2 text-sm rounded-md text-white bg-green-500 hover:bg-green-400"
-                }
-              >
-                <img src="/img/plus.svg" alt="" />
-                <p className="uppercase me-4">Attendance</p>
-              </button>
+                >
+                  <img src="/img/plus.svg" alt="" />
+                  <p className="uppercase me-4">Attendance</p>
+                </button>
+              </div>
             )}
           </div>
           <div className="flex justify-between w-full">
@@ -603,15 +461,6 @@ export default function Attendance() {
           showScannerDefault={showScannerSuccess}
           setShowScannerError={setShowScannerError}
           setLastScannedStudentId={setLastScannedStudentId}
-        />
-      )}
-
-      {showConfirmToggleTimeInModal && (
-        <ConfirmModal
-          title={""}
-          body={`Switch QR Scanning to ${scanTime}?`}
-          toggleModal={toggleConfirmTimeInModal}
-          submit={handleToggleScanAttendance}
         />
       )}
     </div>
