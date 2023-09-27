@@ -26,9 +26,6 @@ export default function StudentListTable({
                 Full Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Suffix
-              </th>
-              <th scope="col" className="px-6 py-3">
                 Gender
               </th>
               <th scope="col" className="px-6 py-3">
@@ -56,9 +53,6 @@ export default function StudentListTable({
                     <p className="text-xs text-gray-600">{student.school_id}</p>
                   </th>
                   <td className="px-6 py-4">{student.full_name}</td>
-                  <td className="px-6 py-4">
-                    {student.suffix !== "N/A" ? student.suffix : ""}
-                  </td>
                   <td className="px-6 py-4">{student.gender}</td>
                   <td className="px-6 py-4">
                     {student.time_in_am !== ""

@@ -77,7 +77,9 @@ export default function StudentListTable({
                     className="px-6 py-4"
                   >
                     {student.last_name}, {student.first_name}{" "}
-                    {student.middle_name !== "N/A" ? student.middle_name : ""}
+                    {student.middle_name !== "N/A"
+                      ? student.middle_name[0].toUpperCase() + "."
+                      : ""}
                   </td>
                   <td
                     onClick={() => {
@@ -104,7 +106,7 @@ export default function StudentListTable({
                     }}
                     className="px-6 py-4"
                   >
-                    {student.contact_number}
+                    {student.contact_number !== "N/A" ? student.contact_number : ""}
                   </td>
                   <td className="relative px-6 py-4 flex justify-between">
                     <img
