@@ -11,3 +11,17 @@
 ::-webkit-scrollbar-thumb {
   background-color: #c2bdbd;
 }
+
+.table-container {
+  position: relative;
+  overflow-y: scroll; /* Enable vertical scroll for tbody */
+  border: 1px solid #e2e8f0; /* Add a border for visual separation */
+}
+
+/* Apply custom styles to the table header for the fixed effect */
+.table-container thead {
+  position: sticky;
+  top: 0;
+  background-color: #fff; /* Background color for the fixed header */
+  z-index: 1; /* Ensure the header is above the tbody content */
+}
