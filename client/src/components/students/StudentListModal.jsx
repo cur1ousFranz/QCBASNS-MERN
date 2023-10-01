@@ -131,7 +131,9 @@ export default function StudentListModal({
                       }
                     >
                       {student.last_name}, {student.first_name}{" "}
-                      {student.middle_name !== "N/A" ? student.middle_name : ""}
+                      {student.middle_name !== "N/A"
+                        ? student.middle_name[0].toUpperCase() + "."
+                        : ""}
                       {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
                     </p>
                   </div>
