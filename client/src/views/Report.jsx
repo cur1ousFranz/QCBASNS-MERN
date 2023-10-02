@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../components/layouts/Sidebar";
-import { useLocation } from "react-router-dom";
 import Header from "../components/header-text/Header";
 import MonthlyReportTable from "../components/reports/MonthlyReportTable";
 import axiosClient from "../utils/AxiosClient";
@@ -11,7 +9,6 @@ import {
 } from "../context/AttendanceContext";
 
 export default function Report() {
-  const location = useLocation();
   const { semesters, dispatch } = useContext(SemesterContext);
   const { attendances, dispatch: attendanceDispatch } =
     useContext(AttendanceContext);
@@ -122,9 +119,6 @@ export default function Report() {
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex max-w-full">
-        <div className="hidden md:block">
-          <Sidebar menu={location.pathname} />
-        </div>
         <div className="p-12 w-full space-y-3">
           <Header title={`Report`} />
           <div className="">

@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../components/layouts/Sidebar";
-import { useLocation } from "react-router-dom";
 import Header from "../components/header-text/Header";
 import { SemesterContext } from "../context/SemesterContext";
 import { ATTENDANCE_TABLES } from "../constants/Constant";
@@ -23,7 +21,6 @@ import {
 } from "../context/AdviserContext";
 
 export default function Attendance() {
-  const location = useLocation();
   const { semesters, dispatch: semesterDispatch } = useContext(SemesterContext);
   const { attendances, dispatch } = useContext(AttendanceContext);
   useState(false);
@@ -290,13 +287,9 @@ export default function Attendance() {
     }
   }, [lastScannedStudentId]);
 
-  // TODO:: ADD NOTE IN ATTENDANCE
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
-        <div className="hidden md:block">
-          <Sidebar menu={location.pathname} />
-        </div>
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex justify-between">
             <div className="flex flex-col w-full md:flex-row md:justify-between md:space-x-6">

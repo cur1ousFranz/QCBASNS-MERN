@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import Sidebar from "../components/layouts/Sidebar";
-import { useLocation } from "react-router-dom";
 import Header from "../components/header-text/Header";
 import CreateSemesterModal from "../components/modals/CreateSemesterModal";
 import axiosClient from "../utils/AxiosClient";
@@ -17,7 +15,6 @@ import StudentListModal from "../components/students/StudentListModal";
 import { Alert } from "../utils/Alert";
 
 export default function Students() {
-  const location = useLocation();
   const { semesters, dispatch } = useContext(SemesterContext);
   const studentContext = useContext(StudentContext);
 
@@ -122,9 +119,6 @@ export default function Students() {
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
-        <div className="hidden md:block">
-          <Sidebar menu={location.pathname} />
-        </div>
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex flex-row md:flex-col">
             {/* CREATE SEMESTER BUTTON */}
