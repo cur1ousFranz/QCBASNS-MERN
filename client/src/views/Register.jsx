@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { registerAdviser } from "../lib/registerAdviser";
 import { Alert } from "../utils/Alert";
 import ValidationMessage from "../components/typography/ValidationMessage";
 import numbersOnly from "../utils/NumberKeys";
 import calculateAge from "../utils/CalculateAge";
+import axiosClient from "../utils/AxiosClient";
 
 export const Register = () => {
   const { dispatch } = useContext(AuthContext);
@@ -21,98 +21,69 @@ export const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const [errorFirstName, setErrorFirstName] = useState(false);
-  const [errorMiddleName, setErrorMiddleName] = useState(false);
-  const [errorLastName, setErrorLastName] = useState(false);
-  const [errorContactNumber, setErrorContactNumber] = useState(false);
-  const [errorBirthDate, setErrorBirthDate] = useState(false);
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [errorPassword, setErrorPassword] = useState(false);
-  const [errorMessages, setErrorMessages] = useState("");
-
+  const [errorFields, setErrorFields] = useState([]);
   const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
   const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
   const [contactNumberErrorMessage, setContactNumberErrorMessage] =
     useState("");
   const [birthDateErrorMessage, setBirthDateErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const [hasErrors, setHasErrors] = useState(false);
+  const [emailErrorMessage, setErrorEmailMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const submitSignup = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-    setErrorFirstName(false);
-    setErrorMiddleName(false);
-    setErrorLastName(false);
-    setErrorBirthDate(false);
-    setErrorContactNumber(false);
-    setErrorEmail(false);
-    setErrorPassword(false);
+    const errors = [];
+    setErrorFields(() => errors);
     setFirstNameErrorMessage("");
     setLastNameErrorMessage("");
     setBirthDateErrorMessage("");
     setPasswordErrorMessage("");
     setContactNumberErrorMessage("");
-    setHasErrors(false);
-    setErrorMessages("");
 
     if (!firstName) {
-      setFirstNameErrorMessage(() => "First Name is required.");
-      setErrorFirstName(true);
+      errors.push("first_name");
+      setFirstNameErrorMessage(() => "First name is required.");
     }
-
     if (!lastName) {
-      setLastNameErrorMessage(() => "Last Name is required.");
-      setErrorLastName(true);
+      errors.push("last_name");
+      setLastNameErrorMessage(() => "Last name is required.");
     }
-
     if (!birthDate) {
+      errors.push("birth_date");
       setBirthDateErrorMessage(() => "Birthdate is required.");
-      setErrorBirthDate(true);
     }
     if (birthDate) {
       const age = calculateAge(birthDate);
       if (age <= 21) {
+        errors.push("birth_date");
         setBirthDateErrorMessage(() => "Age must be 22 years old and above.");
-        setErrorBirthDate(true);
-        setHasErrors(true);
-      } else {
-        setBirthDateErrorMessage("");
-        setHasErrors(false);
       }
     }
-
-    if(!email) {
-      setErrorMessage(() => "Email is required.")
-      setErrorEmail(true);
-      setHasErrors(true);
+    if (!email) {
+      errors.push("birth_date");
+      setErrorEmailMessage(() => "Email is required.");
     }
-
+    if (!password) {
+      errors.push("password");
+      setPasswordErrorMessage("Password is required.");
+    }
     if (password && password !== confirmPassword) {
-      setErrorPassword(true);
+      errors.push("password");
       setPasswordErrorMessage("Password does not match.");
-      setHasErrors(true);
     }
-
-    if (password === confirmPassword && password.length < 3) {
-      setErrorPassword(true);
+    if (password && password === confirmPassword && password.length < 3) {
+      errors.push("password");
       setPasswordErrorMessage("Password atleast 3 characters long.");
-      setHasErrors(true);
     }
-
     if (contactNumber.length < 11) {
+      errors.push("contact_number");
       setContactNumberErrorMessage("Contact must be 11 digits.");
-      setErrorContactNumber(true);
-      setHasErrors(true);
     }
-
     if (!contactNumber) {
+      errors.push("contact_number");
       setContactNumberErrorMessage(() => "Contact number is required.");
-      setErrorContactNumber(true);
-      setHasErrors(true);
     }
 
     // Check if contact number starts with 09
@@ -120,50 +91,45 @@ export const Register = () => {
       const numberArr = contactNumber.split("");
       const firstTwoDigit = [numberArr[0], numberArr[1]];
       if (firstTwoDigit.join("") !== "09") {
+        errors.push("contact_number");
         setContactNumberErrorMessage("Invalid contact number.");
-        setErrorContactNumber(true);
-        setHasErrors(true);
       }
     }
 
-    const currentSuffix = showSuffix === false ? suffix : "";
-    if (!hasErrors) {
+    const currentSuffix = showSuffix === false ? suffix : "N/A";
+
+    if (errors.length === 0) {
       try {
         setIsLoading(true);
-        const data = await registerAdviser(
-          firstName,
-          middleName,
-          lastName,
-          currentSuffix,
-          birthDate,
+        const response = await axiosClient.post("/adviser", {
+          first_name: firstName,
+          middle_name: middleName ? middleName : "N/A",
+          last_name: lastName,
+          suffix: currentSuffix,
+          birthdate: birthDate,
           gender,
           email,
-          contactNumber,
-          password
-        );
+          contact_number: contactNumber,
+          password,
+        });
 
-        dispatch({ type: "LOGIN", payload: data });
-        localStorage.setItem("user", JSON.stringify(data));
-        Alert("Registation successful");
-        setIsLoading(false);
+        if (response.status === 200) {
+          dispatch({ type: "LOGIN", payload: response.data });
+          localStorage.setItem("user", JSON.stringify(response.data));
+          Alert("Registation successful");
+          setIsLoading(false);
+        }
       } catch (error) {
         if (error.response.data.errorFields) {
           const errorFields = error.response.data.errorFields;
-          if (errorFields.includes("first_name")) setErrorFirstName(true);
-          if (errorFields.includes("middle_name")) setErrorMiddleName(true);
-          if (errorFields.includes("last_name")) setErrorLastName(true);
-          if (errorFields.includes("birthdate")) setErrorBirthDate(true);
-          if (errorFields.includes("contact_number"))
-            setErrorContactNumber(true);
-          if (errorFields.includes("email")) setErrorEmail(true);
-          if (errorFields.includes("password")) setErrorPassword(true);
-          if (error.response.data.error[0]) {
-            setErrorMessages(() => error.response.data.error[0]);
-            setErrorEmail(true);
+          if (errorFields.includes("email")) {
+            setErrorEmailMessage(() => error.response.data.error[0]);
           }
         }
         setIsLoading(false);
       }
+    } else {
+      setErrorFields(() => errors);
     }
   };
 
@@ -172,11 +138,9 @@ export const Register = () => {
     const age = calculateAge(value);
     if (age < 22) {
       setBirthDateErrorMessage(() => "Age must be 22 years old and above.");
-      setErrorBirthDate(true);
-      setHasErrors(true);
+      setErrorFields(() => [errorFields, "birth_date"]);
     } else {
       setBirthDateErrorMessage("");
-      setHasErrors(false);
     }
   };
 
@@ -196,9 +160,6 @@ export const Register = () => {
         ></div>
         <div className="relative z-10">
           <h1 className="font-semibold text-2xl mb-1">Register</h1>
-          {errorMessage && (
-            <p className="text-sm absolute text-red-500">{errorMessage}</p>
-          )}
           <form onSubmit={submitSignup}>
             <div className="py-6 space-y-5">
               <div className="flex space-x-3">
@@ -207,26 +168,28 @@ export const Register = () => {
                   <input
                     onChange={(e) => setFirstName(() => e.target.value)}
                     value={firstName}
+                    name="firstname"
                     type="text"
                     className={
-                      !errorFirstName
+                      !firstNameErrorMessage
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
-                  <ValidationMessage message={firstNameErrorMessage} />
+                  {firstNameErrorMessage && (
+                    <ValidationMessage message={firstNameErrorMessage} />
+                  )}
                 </div>
                 <div className="w-full">
-                  <label>Middle Name (Optional)</label>
+                  <label>
+                    Middle Name <span className="text-xs">(Optional)</span>
+                  </label>
                   <input
                     onChange={(e) => setMiddleName(() => e.target.value)}
                     value={middleName}
+                    name="middlename"
                     type="text"
-                    className={
-                      !errorMiddleName
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
-                        : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
-                    }
+                    className="px-2 py-2 w-full bg-gray-100 rounded-md"
                   />
                 </div>
               </div>
@@ -237,13 +200,16 @@ export const Register = () => {
                     onChange={(e) => setLastName(() => e.target.value)}
                     value={lastName}
                     type="text"
+                    name="lastname"
                     className={
-                      !errorLastName
+                      !lastNameErrorMessage
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
-                  <ValidationMessage message={lastNameErrorMessage} />
+                  {lastNameErrorMessage && (
+                    <ValidationMessage message={lastNameErrorMessage} />
+                  )}
                 </div>
                 <div className="w-full">
                   <div className="flex justify-between">
@@ -265,6 +231,11 @@ export const Register = () => {
                     </option>
                     <option value="Jr">Jr</option>
                     <option value="Sr">Sr</option>
+                    <option value="I">I</option>
+                    <option value="II">II</option>
+                    <option value="III">III</option>
+                    <option value="IV">IV</option>
+                    <option value="V">V</option>
                   </select>
                 </div>
               </div>
@@ -276,12 +247,14 @@ export const Register = () => {
                     value={birthDate}
                     type="date"
                     className={
-                      !errorBirthDate
+                      !birthDateErrorMessage
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
-                  <ValidationMessage message={birthDateErrorMessage} />
+                  {birthDateErrorMessage && (
+                    <ValidationMessage message={birthDateErrorMessage} />
+                  )}
                 </div>
                 <div className="w-full">
                   <label>Gender</label>
@@ -303,12 +276,14 @@ export const Register = () => {
                     value={email}
                     type="text"
                     className={
-                      !errorEmail
+                      !emailErrorMessage
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                   />
-                  <ValidationMessage message={errorMessages} />
+                  {emailErrorMessage && (
+                    <ValidationMessage message={emailErrorMessage} />
+                  )}
                 </div>
                 <div className="w-full">
                   <label>Contact Number</label>
@@ -318,13 +293,15 @@ export const Register = () => {
                     value={contactNumber}
                     type="text"
                     className={
-                      !errorContactNumber
+                      !contactNumberErrorMessage
                         ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                         : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                     }
                     maxLength={11}
                   />
-                  <ValidationMessage message={contactNumberErrorMessage} />
+                  {contactNumberErrorMessage && (
+                    <ValidationMessage message={contactNumberErrorMessage} />
+                  )}
                 </div>
               </div>
               <div className="flex space-x-3">
@@ -335,12 +312,12 @@ export const Register = () => {
                     value={password}
                     type="password"
                     className={
-                      errorPassword
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md border border-red-500"
-                        : "px-2 py-2 w-full bg-gray-100 rounded-md"
+                      !passwordErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 rounded-md border border-red-500"
                     }
                   />
-                  {password && errorPassword && (
+                  {passwordErrorMessage && (
                     <ValidationMessage message={passwordErrorMessage} />
                   )}
                 </div>
@@ -351,9 +328,9 @@ export const Register = () => {
                     value={confirmPassword}
                     type="password"
                     className={
-                      errorPassword
-                        ? "px-2 py-2 w-full bg-gray-100 rounded-md border border-red-500"
-                        : "px-2 py-2 w-full bg-gray-100 rounded-md"
+                      !passwordErrorMessage
+                        ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                        : "px-2 py-2 w-full bg-gray-100 rounded-md border border-red-500"
                     }
                   />
                 </div>
