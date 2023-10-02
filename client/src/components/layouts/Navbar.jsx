@@ -20,7 +20,9 @@ export default function Navbar() {
       return (
         <h1 className="mt-2 text-sm font-semibold text-gray-600">
           {adviser.first_name}{" "}
-          {adviser.middle_name !== "N/A" ? adviser.middle_name : ""}{" "}
+          {adviser.middle_name !== "N/A"
+            ? adviser.middle_name[0].toUpperCase() + "."
+            : ""}{" "}
           {adviser.last_name} {adviser.suffix !== "N/A" ? adviser.suffix : ""}
         </h1>
       );
