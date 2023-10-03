@@ -22,7 +22,11 @@ export default function MonthlyReportTable({
   useEffect(() => {
     // Set inital attendance record
     if (weekDaysAndDates) {
-      const attendance = monthAttendances[monthAttendances.length - 1];
+      
+      const attendance = monthAttendances.sort((a, b) =>
+        a.createdAt.localeCompare(b.createdAt)
+      )[monthAttendances.length - 1];
+
       const studentsListInitialRecord = [];
       for (const student of attendance.students) {
         let studentInitialRecord = {
