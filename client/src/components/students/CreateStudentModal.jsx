@@ -90,7 +90,7 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
       errors.push("schoolId");
       setStudentIdErrorMessage("LRN must be 12 numbers");
     }
-    if (schoolId && schoolId.length === 12 && !Number.isInteger(schoolId)) {
+    if (schoolId && schoolId.length === 12 && !Number.isInteger(parseInt(schoolId))) {
       errors.push("schoolId");
       setStudentIdErrorMessage("Invalid LRN.");
     }
