@@ -45,7 +45,7 @@ const createSemester = async (req, res) => {
     timein_am,
     timeout_am,
     timein_pm,
-    timeout_pm
+    timeout_pm,
   } = req.body;
 
   const errorFields = [];
@@ -80,7 +80,7 @@ const createSemester = async (req, res) => {
     timein_am,
     timeout_am,
     timein_pm,
-    timeout_pm
+    timeout_pm,
   };
   const result = await Semester.create(newSemester);
   return res.status(200).json(result);
@@ -140,8 +140,11 @@ const addStudentToSemester = async (req, res) => {
           student_id: student._id,
           school_id: student.school_id,
           full_name: `${student.last_name}, ${student.first_name} ${
-            student.middle_name !== "N/A" ? student.middle_name[0].toUpperCase() + "." : ""
-          } ${student.suffix !== "N/A" ? student.suffix : ""}`,
+            student.middle_name !== "N/A"
+              ? student.middle_name[0].toUpperCase() + "."
+              : ""
+          }`,
+          suffix: student.suffix !== "N/A" ? student.suffix : "",
           gender: student.gender,
           time_in_am: "",
           time_out_am: "",
@@ -194,8 +197,11 @@ const addExistingStudentsToSemester = async (req, res) => {
             student_id: student._id,
             school_id: student.school_id,
             full_name: `${student.last_name}, ${student.first_name} ${
-              student.middle_name !== "N/A" ? student.middle_name[0].toUpperCase() + "." : ""
-            } ${student.suffix !== "N/A" ? student.suffix : ""}`,
+              student.middle_name !== "N/A"
+                ? student.middle_name[0].toUpperCase() + "."
+                : ""
+            }`,
+            suffix: student.suffix !== "N/A" ? student.suffix : "",
             gender: student.gender,
             time_in_am: "",
             time_out_am: "",
