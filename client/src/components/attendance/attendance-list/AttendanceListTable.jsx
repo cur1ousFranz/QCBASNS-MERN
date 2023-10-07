@@ -24,37 +24,24 @@ export default function AttendanceListTable({ attendances, toggleTable }) {
           {attendances &&
             attendances.map((attendance) => (
               <tr
+                onClick={() =>
+                  toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)
+                }
                 key={attendance._id}
                 className="border-b whitespace-normal text-sm max-w-md overflow-ellipsis cursor-pointer bg-white hover:bg-green-50"
               >
-                <th
-                  onClick={() =>
-                    toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)
-                  }
-                  scope="row"
-                  className="relative px-6 py-4 font-medium"
-                >
+                <th scope="row" className="relative px-6 py-4 font-medium">
                   {ConvertDate(attendance.createdAt)}
                   <p className="text-xs text-gray-600">
                     {HumanReadableDate(new Date(attendance.createdAt))}
                   </p>
                 </th>
-                <td
-                  onClick={() =>
-                    toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)
-                  }
-                  className="px-6 py-4"
-                >
+                <td className="px-6 py-4">
                   SY {attendance.semester.start_year} -{" "}
                   {attendance.semester.end_year}
                 </td>
 
-                <td
-                  onClick={() =>
-                    toggleTable(ATTENDANCE_TABLES.STUDENT, attendance)
-                  }
-                  className="px-6 py-4 flex justify-between"
-                >
+                <td className="px-6 py-4 flex justify-between">
                   {attendance.status ? (
                     <p className="mt-2">
                       <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
@@ -85,9 +72,7 @@ export default function AttendanceListTable({ attendances, toggleTable }) {
         </tbody>
       </table>
       <div className="mt-2">
-        <h1 className="text-sm text-gray-600">
-          Total: {attendances.length}
-        </h1>
+        <h1 className="text-sm text-gray-600">Total: {attendances.length}</h1>
       </div>
     </div>
   );

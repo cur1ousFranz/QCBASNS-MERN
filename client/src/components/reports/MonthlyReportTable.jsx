@@ -22,7 +22,6 @@ export default function MonthlyReportTable({
   useEffect(() => {
     // Set inital attendance record
     if (weekDaysAndDates) {
-      
       const attendance = monthAttendances.sort((a, b) =>
         a.createdAt.localeCompare(b.createdAt)
       )[monthAttendances.length - 1];
@@ -66,6 +65,7 @@ export default function MonthlyReportTable({
               if (student.time_in_am && student.time_out_pm) {
                 dayRecord = REPORT.Present;
               }
+
               // LATE
               if (
                 isLate(currentSelectedSemester.timein_am, student.time_in_am) ||
@@ -75,8 +75,8 @@ export default function MonthlyReportTable({
               }
               // CUTTING
               if (
-                (student.time_in_am && !student.time_out_am) ||
-                (student.time_in_pm && !student.time_out_pm)
+                (student.time_in_am !== "" && student.time_out_am === "") ||
+                (student.time_in_pm !== "" && student.time_out_pm === "")
               ) {
                 dayRecord = REPORT.Cutting;
               }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import Header from "../components/header-text/Header";
 import { SemesterContext } from "../context/SemesterContext";
@@ -19,6 +20,7 @@ import {
   ADVISER_CONTEXT_TYPES,
   AdviserContext,
 } from "../context/AdviserContext";
+import Search from "../components/input/Search";
 
 export default function Attendance() {
   const { semesters, dispatch: semesterDispatch } = useContext(SemesterContext);
@@ -27,7 +29,7 @@ export default function Attendance() {
   const [showCreateAttendanceModal, setShowCreateAttendanceModal] =
     useState(false);
   const [currentShowedTable, setCurrentShowedTable] = useState(
-    ATTENDANCE_TABLES.ATTENDANCE
+    ATTENDANCE_TABLES.SEMESTER
   );
   const [currentSelectedSemester, setCurrentSelectedSemester] = useState(null);
   const [errorModalMessage, setErrorModalMessage] = useState("");
@@ -172,6 +174,27 @@ export default function Attendance() {
     }
   }, [currentSelectedSemester, selectedAttendance]);
 
+  useEffect(() => {
+    const getAllSemesterAttendances = async () => {
+      if (currentSelectedSemester) {
+        try {
+          const response = await axiosClient.get(
+            `/attendance/semester/${currentSelectedSemester._id}`
+          );
+          if (response.status === 200) {
+            dispatch({
+              type: ATTENDANCE_CONTEXT_TYPES.SET_SEMESTER_ATTENDANCES,
+              payload: response.data,
+            });
+          }
+        } catch (error) {
+          setErrorModalMessage(error.message);
+        }
+      }
+    };
+    getAllSemesterAttendances();
+  }, [currentSelectedSemester]);
+
   // Count total AM scanned students
   useEffect(() => {
     if (selectedAttendance) {
@@ -228,6 +251,12 @@ export default function Attendance() {
   const toggleCreateAttendanceModal = (value) =>
     setShowCreateAttendanceModal(value);
 
+  const handleSelectSemester = async (table, semester) => {
+    console.log("here", semester);
+    setCurrentSelectedSemester(() => semester);
+    setCurrentShowedTable(() => table);
+  };
+
   const handleSelectAttendance = async (table, attendance) => {
     setSelectedAttendance(() => attendance);
     setCurrentShowedTable(() => table);
@@ -255,7 +284,9 @@ export default function Attendance() {
           );
 
           if (response.status === 200) {
-            Alert(`${student.first_name} ${student.last_name} Scanned Success!`);
+            Alert(
+              `${student.first_name} ${student.last_name} Scanned Success!`
+            );
             setSelectedAttendance(() => response.data);
             dispatch({
               type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
@@ -287,30 +318,44 @@ export default function Attendance() {
     }
   }, [lastScannedStudentId]);
 
+  const handleClickArrowBack = () => {
+    if (currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE) {
+      setCurrentShowedTable(() => ATTENDANCE_TABLES.SEMESTER);
+    }
+    if (currentShowedTable === ATTENDANCE_TABLES.STUDENT) {
+      setCurrentShowedTable(() => ATTENDANCE_TABLES.ATTENDANCE);
+      setShowScanner(false);
+      setSelectedAttendance(null);
+    }
+  };
+
+  const handleSearch = async (searchInput) => {
+    console.log(searchInput);
+  };
+
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
           <div className="flex justify-between">
             <div className="flex flex-col w-full md:flex-row md:justify-between md:space-x-6">
-              <div className="w-full">
+              <div className="w-full flex justify-between">
                 <div className="flex space-x-2">
-                  {currentShowedTable === ATTENDANCE_TABLES.STUDENT && (
+                  {(currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE ||
+                    currentShowedTable === ATTENDANCE_TABLES.STUDENT) && (
                     <img
-                      onClick={() => {
-                        setCurrentShowedTable(
-                          () => ATTENDANCE_TABLES.ATTENDANCE
-                        );
-                        setShowScanner(false);
-                        setSelectedAttendance(null);
-                      }}
-                      className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
+                      onClick={handleClickArrowBack}
+                      className="cursor-pointer p-2 h-fit rounded-full hover:bg-gray-200"
                       src="/img/arrow-back.svg"
                       alt=""
                     />
                   )}
-
-                  <Header title={`Attendance`} />
+                  {currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE ||
+                  currentShowedTable === ATTENDANCE_TABLES.STUDENT ? (
+                    <Header title={`Attendances`} />
+                  ) : (
+                    <Header title={`Semesters`} />
+                  )}
                   {selectedAttendance && (
                     <span
                       className={
@@ -323,6 +368,9 @@ export default function Attendance() {
                     </span>
                   )}
                 </div>
+                {/* <Search
+                  handleSearch={handleSearch}
+                /> */}
               </div>
               <div className="flex space-x-3">
                 <div>
@@ -365,6 +413,8 @@ export default function Attendance() {
                 <div className="hidden md:flex flex-col md:flex-row md:space-x-1">
                   <div className="flex">
                     {studentTableDetailsList &&
+                      (currentShowedTable === ATTENDANCE_TABLES.ATTENDANCE ||
+                        currentShowedTable === ATTENDANCE_TABLES.STUDENT) &&
                       studentTableDetailsList.map((list, index) => (
                         <div className="flex" key={index}>
                           <p className="p-1 italic text-sm text-gray-500">
@@ -392,7 +442,10 @@ export default function Attendance() {
           {currentShowedTable === ATTENDANCE_TABLES.SEMESTER && (
             <div className="w-full">
               <div className="overflow-x-auto">
-                <SemesterListTable semesters={semesters} />
+                <SemesterListTable
+                  semesters={semesters}
+                  toggleTable={handleSelectSemester}
+                />
               </div>
             </div>
           )}
