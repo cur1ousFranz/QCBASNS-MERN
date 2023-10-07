@@ -142,19 +142,19 @@ export default function Students() {
                 <div className="flex space-x-4">
                   <img
                     onClick={() => setShowStudentList(false)}
-                    className="cursor-pointer p-2 rounded-md hover:bg-gray-200"
+                    className="cursor-pointer p-2 rounded-full hover:bg-gray-200"
                     src="/img/arrow-back.svg"
                     alt=""
                   />
                   <Header title="Students" />
                   {currentSemester && currentSemester.active ? (
-                    <p className="mt-2">
+                    <p className="mt-1">
                       <span className="p-1 font-semibold text-xs rounded-md text-white bg-green-500">
                         Active
                       </span>
                     </p>
                   ) : (
-                    <p className="mt-2">
+                    <p className="mt-1">
                       <span className="p-1 font-semibold text-xs rounded-md text-white bg-red-400">
                         Inactive
                       </span>

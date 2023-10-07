@@ -5,7 +5,7 @@ export default function SemesterListTable({ semesters, toggleTable }) {
   return (
     <>
       <div className="max-h-[70vh] overflow-y-auto">
-        <table className="w-full overflow-x-auto text-sm text-left mx-auto">
+        <table className="w-full overflow-x-auto text-sm text-left mx-auto border">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
