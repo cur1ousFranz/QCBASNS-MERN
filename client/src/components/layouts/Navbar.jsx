@@ -41,8 +41,8 @@ export default function Navbar() {
             to={"/attendance"}
             className={`${
               location.pathname === PATHNAME.ATTENDANCE
-                ? "underline text-gray-600"
-                : "hover:underline"
+                ? "underline text-gray-800"
+                : "text-gray-500 hover:text-gray-800 hover:underline"
             }`}
           >
             Attendance
@@ -51,8 +51,8 @@ export default function Navbar() {
             to={"/student"}
             className={`${
               location.pathname === PATHNAME.STUDENT
-                ? "underline text-gray-600"
-                : "hover:underline"
+                ? "underline text-gray-800"
+                : "text-gray-500 hover:text-gray-800 hover:underline"
             }`}
           >
             Student
@@ -61,8 +61,8 @@ export default function Navbar() {
             to={"/report"}
             className={`${
               location.pathname === PATHNAME.REPORT
-                ? "underline underline text-gray-600"
-                : "hover:underline"
+                ? "underline text-gray-800"
+                : "text-gray-500 hover:text-gray-800 hover:underline"
             }`}
           >
             Report
@@ -71,8 +71,8 @@ export default function Navbar() {
             to={"/message"}
             className={`${
               location.pathname === PATHNAME.MESSAGE
-                ? "underline underline text-gray-600"
-                : "hover:underline"
+                ? "underline text-gray-800"
+                : "text-gray-500 hover:text-gray-800 hover:underline"
             }`}
           >
             Message
