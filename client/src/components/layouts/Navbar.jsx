@@ -36,13 +36,13 @@ export default function Navbar() {
         <img src="/img/logo.png" className="object-fit w-1/2" alt="" />
       </Link>
       {user && (
-        <div className="hidden md:flex space-x-8 mt-5 uppercase font-semibold text-gray-500">
+        <div className="hidden md:flex space-x-8 mt-5 uppercase text-gray-500">
           <Link
             to={"/attendance"}
             className={`${
               location.pathname === PATHNAME.ATTENDANCE
-                ? "underline text-gray-800"
-                : "text-gray-500 hover:text-gray-800 hover:underline"
+                ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
             }`}
           >
             Attendance
@@ -51,8 +51,8 @@ export default function Navbar() {
             to={"/student"}
             className={`${
               location.pathname === PATHNAME.STUDENT
-                ? "underline text-gray-800"
-                : "text-gray-500 hover:text-gray-800 hover:underline"
+                ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
             }`}
           >
             Student
@@ -61,8 +61,8 @@ export default function Navbar() {
             to={"/report"}
             className={`${
               location.pathname === PATHNAME.REPORT
-                ? "underline text-gray-800"
-                : "text-gray-500 hover:text-gray-800 hover:underline"
+                ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
             }`}
           >
             Report
@@ -71,8 +71,8 @@ export default function Navbar() {
             to={"/message"}
             className={`${
               location.pathname === PATHNAME.MESSAGE
-                ? "underline text-gray-800"
-                : "text-gray-500 hover:text-gray-800 hover:underline"
+                ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
             }`}
           >
             Message
