@@ -162,7 +162,7 @@ export default function StudentListTable({
               ))}
             {students && students.length === 0 && (
               <tr className="border-b cursor-pointer bg-white">
-                <td colSpan={4} className="px-6 py-4 text-center">
+                <td colSpan={6} className="px-6 py-4 text-center">
                   No students to show
                 </td>
               </tr>
