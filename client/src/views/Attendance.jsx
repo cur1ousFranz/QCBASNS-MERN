@@ -255,7 +255,7 @@ export default function Attendance() {
           );
 
           if (response.status === 200) {
-            Alert("Scanned success!");
+            Alert(`${student.first_name} ${student.last_name} Scanned Success!`);
             setSelectedAttendance(() => response.data);
             dispatch({
               type: ATTENDANCE_CONTEXT_TYPES.UPDATE_SEMESTER_ATTENDANCE,
