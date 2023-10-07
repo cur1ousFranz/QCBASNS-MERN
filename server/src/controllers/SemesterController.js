@@ -131,7 +131,7 @@ const addStudentToSemester = async (req, res) => {
       semester_id: id,
       status: true,
     });
-    if (attendance) {
+    if (attendance.length) {
       const student = await Student.findById({ _id: student_id });
       const students = attendance[0].students;
       const newStudents = [
