@@ -90,7 +90,11 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
       errors.push("schoolId");
       setStudentIdErrorMessage("LRN must be 12 numbers");
     }
-    if (schoolId && schoolId.length === 12 && !Number.isInteger(parseInt(schoolId))) {
+    if (
+      schoolId &&
+      schoolId.length === 12 &&
+      !Number.isInteger(parseInt(schoolId))
+    ) {
       errors.push("schoolId");
       setStudentIdErrorMessage("Invalid LRN.");
     }
@@ -515,16 +519,22 @@ const CreateStudentModal = ({ toggleModal, semesterId, title }) => {
               <div className="flex space-x-3">
                 <div className="w-full relative">
                   <label>Relationship</label>
-                  <input
-                    type="text"
-                    value={relationship}
+                  <select
                     onChange={(e) => setRelationship(e.target.value)}
+                    defaultValue={"Select"}
                     className={
                       !errorFields.includes("relationship")
                         ? INPUT_DEFAULT_STYLE
                         : INPUT_ERROR_STYLE
                     }
-                  />
+                  >
+                    <option value="Select" disabled>
+                      Select
+                    </option>
+                    <option value="Mother">Mother</option>
+                    <option value="Father">Father</option>
+                    <option value="Guardian">Guardian</option>
+                  </select>
                   {errorFields.includes("relationship") && (
                     <ValidationMessage message="Relationship is required." />
                   )}
