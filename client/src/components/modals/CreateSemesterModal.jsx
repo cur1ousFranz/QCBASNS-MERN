@@ -17,10 +17,10 @@ const CreateSemesterModal = ({
   const [section, setSection] = useState("");
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
-  const [timein_am, setTimeinAm] = useState("");
-  const [timeout_am, setTimeoutAm] = useState("");
-  const [timein_pm, setTimeinPm] = useState("");
-  const [timeout_pm, setTimeoutPm] = useState("");
+  const [timein_am, setTimeinAm] = useState("07:30");
+  const [timeout_am, setTimeoutAm] = useState("11:30");
+  const [timein_pm, setTimeinPm] = useState("12:30");
+  const [timeout_pm, setTimeoutPm] = useState("16:30");
 
   const [errorStrand, setErrorStrand] = useState(false);
   const [errorSection, setErrorSection] = useState(false);
@@ -258,7 +258,7 @@ const CreateSemesterModal = ({
                 <div className="w-full relative">
                   <label>Time In (AM)</label>
                   <input
-                    // value={section}
+                    value={timein_am}
                     onChange={(e) => handleAmTimeChange(e, "AM", "timein")}
                     type="time"
                     className={
@@ -275,7 +275,7 @@ const CreateSemesterModal = ({
                 <div className="w-full relative">
                   <label>Time Out (AM)</label>
                   <input
-                    // value={section}
+                    value={timeout_am}
                     onChange={(e) => handleAmTimeChange(e, "AM", "timeout")}
                     type="time"
                     className={
@@ -294,7 +294,7 @@ const CreateSemesterModal = ({
                 <div className="w-full relative">
                   <label>Time In (PM)</label>
                   <input
-                    // value={section}
+                    value={timein_pm}
                     onChange={(e) => handlePmTimeChange(e, "PM", "timein")}
                     type="time"
                     className={
@@ -311,7 +311,7 @@ const CreateSemesterModal = ({
                 <div className="w-full relative">
                   <label>Time Out (PM)</label>
                   <input
-                    // value={section}
+                    value={timeout_pm}
                     onChange={(e) => handlePmTimeChange(e, "PM", "timeout")}
                     type="time"
                     className={
