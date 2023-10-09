@@ -118,7 +118,15 @@ export default function ReportSemester() {
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
         <div className="py-12 px-6 lg:px-12 w-full space-y-3">
-          <Header title={`Semester Report`} />
+          <div className="flex items-center space-x-3">
+            <div
+              onClick={() => window.history.back()}
+              className="p-1 cursor-pointer rounded-full hover:bg-green-200"
+            >
+              <img src="/img/arrow-back.svg" className="w-5" alt="" />
+            </div>
+            <Header title="Semester's Report" />
+          </div>
           <div className="flex justify-between space-x-3">
             <select
               onChange={(e) => setSelectedMonth(parseInt(e.target.value))}

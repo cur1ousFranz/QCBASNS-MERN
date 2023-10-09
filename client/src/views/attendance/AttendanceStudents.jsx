@@ -160,7 +160,15 @@ export default function AttendanceStudents() {
               <div className="w-full">
                 <div className="flex justify-between">
                   <div className="flex space-x-3">
-                    <Header title={`Attendance Students`} />
+                    <div className="flex items-center space-x-3">
+                      <div
+                        onClick={() => window.history.back()}
+                        className="p-1 cursor-pointer rounded-full hover:bg-green-200"
+                      >
+                        <img src="/img/arrow-back.svg" className="w-5" alt="" />
+                      </div>
+                      <Header title="Attendance Students" />
+                    </div>
                     {attendance && (
                       <span
                         className={

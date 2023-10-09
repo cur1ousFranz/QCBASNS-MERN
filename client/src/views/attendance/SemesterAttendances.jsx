@@ -193,7 +193,15 @@ export default function SemesterAttendances() {
         <div className="flex">
           <div className="py-12 px-6 lg:px-12 w-full space-y-3">
             <div className="flex justify-between">
-              <Header title={`Attendances`} />
+              <div className="flex items-center space-x-3">
+                <div
+                  onClick={() => window.history.back()}
+                  className="p-1 cursor-pointer rounded-full hover:bg-green-200"
+                >
+                  <img src="/img/arrow-back.svg" className="w-5" alt="" />
+                </div>
+                <Header title="Attendances" />
+              </div>
               <div>
                 <button
                   onClick={() => {
