@@ -44,17 +44,9 @@ const QrCodeModal = ({ toggleModal, title, student }) => {
   };
 
   const handleCancel = () => toggleModal(false);
-  const handleBackdropCancel = (e) => {
-    if (e.target.classList.contains("modal-backdrop")) {
-      toggleModal(false);
-    }
-  };
 
   return (
-    <div
-      onClick={handleBackdropCancel}
-      className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-    >
+    <div className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50">
       <div className="modal w-full md:w-1/4 overflow-y-auto bg-white rounded-lg shadow-lg">
         <header className="modal-header px-4 mt-4 flex justify-between">
           <p className="text-sm md:text-lg lg:text-lg">Printable QR Code</p>

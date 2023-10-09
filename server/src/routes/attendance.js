@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   getAllSemesterAttendances,
+  getAttendance,
   createAttendance,
   updateAttendance,
   createStudentAttendance,
@@ -9,6 +10,7 @@ const {
 const router = express.Router();
 
 router.get("/api/v1/attendance", getAllAttendances);
+router.get("/api/v1/attendance/:id", getAttendance);
 router.get("/api/v1/attendance/semester/:id", getAllSemesterAttendances);
 router.post("/api/v1/attendance", createAttendance);
 router.put("/api/v1/attendance/:id", updateAttendance);

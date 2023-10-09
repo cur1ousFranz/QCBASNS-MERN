@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
-import ErrorModal from "../modals/ErrorModal";
+import ErrorModal from "./ErrorModal";
 import { CHECKBOX_DEFAULT_STYLE } from "../../constants/Constant";
-import { SemesterContext } from "../../context/SemesterContext";
 
 export default function StudentListModal({
   toggleModal,
   addExisitingStudents,
   currentSemesterId,
+  currentSemester,
 }) {
   const [errorModalMessage, setErrorModalMessage] = useState("");
   const [studentList, setStudentList] = useState([]);
   const [selectedStudentList, setSelectedStudentList] = useState([]);
-  const { semesters } = useContext(SemesterContext);
-  const [currentSemester, setCurrentSemester] = useState(null);
+  const [studentListExist, setStudentListExist] = useState([]);
+  const [sortedStudents, setSortedStudents] = useState([]);
 
   useEffect(() => {
     const getAllStudents = async () => {
@@ -28,11 +28,6 @@ export default function StudentListModal({
     };
 
     getAllStudents();
-
-    const sem = semesters.filter(
-      (semester) => semester._id === currentSemesterId
-    )[0];
-    setCurrentSemester(() => sem);
   }, []);
 
   const toggleCheckbox = (checked, studentId) => {
@@ -50,7 +45,7 @@ export default function StudentListModal({
     if (checked) {
       const currentSelected = [];
       for (const student of studentList) {
-        if (!checkIfStudentExist(student._id)) {
+        if (!studentListExist.includes(student._id)) {
           currentSelected.push(student._id);
         }
       }
@@ -63,6 +58,7 @@ export default function StudentListModal({
   const handleAddStudents = () => {
     if (selectedStudentList) {
       addExisitingStudents(selectedStudentList);
+      setStudentListExist(() => selectedStudentList);
     }
   };
 
@@ -70,16 +66,19 @@ export default function StudentListModal({
     toggleModal(false);
   };
 
-  const checkIfStudentExist = (studentId) => {
-    let exist = false;
+  useEffect(() => {
+    const list = [];
     for (const student of currentSemester.students) {
-      if (student.student_id === studentId) {
-        exist = true;
-      }
+      list.push(student.student_id);
     }
+    setStudentListExist(() => list);
+  }, [currentSemester]);
 
-    return exist;
-  };
+  useEffect(() => {
+    setSortedStudents(() =>
+      studentList.sort((a, b) => a.last_name.localeCompare(b.last_name))
+    );
+  }, [studentList]);
 
   return (
     <div
@@ -106,7 +105,7 @@ export default function StudentListModal({
               <p className="text-sm mt-1">Check All</p>
             </li>
             {studentList.length > 0 &&
-              studentList.map((student) => (
+              sortedStudents.map((student, index) => (
                 <li
                   key={student._id}
                   className={
@@ -121,11 +120,11 @@ export default function StudentListModal({
                       checked={selectedStudentList.includes(student._id)}
                       type="checkbox"
                       className={`${CHECKBOX_DEFAULT_STYLE}`}
-                      disabled={checkIfStudentExist(student._id)}
+                      disabled={studentListExist.includes(student._id)}
                     />
                     <p
                       className={
-                        checkIfStudentExist(student._id)
+                        studentListExist.includes(student._id)
                           ? "inline-block mt-1 text-gray-400"
                           : "inline-block mt-1"
                       }
@@ -140,7 +139,7 @@ export default function StudentListModal({
                   <div className="w-full flex justify-center space-x-4">
                     <p
                       className={
-                        checkIfStudentExist(student._id)
+                        studentListExist.includes(student._id)
                           ? "inline-block mt-1 text-gray-400"
                           : "inline-block mt-1"
                       }

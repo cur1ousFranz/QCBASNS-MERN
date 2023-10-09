@@ -10,6 +10,7 @@ const track = require("./src/routes/track");
 const student = require("./src/routes/student");
 const barangay = require("./src/routes/barangay");
 const attendance = require("./src/routes/attendance");
+const report = require("./src/routes/report");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -38,3 +39,4 @@ app.use(track);
 app.use(student);
 app.use(barangay);
 app.use(attendance);
+app.use(report);

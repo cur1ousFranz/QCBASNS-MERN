@@ -12,8 +12,23 @@ const getAllAttendances = async (req, res) => {
   return res.status(200).json(attendances);
 };
 
+const getAttendance = async (req, res) => {
+  const { id: attendanceId } = req.params;
+  if (!isValidObjectId(attendanceId)) {
+    return res.status(404).json({ error: "No such attendance" });
+  }
+  try {
+    const attendance = await AttendanceModel.findById({ _id: attendanceId });
+    return res.status(200).json(attendance);
+  } catch (error) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+};
+
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
 
   if (!isValidObjectId(semester_id)) {
     return res.status(404).json({ error: "No such semester" });
@@ -22,6 +37,12 @@ const getAllSemesterAttendances = async (req, res) => {
   const userId = extractUserID(req);
   const adviser = await AdviserModel.findOne({ user_id: userId });
 
+  const totalAttendances = await AttendanceModel.countDocuments({
+    adviser_id: adviser._id,
+    semester_id,
+  });
+
+  const totalPages = Math.ceil(totalAttendances / perPage);
   const attendances = await AttendanceModel.aggregate([
     {
       $lookup: {
@@ -42,22 +63,41 @@ const getAllSemesterAttendances = async (req, res) => {
     },
     {
       $sort: {
-        createdAt: -1, // Sort by createdAt in descending order (-1)
+        createdAt: -1,
       },
+    },
+    {
+      $skip: (page - 1) * perPage,
+    },
+    {
+      $limit: perPage,
     },
   ]);
 
-  return res.status(200).json(attendances);
+  return res.status(200).json({
+    attendances,
+    totalPages,
+    currentPage: page,
+  });
 };
 
 const createAttendance = async (req, res) => {
   const { semester_id } = req.body;
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
 
   if (!isValidObjectId(semester_id)) {
     return res.status(404).json({ error: "No such semester" });
   }
+
   const userId = extractUserID(req);
   const adviser = await AdviserModel.findOne({ user_id: userId });
+
+  const totalAttendances = await AttendanceModel.countDocuments({
+    adviser_id: adviser._id,
+    semester_id,
+  });
+  const totalPages = Math.ceil(totalAttendances / perPage);
 
   const studentsList = [];
   const semester = await SemesterModel.findById(semester_id);
@@ -80,14 +120,14 @@ const createAttendance = async (req, res) => {
     });
   }
 
-  const createdAttendance = await AttendanceModel.create({
+  await AttendanceModel.create({
     semester_id,
     adviser_id: adviser._id,
     status: true,
     students: studentsList,
   });
 
-  const attendance = await AttendanceModel.aggregate([
+  const attendances = await AttendanceModel.aggregate([
     {
       $lookup: {
         from: "semesters",
@@ -101,55 +141,43 @@ const createAttendance = async (req, res) => {
     },
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(createdAttendance._id),
         semester_id: new mongoose.Types.ObjectId(semester_id),
         adviser_id: new mongoose.Types.ObjectId(adviser._id),
       },
     },
     {
-      $limit: 1, // Limit the result to one document
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $skip: (page - 1) * perPage,
+    },
+    {
+      $limit: perPage,
     },
   ]);
 
-  return res.status(200).json(attendance[0]);
+  return res.status(200).json({
+    attendances,
+    totalPages,
+    currentPage: page,
+  });
 };
 
 const updateAttendance = async (req, res) => {
   const { id } = req.params;
-  const updated = req.body;
+  const { status } = req.body;
 
   if (!isValidObjectId(id)) {
     return res.status(404).json({ error: "No such attendance" });
   }
-
-  await AttendanceModel.findByIdAndUpdate({ _id: id }, { ...updated });
-  const updatedAttendance = await AttendanceModel.findById(id);
-
-  const attendance = await AttendanceModel.aggregate([
-    {
-      $lookup: {
-        from: "semesters",
-        localField: "semester_id",
-        foreignField: "_id",
-        as: "semester",
-      },
-    },
-    {
-      $unwind: "$semester", // Unwind the array created by $lookup (optional)
-    },
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(updatedAttendance._id),
-        semester_id: new mongoose.Types.ObjectId(updatedAttendance.semester_id),
-        adviser_id: new mongoose.Types.ObjectId(updatedAttendance.adviser_id),
-      },
-    },
-    {
-      $limit: 1, // Limit the result to one document
-    },
-  ]);
-
-  return res.status(200).json(attendance[0]);
+  try {
+    await AttendanceModel.findByIdAndUpdate({ _id: id }, { status });
+    return res.status(200).json({ message: "Success" });
+  } catch (error) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
 };
 
 const createStudentAttendance = async (req, res) => {
@@ -289,31 +317,10 @@ const createStudentAttendance = async (req, res) => {
     });
   }
 
-  const latestAttendance = await AttendanceModel.aggregate([
-    {
-      $lookup: {
-        from: "semesters",
-        localField: "semester_id",
-        foreignField: "_id",
-        as: "semester",
-      },
-    },
-    {
-      $unwind: "$semester", // Unwind the array created by $lookup (optional)
-    },
-    {
-      $match: {
-        _id: new mongoose.Types.ObjectId(attendance._id),
-        semester_id: new mongoose.Types.ObjectId(semester_id),
-        adviser_id: new mongoose.Types.ObjectId(attendance.adviser_id),
-      },
-    },
-    {
-      $limit: 1, // Limit the result to one document
-    },
-  ]);
-
-  return res.status(200).json(latestAttendance[0]);
+  const updatedAttendance = await AttendanceModel.findById({
+    _id: attendance._id,
+  });
+  return res.status(200).json(updatedAttendance);
 };
 
 const getStudentInAttendance = (AttendanceStudents, student_id) => {
@@ -359,6 +366,7 @@ const sendSMS = (
 
 module.exports = {
   getAllAttendances,
+  getAttendance,
   getAllSemesterAttendances,
   createAttendance,
   updateAttendance,

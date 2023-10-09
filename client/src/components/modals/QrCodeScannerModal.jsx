@@ -1,7 +1,7 @@
 import { QrScanner } from "@yudiel/react-qr-scanner";
 import React from "react";
 import Draggable from "react-draggable";
-import { Alert } from "../../../utils/Alert";
+import { Alert } from "../../utils/Alert";
 
 export default function QrCodeScannerModal({
   toggleModal,

@@ -21,7 +21,8 @@ export default function MonthlyReportTable({
 
   useEffect(() => {
     // Set inital attendance record
-    if (weekDaysAndDates) {
+    if (weekDaysAndDates && monthAttendances.length) {
+      console.log(monthAttendances);
       const attendance = monthAttendances.sort((a, b) =>
         a.createdAt.localeCompare(b.createdAt)
       )[monthAttendances.length - 1];
@@ -221,7 +222,7 @@ export default function MonthlyReportTable({
                       } cursor-pointer hover:bg-green-100`}
                       onClick={() => setSelectedRow(full_name)}
                     >
-                      <td className="px-4 py-2">{full_name}</td>
+                      <td className="whitespace-nowrap  px-4 py-2">{full_name}</td>
                       {dateValues.map((dateValues, index) => (
                         <td
                           key={full_name + dateValues + index}

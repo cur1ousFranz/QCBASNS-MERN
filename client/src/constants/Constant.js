@@ -5,10 +5,10 @@ export const SELECTED_SIDEBAR_LIST_STYLE =
   "flex items-center cursor-pointer px-2 py-1 text-gray-900 rounded-sm bg-green-100 ";
 
 export const PATHNAME = {
-  STUDENT: "/student",
-  ATTENDANCE: "/attendance",
-  REPORT: "/report",
-  MESSAGE: "/message",
+  STUDENT: "student",
+  ATTENDANCE: "attendance",
+  REPORT: "report",
+  MESSAGE: "message",
 };
 
 export const INPUT_DEFAULT_STYLE = "px-2 py-2 w-full bg-gray-100 rounded-md";

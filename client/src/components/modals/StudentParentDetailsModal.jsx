@@ -1,11 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import { StudentContext } from "../../context/StudentContext";
-import { INPUT_DEFAULT_STYLE } from "../../constants/Constant";
-import InputLayout from "../students/layout/InputLayout";
+import { useEffect, useState } from "react";
+import InputLayout from "../input/InputLayout";
+import axiosClient from "../../utils/AxiosClient";
 
 export default function StudentParentDetailsModal({ toggleModal, studentId }) {
-  const { students } = useContext(StudentContext);
-
   const [schoolId, setSchoolid] = useState("");
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -29,27 +26,34 @@ export default function StudentParentDetailsModal({ toggleModal, studentId }) {
   const [relationship, setRelationship] = useState("");
 
   useEffect(() => {
-    const student = students.filter((student) => student._id === studentId)[0];
-
-    setSchoolid(() => student.school_id);
-    setFirstName(() => student.first_name);
-    setMiddleName(() => student.middle_name);
-    setLastName(() => student.last_name);
-    setSuffix(() => student.suffix);
-    setGender(() => student.gender);
-    setBirthDate(() => student.birthdate);
-    setContactNumber(() => student.contact_number);
-    setVillage(() => student.address.village);
-    setStreet(() => student.address.street);
-    setBarangay(() => student.address.barangay);
-    setCity(() => student.address.city);
-    setParentFirstname(() => student.parent.first_name);
-    setParentMiddleName(() => student.parent.middle_name);
-    setParentLastName(() => student.parent.last_name);
-    setParentSuffix(() => student.parent.suffix);
-    setParentGender(() => student.parent.gender);
-    setParentContactNumber(() => student.parent.contact_number);
-    setRelationship(() => student.parent.relationship);
+    const getStudentDetails = async () => {
+      try {
+        const response = await axiosClient.get(`/student/${studentId}`);
+        if (response.status === 200) {
+          const student = response.data;
+          setSchoolid(() => student.school_id);
+          setFirstName(() => student.first_name);
+          setMiddleName(() => student.middle_name);
+          setLastName(() => student.last_name);
+          setSuffix(() => student.suffix);
+          setGender(() => student.gender);
+          setBirthDate(() => student.birthdate);
+          setContactNumber(() => student.contact_number);
+          setVillage(() => student.address.village);
+          setStreet(() => student.address.street);
+          setBarangay(() => student.address.barangay);
+          setCity(() => student.address.city);
+          setParentFirstname(() => student.parent.first_name);
+          setParentMiddleName(() => student.parent.middle_name);
+          setParentLastName(() => student.parent.last_name);
+          setParentSuffix(() => student.parent.suffix);
+          setParentGender(() => student.parent.gender);
+          setParentContactNumber(() => student.parent.contact_number);
+          setRelationship(() => student.parent.relationship);
+        }
+      } catch (error) {}
+    };
+    getStudentDetails();
   }, []);
 
   const handleClose = () => {

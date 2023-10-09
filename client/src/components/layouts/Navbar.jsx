@@ -1,20 +1,41 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { AdviserContext } from "../../context/AdviserContext";
 import { PATHNAME } from "../../constants/Constant";
+import axiosClient from "../../utils/AxiosClient";
 
 export default function Navbar() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const location = useLocation();
   const { user, dispatch } = useContext(AuthContext);
-  const { adviser } = useContext(AdviserContext);
+
+  const location = useLocation();
+  const [adviser, setAdviser] = useState(null);
+  const [currentPath, setCurrentPath] = useState("");
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
     setShowProfileDropdown(false);
     localStorage.removeItem("user");
   };
+
+  useEffect(() => {
+    const getAdviser = async () => {
+      try {
+        const response = await axiosClient.get("/adviser");
+        if (response.status === 200) {
+          setAdviser(() => response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAdviser();
+  }, []);
+
+  useEffect(() => {
+    const url = location.pathname.trim().split("/");
+    setCurrentPath(() => url[1]);
+  }, [location]);
 
   const AdviserName = () => {
     if (adviser) {
@@ -56,11 +77,11 @@ export default function Navbar() {
           <div className="flex space-x-12">
             <div>
               {user && (
-                <div className="hidden md:flex space-x-8 mt-1 uppercase text-gray-500">
+                <div className="hidden md:flex space-x-8 mt-0.5 uppercase text-gray-500">
                   <Link
                     to={"/attendance"}
                     className={`${
-                      location.pathname === PATHNAME.ATTENDANCE
+                      currentPath === PATHNAME.ATTENDANCE
                         ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
                         : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
                     }`}
@@ -70,7 +91,7 @@ export default function Navbar() {
                   <Link
                     to={"/student"}
                     className={`${
-                      location.pathname === PATHNAME.STUDENT
+                      currentPath === PATHNAME.STUDENT
                         ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
                         : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
                     }`}
@@ -80,7 +101,7 @@ export default function Navbar() {
                   <Link
                     to={"/report"}
                     className={`${
-                      location.pathname === PATHNAME.REPORT
+                      currentPath === PATHNAME.REPORT
                         ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
                         : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
                     }`}
@@ -90,7 +111,7 @@ export default function Navbar() {
                   <Link
                     to={"/message"}
                     className={`${
-                      location.pathname === PATHNAME.MESSAGE
+                      currentPath === PATHNAME.MESSAGE
                         ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
                         : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
                     }`}
@@ -103,7 +124,16 @@ export default function Navbar() {
 
             <div>
               <div className="flex space-x-3">
-                <AdviserName />
+                {adviser && (
+                  <h1 className="mt-2 text-sm font-semibold text-gray-600">
+                    {adviser.first_name}{" "}
+                    {adviser.middle_name !== "N/A"
+                      ? adviser.middle_name[0].toUpperCase() + "."
+                      : ""}{" "}
+                    {adviser.last_name}{" "}
+                    {adviser.suffix !== "N/A" ? adviser.suffix : ""}
+                  </h1>
+                )}
                 <img
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                   src="/img/person.svg"

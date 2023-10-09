@@ -9,12 +9,27 @@ const AttendanceModel = require("../models/AttendanceModel");
 
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
   try {
     const adviser = await Adviser.findOne({ user_id: userId });
-    const semesters = await Semester.find({ adviser_id: adviser._id }).sort({
-      createdAt: -1,
+
+    const totalSemesters = await Semester.countDocuments({
+      adviser_id: adviser._id,
     });
-    return res.status(200).json(semesters);
+
+    const totalPages = Math.ceil(totalSemesters / perPage);
+
+    const semesters = await Semester.find({ adviser_id: adviser._id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+
+    return res.status(200).json({
+      semesters,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     return res.status(400).json({ error: "Something went wrong!" });
   }
@@ -47,6 +62,8 @@ const createSemester = async (req, res) => {
     timein_pm,
     timeout_pm,
   } = req.body;
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
 
   const errorFields = [];
   const errorMessage = "Please fill in all fields";
@@ -64,32 +81,63 @@ const createSemester = async (req, res) => {
   if (errorFields.length > 0) {
     return res.status(400).json({ error: errorMessage, errorFields });
   }
-  const userId = extractUserID(req);
-  const adviser = await Adviser.findOne({ user_id: userId });
-  const newSemester = {
-    adviser_id: adviser._id,
-    semester,
-    track,
-    strand,
-    grade_level,
-    section,
-    students: [],
-    start_year,
-    end_year,
-    active,
-    timein_am,
-    timeout_am,
-    timein_pm,
-    timeout_pm,
-  };
-  const result = await Semester.create(newSemester);
-  return res.status(200).json(result);
+
+  try {
+    const userId = extractUserID(req);
+    const adviser = await Adviser.findOne({ user_id: userId });
+
+    // Set the latest Semester to inactive
+    const lastActiveSemester = await Semester.findOne({ active: true });
+    if (lastActiveSemester)
+      await Semester.findByIdAndUpdate(
+        { _id: lastActiveSemester._id },
+        { active: false }
+      );
+
+    const newSemester = {
+      adviser_id: adviser._id,
+      semester,
+      track,
+      strand,
+      grade_level,
+      section,
+      students: [],
+      start_year,
+      end_year,
+      active,
+      timein_am,
+      timeout_am,
+      timein_pm,
+      timeout_pm,
+    };
+    await Semester.create(newSemester);
+
+    const totalSemesters = await Semester.countDocuments({
+      adviser_id: adviser._id,
+    });
+
+    const totalPages = Math.ceil(totalSemesters / perPage);
+    const semesters = await Semester.find({ adviser_id: adviser._id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * perPage)
+      .limit(perPage);
+
+    return res.status(200).json({
+      semesters,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
 };
 
 const updateSemester = async (req, res) => {
   const updated = req.body;
   const userId = extractUserID(req);
   const { id } = req.params;
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
 
   if (!isValidObjectId(id)) {
     return res.status(404).json({ error: "No such semeester" });
@@ -107,7 +155,21 @@ const updateSemester = async (req, res) => {
     return res.status(400).json({ error: "Cannot find semester" });
   }
 
-  return res.status(200).json(semester);
+  const totalSemesters = await Semester.countDocuments({
+    adviser_id: adviser._id,
+  });
+
+  const totalPages = Math.ceil(totalSemesters / perPage);
+  const semesters = await Semester.find({ adviser_id: adviser._id })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * perPage)
+    .limit(perPage);
+
+  return res.status(200).json({
+    semesters,
+    totalPages,
+    currentPage: page,
+  });
 };
 
 const addStudentToSemester = async (req, res) => {
@@ -159,7 +221,13 @@ const addStudentToSemester = async (req, res) => {
       );
     }
 
-    return res.status(200).json(semester);
+    const semesterStudents = semester.students;
+    const studentList = [];
+    for (const student of semesterStudents) {
+      const result = await Student.findById({ _id: student.student_id });
+      studentList.push(result);
+    }
+    return res.status(200).json(studentList);
   } catch (error) {
     return res.status(400).json(error);
   }

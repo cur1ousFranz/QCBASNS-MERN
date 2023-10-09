@@ -9,14 +9,8 @@ const ConfirmModal = ({ toggleModal, submit, title, body }) => {
     toggleModal(false);
   };
 
-  const handleBackdropCancel = (e) => {
-    if (e.target.classList.contains("modal-backdrop")) {
-      toggleModal(false);
-    }
-  };
-
   return (
-    <div onClick={handleBackdropCancel} className="fixed inset-0 flex items-center justify-center modal-backdrop">
+    <div className="fixed inset-0 flex items-center justify-center modal-backdrop">
       <div className="modal w-1/2 md:w-1/4 bg-white rounded-lg shadow-lg">
         <header className="modal-header p-4">
           <p className="md:text-lg text-gray-700">{title}</p>

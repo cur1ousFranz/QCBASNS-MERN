@@ -1,12 +1,15 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
-import { SemesterContext } from "../../context/SemesterContext";
 import { Alert } from "../../utils/Alert";
 import ErrorModal from "./ErrorModal";
 import UpperCaseWords from "../../utils/UpperCaseWords";
 import ValidationMessage from "../typography//ValidationMessage";
 
-const CreateSemesterModal = ({ toggleModal }) => {
+const CreateSemesterModal = ({
+  toggleModal,
+  setSemesterList,
+  getAllSemester,
+}) => {
   const [semester, setSemester] = useState("1");
   const [gradeLevel, setGradeLevel] = useState("12");
   const [track, setTrack] = useState("");
@@ -36,7 +39,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
   const [pmTimeOutErrorMessage, setPmTimeOutErrorMessage] = useState("");
   const [lastSelectedMeridiem, setLastSelectedMeridiem] = useState("");
 
-  const { semesters, dispatch } = useContext(SemesterContext);
+  // const { semesterList, dispatch } = useContext(SemesterContext);
 
   useEffect(() => {
     const getAllTracks = async () => {
@@ -127,28 +130,9 @@ const CreateSemesterModal = ({ toggleModal }) => {
       !pmTimeOutErrorMessage
     ) {
       try {
-        let latestSemester;
-        if (semesters.length) {
-          latestSemester = semesters[0];
-        }
-
-        const response = await axiosClient.post("/semester", newSemester);
+        const response = await axiosClient.post(`/semester`, newSemester);
         if (response.status === 200) {
-          dispatch({ type: "ADD_SEMESTER", payload: response.data });
-          // Update the latest semester to make inactive
-          if (latestSemester) {
-            const res = await axiosClient.put(
-              `/semester/${latestSemester._id}`,
-              {
-                active: false,
-              }
-            );
-
-            if (res.status === 200) {
-              dispatch({ type: "UPDATE_SEMESTER", payload: res.data });
-            }
-          }
-
+          getAllSemester();
           toggleModal(false);
           Alert("Semester Created");
         }
@@ -160,12 +144,6 @@ const CreateSemesterModal = ({ toggleModal }) => {
 
   const handleCancel = (value = false) => {
     toggleModal(value);
-  };
-
-  const handleBackdropCancel = (e) => {
-    if (e.target.classList.contains("modal-backdrop")) {
-      toggleModal(false);
-    }
   };
 
   // AM TIME ONCHANGE
@@ -261,10 +239,7 @@ const CreateSemesterModal = ({ toggleModal }) => {
   }, [timein_pm, timeout_pm]);
 
   return (
-    <div
-      onClick={handleBackdropCancel}
-      className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
-    >
+    <div className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50">
       <div className="modal w-full my-auto md:w-8/12 lg:w-6/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header mt-4 py-3">
           <p className="text-lg">

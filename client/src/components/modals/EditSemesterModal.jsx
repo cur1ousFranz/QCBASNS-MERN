@@ -1,12 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosClient from "../../utils/AxiosClient";
 import { Alert } from "../../utils/Alert";
-import { SemesterContext } from "../../context/SemesterContext";
 import UpperCaseWords from "../../utils/UpperCaseWords";
 import ValidationMessage from "../typography//ValidationMessage";
 import ErrorModal from "./ErrorModal";
 
-export default function EditSemesterModal({ toggleModal, semesterId }) {
+export default function EditSemesterModal({
+  toggleModal,
+  semesterId,
+  setSemesterList,
+  setPaginationData,
+}) {
   const [semester, setSemester] = useState("1st Semester");
   const [gradeLevel, setGradeLevel] = useState("12");
   const [track, setTrack] = useState("");
@@ -25,7 +29,6 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
   const [tracks, setTracks] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
-  const { semesters, dispatch } = useContext(SemesterContext);
   const [errorModalMessage, setErrorModalMessage] = useState("");
   const [amTimeInErrorMessage, setAmTimeInErrorMessage] = useState("");
   const [amTimeOutErrorMessage, setAmTimeOutErrorMessage] = useState("");
@@ -57,23 +60,30 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
         setSelectedStrand(() => "N/A");
       }
     });
-  }, [track]);
+  }, [tracks]);
 
   useEffect(() => {
-    const result = semesters.filter((semester) => semester._id === semesterId);
-    const selectedSemester = result[0];
-    setSemester(() => selectedSemester.semester);
-    setGradeLevel(() => selectedSemester.grade_level);
-    setTrack(() => selectedSemester.track);
-    setSelectedStrand(() => selectedSemester.strand);
-    setSection(() => selectedSemester.section);
-    setStartYear(() => selectedSemester.start_year);
-    setEndYear(() => selectedSemester.end_year);
-    setTimeinAm(() => selectedSemester.timein_am);
-    setTimeoutAm(() => selectedSemester.timeout_am);
-    setTimeinPm(() => selectedSemester.timein_pm);
-    setTimeoutPm(() => selectedSemester.timeout_pm);
-  }, []);
+    const getSemester = async () => {
+      try {
+        const response = await axiosClient.get(`/semester/${semesterId}`);
+        if (response.status === 200) {
+          const selectedSemester = response.data;
+          setSemester(() => selectedSemester.semester);
+          setGradeLevel(() => selectedSemester.grade_level);
+          setTrack(() => selectedSemester.track);
+          setSelectedStrand(() => selectedSemester.strand);
+          setSection(() => selectedSemester.section);
+          setStartYear(() => selectedSemester.start_year);
+          setEndYear(() => selectedSemester.end_year);
+          setTimeinAm(() => selectedSemester.timein_am);
+          setTimeoutAm(() => selectedSemester.timeout_am);
+          setTimeinPm(() => selectedSemester.timein_pm);
+          setTimeoutPm(() => selectedSemester.timeout_pm);
+        }
+      } catch (error) {}
+    };
+    getSemester();
+  }, [semesterId]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -118,19 +128,33 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
       section: UpperCaseWords(section),
       start_year: startYear,
       end_year: endYear,
+      timein_am,
+      timeout_am,
+      timein_pm,
+      timeout_pm,
     };
 
-    if (!hasError) {
+    if (
+      !hasError &&
+      !amTimeInErrorMessage &&
+      !amTimeOutErrorMessage &&
+      !pmTimeInErrorMessage &&
+      !pmTimeOutErrorMessage
+    ) {
       try {
         const response = await axiosClient.put(`/semester/${semesterId}`, {
           ...updatedSemester,
         });
         if (response.status === 200) {
-          dispatch({ type: "UPDATE_SEMESTER", payload: response.data });
+          setSemesterList(() => response.data);
+          setPaginationData({
+            current_page: response.data.currentPage,
+            last_page: response.data.totalPages,
+          });
+          // dispatch({ type: "UPDATE_SEMESTER", payload: response.data });
           toggleModal(false);
           Alert("Semester Updated");
         }
-        console.log(updatedSemester);
       } catch (error) {
         setErrorModalMessage(error.message);
       }
@@ -139,12 +163,6 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
   const handleCancel = () => {
     toggleModal(false);
-  };
-
-  const handleBackdropCancel = (e) => {
-    if (e.target.classList.contains("modal-backdrop")) {
-      toggleModal(false);
-    }
   };
 
   // AM TIME ONCHANGE
@@ -241,7 +259,6 @@ export default function EditSemesterModal({ toggleModal, semesterId }) {
 
   return (
     <div
-      onClick={handleBackdropCancel}
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
       style={{ minHeight: "100vh" }}
     >
