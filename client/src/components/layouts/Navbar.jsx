@@ -55,7 +55,7 @@ export default function Navbar() {
     <div className="py-2 px-12 border-b flex justify-between">
       <div className="flex">
         <Link to={"/"} className="p-0">
-          <img src="/img/logo.png" className="object-fit w-1/2" alt="" />
+          <img src="/img/GSCNHS.png" className="object-fit w-1/2" alt="" />
         </Link>
         <div className="hidden mt-2 -ml-12 text-gray-700 md:block">
           <p className="text-xs">GENERAL SANTOS CITY NATIONAL HIGH SCHOOL</p>
