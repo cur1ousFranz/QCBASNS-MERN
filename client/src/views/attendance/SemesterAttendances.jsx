@@ -309,9 +309,9 @@ export default function SemesterAttendances() {
 
         {showCreateAttendanceModal && (
           <ConfirmModal
-            title={"Create New Attendance"}
+            title={"Attention"}
             body={
-              "By proceeding to create new attendance, previous attendance will be set to inactive."
+              "You can only create on attendance per day. Would you like to proceed?"
             }
             toggleModal={toggleCreateAttendanceModal}
             submit={handleCreateAttendance}
