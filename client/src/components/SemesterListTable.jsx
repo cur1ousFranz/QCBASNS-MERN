@@ -9,7 +9,7 @@ export default function SemesterListTable({
   navigate,
   handlePageChange,
   setSemesterList,
-  setPaginationData
+  setPaginationData,
 }) {
   const [showOptionMenu, setShowOptionMenu] = useState(false);
   const [selectedOptionIndex, setSeletedOptionIndex] = useState(null);
@@ -33,19 +33,19 @@ export default function SemesterListTable({
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3">
-                Section
+                School Year
               </th>
               <th scope="col" className="px-6 py-3">
                 Semester
-              </th>
-              <th scope="col" className="px-6 py-3">
-                School Year
               </th>
               <th scope="col" className="px-6 py-3">
                 Track
               </th>
               <th scope="col" className="px-6 py-3">
                 Strand
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Section
               </th>
               <th scope="col" className="px-6 py-3">
                 Grade Level
@@ -62,25 +62,18 @@ export default function SemesterListTable({
                   key={semester._id}
                   className="border-b whitespace-normal text-sm max-w-md overflow-ellipsis cursor-pointer bg-white hover:bg-green-50"
                 >
-                  <th
+                  <td
                     onClick={() => navigate(semester._id)}
-                    scope="row"
-                    className="px-6 py-4 font-medium"
+                    className="px-6 py-4"
                   >
-                    {semester.section}
-                  </th>
+                    {semester.start_year} - {semester.end_year}
+                  </td>
                   <td
                     onClick={() => navigate(semester._id)}
                     className="px-6 py-4"
                   >
                     {semester.semester}
                     {semester.semester === "1" ? "st Semester" : "nd Semester"}
-                  </td>
-                  <td
-                    onClick={() => navigate(semester._id)}
-                    className="px-6 py-4"
-                  >
-                    {semester.start_year} - {semester.end_year}
                   </td>
                   <td
                     onClick={() => navigate(semester._id)}
@@ -94,6 +87,13 @@ export default function SemesterListTable({
                   >
                     {semester.strand}
                   </td>
+                  <th
+                    onClick={() => navigate(semester._id)}
+                    scope="row"
+                    className="px-6 py-4 font-medium"
+                  >
+                    {semester.section}
+                  </th>
                   <td
                     onClick={() => navigate(semester._id)}
                     className="px-6 py-4"
