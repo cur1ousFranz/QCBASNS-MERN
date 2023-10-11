@@ -589,7 +589,7 @@ const CreateStudentModal = ({
               </div>
               <div className="flex space-x-3">
                 <div className="w-full relative">
-                  <label>City/Municipality</label>
+                  <label>City</label>
                   <input
                     type="text"
                     value={city}
