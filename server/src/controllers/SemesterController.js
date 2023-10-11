@@ -86,11 +86,14 @@ const createSemester = async (req, res) => {
     const userId = extractUserID(req);
     const adviser = await Adviser.findOne({ user_id: userId });
 
-    // Set the latest Semester to inactive
-    const lastActiveSemester = await Semester.findOne({ active: true });
+    // Set the latest Semester of adviser to inactive
+    const lastActiveSemester = await Semester.findOne({
+      adviser_id: adviser._id,
+      active: true,
+    });
     if (lastActiveSemester)
       await Semester.findByIdAndUpdate(
-        { _id: lastActiveSemester._id },
+        { _id: lastActiveSemester._id, adviser_id: adviser._id },
         { active: false }
       );
 
