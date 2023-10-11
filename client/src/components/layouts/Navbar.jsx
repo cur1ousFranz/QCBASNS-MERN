@@ -19,18 +19,20 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const getAdviser = async () => {
-      try {
-        const response = await axiosClient.get("/adviser");
-        if (response.status === 200) {
-          setAdviser(() => response.data);
+    if (user) {
+      const getAdviser = async () => {
+        try {
+          const response = await axiosClient.get("/adviser");
+          if (response.status === 200) {
+            setAdviser(() => response.data);
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getAdviser();
-  }, []);
+      };
+      getAdviser();
+    }
+  }, [user]);
 
   useEffect(() => {
     const url = location.pathname.trim().split("/");
