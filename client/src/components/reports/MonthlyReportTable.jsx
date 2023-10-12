@@ -2,22 +2,40 @@ import React, { useEffect, useState } from "react";
 import getWeekdaysAndFormattedDatesInMonth from "../../utils/GetWeekDaysInMonth";
 import formattedDate from "../../utils/FormattedDate";
 import { REPORT } from "../../constants/Report";
+import getWeeksInMonth from "../../utils/GetWeekDaysInWeek";
 
 export default function MonthlyReportTable({
   selectedMonthIndex,
   semesterYear,
   monthAttendances,
   currentSelectedSemester,
+  tableShow,
+  currentWeeklyIndex,
+  setWeeklyIndexes,
 }) {
   const [weekDaysAndDates, setWeekDaysAndDates] = useState([]);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [selectedRow, setSelectedRow] = useState("");
 
   useEffect(() => {
-    const weekdaysAndFormattedDatesInMonth =
-      getWeekdaysAndFormattedDatesInMonth(semesterYear, selectedMonthIndex);
-    setWeekDaysAndDates(() => weekdaysAndFormattedDatesInMonth);
-  }, [selectedMonthIndex, semesterYear]);
+    if (tableShow === REPORT.Monthly) {
+      const result = getWeekdaysAndFormattedDatesInMonth(
+        semesterYear,
+        selectedMonthIndex
+      );
+      setWeekDaysAndDates(() => result);
+    }
+    if (tableShow === REPORT.Weekly) {
+      const result = getWeeksInMonth(semesterYear, selectedMonthIndex);
+      setWeekDaysAndDates(() => result[currentWeeklyIndex]); // Divided weeks in month
+      
+      const indexes = [];
+      for (let i = 0; i < result.length; i++) {
+        indexes.push(i);
+      }
+      setWeeklyIndexes(() => indexes);
+    }
+  }, [selectedMonthIndex, semesterYear, tableShow, currentWeeklyIndex]);
 
   useEffect(() => {
     // Set inital attendance record
@@ -233,7 +251,7 @@ export default function MonthlyReportTable({
                       } cursor-pointer hover:bg-green-100`}
                       onClick={() => setSelectedRow(full_name)}
                     >
-                      <td className="whitespace-nowrap px-4 py-2">
+                      <td className="whitespace-nowrap p-2">
                         {full_name}
                       </td>
                       {dateValues.map((dateValues, index) => (
@@ -242,38 +260,38 @@ export default function MonthlyReportTable({
                           className="text-xs border"
                         >
                           {dateValues.record === REPORT.NoRecord && (
-                            <div className="p-3">-:-</div>
+                            <div className="p-3 text-center text-gray-400">-:-</div>
                           )}
                           {dateValues.record === REPORT.Present && (
-                            <div className="p-4 bg-white"></div>
+                            <div className="p-3 bg-white"></div>
                           )}
                           {dateValues.record === REPORT.Absent && (
-                            <div className="p-5 bg-black"></div>
+                            <div className="p-3 bg-black"></div>
                           )}
                           {dateValues.record === REPORT.Cutting && (
                             <div className="p-3 text-center">X</div>
                           )}
                           {dateValues.record === REPORT.Late && (
-                            <div className="p-5 bg-red-500"></div>
+                            <div className="p-3 bg-red-500"></div>
                           )}
                           {dateValues.record === REPORT.Halfday && (
-                            <div className="relative border border-black p-5">
+                            <div className="relative border border-black p-3">
                               <div className="absolute left-0 top-0 w-full h-1/2 bg-black"></div>
                               <div className="absolute left-0 bottom-0 w-full h-1/2 bg-white"></div>
                             </div>
                           )}
                         </td>
                       ))}
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border text-center">
                         {countResult(attendance, REPORT.Absent)}
                       </td>
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border text-center">
                         {countResult(attendance, REPORT.Late)}
                       </td>
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border text-center">
                         {countResult(attendance, REPORT.Cutting)}
                       </td>
-                      <td className="px-4 py-2 border">
+                      <td className="px-4 py-2 border text-center">
                         {countResult(attendance, REPORT.Halfday)}
                       </td>
                     </tr>

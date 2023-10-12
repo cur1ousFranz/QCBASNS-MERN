@@ -5,6 +5,8 @@ export const REPORT = {
   Late: "Late",
   Cutting: "Cutting",
   Halfday: "Halfday",
+  Monthly: "Monthly",
+  Weekly: "Weekly",
 };
 
 export const Present = () => {

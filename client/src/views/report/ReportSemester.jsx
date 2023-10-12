@@ -3,7 +3,7 @@ import MonthlyReportTable from "../../components/reports/MonthlyReportTable";
 import { useParams } from "react-router-dom";
 import axiosClient from "../../utils/AxiosClient";
 import Header from "../../components/header-text/Header";
-import { Absent, Cutting, Halfday, Late } from "../../constants/Report";
+import { Absent, Cutting, Halfday, Late, REPORT } from "../../constants/Report";
 
 export default function ReportSemester() {
   const { semesterId } = useParams();
@@ -15,6 +15,9 @@ export default function ReportSemester() {
   const [monthAttendances, setMonthAttendances] = useState([]);
   const [semester, setSemester] = useState(null);
   const [tableDetails, setTableDetails] = useState([]);
+  const [tableShow, setTableShow] = useState(REPORT.Monthly);
+  const [currentWeeklyIndex, setCurrentWeeklyIndex] = useState(0);
+  const [weeklyIndexes, setWeeklyIndexes] = useState([]);
 
   useEffect(() => {
     const getSemester = async () => {
@@ -115,6 +118,23 @@ export default function ReportSemester() {
     return filteredAttendances;
   }
 
+  const formatIndex = (index) => {
+    switch (index) {
+      case 0:
+        return "1st Week";
+      case 1:
+        return "2nd Week";
+      case 2:
+        return "3rd Week";
+      case 3:
+        return "4th Week";
+      case 4:
+        return "5th Week";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
@@ -129,19 +149,43 @@ export default function ReportSemester() {
             <Header title="Semester's Report" />
           </div>
           <div className="flex justify-between space-x-3">
-            <select
-              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              value={selectedMonth ? selectedMonth : ""}
-              className="px-1 text-sm w-fit rounded-sm border border-gray-500"
-            >
-              {monthsList &&
-                monthsList.map((month) => (
-                  <option key={month.month} value={month.number}>
-                    {month.month}
-                  </option>
-                ))}
-              {monthsList.length === 0 && <option>No record</option>}
-            </select>
+            <div className="flex space-x-3">
+              <select
+                onChange={(e) => setTableShow(e.target.value)}
+                value={tableShow}
+                className="px-1 text-sm w-fit rounded-sm border border-gray-500"
+              >
+                <option value={REPORT.Monthly}>{REPORT.Monthly}</option>
+                <option value={REPORT.Weekly}>{REPORT.Weekly}</option>
+              </select>
+              <select
+                onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+                value={selectedMonth ? selectedMonth : ""}
+                className="px-1 text-sm w-fit rounded-sm border border-gray-500"
+              >
+                {monthsList &&
+                  monthsList.map((month) => (
+                    <option key={month.month} value={month.number}>
+                      {month.month}
+                    </option>
+                  ))}
+                {monthsList.length === 0 && <option>No record</option>}
+              </select>
+
+              {tableShow === REPORT.Weekly && (
+                <select
+                  onChange={(e) => setCurrentWeeklyIndex(e.target.value)}
+                  value={currentWeeklyIndex}
+                  className="px-1 text-sm w-fit rounded-sm border border-gray-500"
+                >
+                  {weeklyIndexes.map((index) => (
+                    <option key={`weekly ${index}`} value={index}>
+                      {formatIndex(index)}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
             <div className="flex space-x-3">
               <div className="flex space-x-2 text-sm">
                 <p>Present</p>
@@ -176,18 +220,29 @@ export default function ReportSemester() {
                 </div>
               ))}
           </div>
-          {monthAttendances.length > 0 ? (
+          {monthAttendances.length > 0 && (
             <MonthlyReportTable
               selectedMonthIndex={selectedMonth}
               semesterYear={semesterYear}
               monthAttendances={monthAttendances}
               currentSelectedSemester={semester}
+              tableShow={tableShow}
+              currentWeeklyIndex={currentWeeklyIndex}
+              setWeeklyIndexes={setWeeklyIndexes}
             />
-          ) : (
-            <div className="border-b align-middle text-center cursor-pointer text-gray-400 bg-gray-50">
-              <p className="py-24">No Record</p>
-            </div>
           )}
+          {/* {monthAttendances.length > 0 && tableShow === REPORT.Weekly && (
+            <WeeklyReportTable
+              selectedMonthIndex={selectedMonth}
+              semesterYear={semesterYear}
+              monthAttendances={monthAttendances}
+              currentSelectedSemester={semester}
+            />
+          )} */}
+
+          {/* <div className="border-b align-middle text-center cursor-pointer text-gray-400 bg-gray-50">
+              <p className="py-24">No Record</p>
+            </div> */}
         </div>
       </div>
     </div>
