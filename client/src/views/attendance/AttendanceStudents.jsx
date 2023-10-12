@@ -11,8 +11,6 @@ export default function AttendanceStudents() {
   const { semesterId, attendanceId } = useParams();
   const [attendance, setAttendance] = useState(null);
   const [studentsList, setStudentList] = useState([]);
-  const [totalAmScanned, setTotalAmScanned] = useState(0);
-  const [totalPmScanned, setTotalPmScanned] = useState(0);
   const [showScanner, setShowScanner] = useState(false);
   const [lastScannedStudentId, setLastScannedStudentId] = useState("");
   const [showScannerError, setShowScannerError] = useState(false);
@@ -21,6 +19,11 @@ export default function AttendanceStudents() {
   const [currentSemester, setCurrentSemester] = useState(null);
   const [studentTableDetailsList, setStudentTableDetailsList] = useState([]);
   const [sortedStudents, setSortedStudents] = useState([]);
+
+  const [totalAmInScanned, setTotalAmInScanned] = useState(0);
+  const [totalAmOutScanned, setTotalAmOutScanned] = useState(0);
+  const [totalPmInScanned, setTotalPmInScanned] = useState(0);
+  const [totalPmOutScanned, setTotalPmOutScanned] = useState(0);
 
   const getAttendanceStudents = async () => {
     try {
@@ -65,19 +68,29 @@ export default function AttendanceStudents() {
   }, [currentSemester, attendance]);
 
   useEffect(() => {
-    let amCount = 0;
-    let pmCount = 0;
+    let amInCount = 0;
+    let amOutCount = 0;
+    let pmInCount = 0;
+    let pmOutCount = 0;
     studentsList.forEach((student) => {
       if (student.time_in_am) {
-        amCount++;
+        amInCount++;
+      }
+      if (student.time_out_am) {
+        amOutCount++;
       }
       if (student.time_in_pm) {
-        pmCount++;
+        pmInCount++;
+      }
+      if (student.time_out_pm) {
+        pmOutCount++;
       }
     });
 
-    setTotalAmScanned(() => amCount);
-    setTotalPmScanned(() => pmCount);
+    setTotalAmInScanned(() => amInCount);
+    setTotalAmOutScanned(() => amOutCount);
+    setTotalPmInScanned(() => pmInCount);
+    setTotalPmOutScanned(() => pmOutCount);
   }, [studentsList]);
 
   const handleQrScanned = async (student) => {
@@ -206,12 +219,13 @@ export default function AttendanceStudents() {
                         </div>
                       ))}
                   </div>
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-3 font-semibold">
                     <h1 className="text-sm text-gray-600">
-                      Scanned (AM): {totalAmScanned} / {studentsList.length}
+                      Scanned (AM) IN: {totalAmInScanned} / OUT:{" "}
+                      {totalAmOutScanned}
                     </h1>
                     <h1 className="text-sm text-gray-600">
-                      Scanned (PM): {totalPmScanned} / {studentsList.length}
+                      (PM) IN: {totalPmInScanned} / OUT: {totalPmOutScanned}
                     </h1>
                   </div>
                 </div>
