@@ -3,6 +3,7 @@ import MonthlyReportTable from "../../components/reports/MonthlyReportTable";
 import { useParams } from "react-router-dom";
 import axiosClient from "../../utils/AxiosClient";
 import Header from "../../components/header-text/Header";
+import { Absent, Cutting, Halfday, Late } from "../../constants/Report";
 
 export default function ReportSemester() {
   const { semesterId } = useParams();
@@ -131,7 +132,7 @@ export default function ReportSemester() {
             <select
               onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
               value={selectedMonth ? selectedMonth : ""}
-              className="px-2 py-1 w-fit border rounded-md"
+              className="px-1 text-sm w-fit rounded-sm border border-gray-500"
             >
               {monthsList &&
                 monthsList.map((month) => (
@@ -148,19 +149,19 @@ export default function ReportSemester() {
               </div>
               <div className="flex space-x-2 text-sm">
                 <p>Absent</p>
-                <div className="w-fit mt-1 p-1.5 h-fit border border-red-400 bg-red-400"></div>
+                <Absent />
+              </div>
+              <div className="flex space-x-2 text-sm">
+                <p>Halfday</p>
+                <Halfday />
               </div>
               <div className="flex space-x-2 text-sm">
                 <p>Late</p>
-                <div className="w-fit mt-1 p-1.5 h-fit border border-yellow-400 bg-yellow-400"></div>
+                <Late />
               </div>
               <div className="flex space-x-2 text-sm">
                 <p>Cutting</p>
-                <div className="w-fit mt-1 p-1.5 h-fit border border-green-400 bg-green-400"></div>
-              </div>
-              <div className="flex space-x-2 text-sm">
-                <p>Undertime</p>
-                <div className="w-fit mt-1 p-1.5 h-fit border border-orange-400 bg-orange-400"></div>
+                <Cutting />
               </div>
             </div>
           </div>

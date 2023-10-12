@@ -57,7 +57,6 @@ export default function MonthlyReportTable({
                * Absent (Red)
                * Late (Yellow)
                * Cutting (Green)
-               * Undertime (Orange)
                */
 
               let dayRecord;
@@ -76,28 +75,26 @@ export default function MonthlyReportTable({
               // CUTTING
               if (
                 (student.time_in_am !== "" && student.time_out_am === "") ||
-                (student.time_in_pm !== "" && student.time_out_pm === "")
-              ) {
-                dayRecord = REPORT.Cutting;
-              }
-              // UNDERTIME
-              if (
-                isUnderTime(
+                (student.time_in_pm !== "" && student.time_out_pm === "") ||
+                isCutting(
                   currentSelectedSemester.timeout_am,
                   student.time_out_am
                 ) ||
-                isUnderTime(
+                isCutting(
                   currentSelectedSemester.timeout_pm,
                   student.time_out_pm
                 )
               ) {
-                dayRecord = REPORT.Undertime;
+                dayRecord = REPORT.Cutting;
+              }
+              // HALFDAY
+              if (isHalfday(currentSelectedSemester.timeout_am, student)) {
+                dayRecord = REPORT.Halfday;
               }
               // ABSENT
               if (!student.time_in_am && !student.time_out_pm) {
                 dayRecord = REPORT.Absent;
               }
-
               studentsListInitialRecord.map((attendance) => {
                 if (attendance.student_id === student.student_id) {
                   attendance[attendanceDate] = {
@@ -126,25 +123,40 @@ export default function MonthlyReportTable({
     return studentTime > semesterTimeIn;
   };
 
-  const isUnderTime = (semesterTimeOut, studentTimeOut) => {
+  const isCutting = (semesterTimeOut, studentTimeOut) => {
     if (!studentTimeOut) return false;
     const studentTimeMatch = studentTimeOut.match(/\d{2}:\d{2}/);
     const studentTime = studentTimeMatch[0];
     return studentTime < semesterTimeOut;
   };
 
+  const isHalfday = (semesterTimeOut, student) => {
+    if (
+      student.time_in_am &&
+      student.time_out_am &&
+      !student.time_in_pm &&
+      !student.time_out_pm
+    ) {
+      const studentTimeMatch = student.time_out_am.match(/\d{2}:\d{2}/);
+      const studentTime = studentTimeMatch[0];
+      if (studentTime > semesterTimeOut) {
+        return true;
+      }
+    }
+  };
+
   const countResult = (attendance, toCount) => {
     let countAbsent = 0;
     let countLate = 0;
     let countCutting = 0;
-    let countUndertime = 0;
+    let countHalfday = 0;
     const { student_id, full_name, ...dateDate } = attendance;
     const dateValues = Object.values(dateDate);
     dateValues.forEach((value) => {
       if (value.record === REPORT.Absent) countAbsent++;
       if (value.record === REPORT.Late) countLate++;
       if (value.record === REPORT.Cutting) countCutting++;
-      if (value.record === REPORT.Undertime) countUndertime++;
+      if (value.record === REPORT.Halfday) countHalfday++;
     });
 
     switch (toCount) {
@@ -154,8 +166,8 @@ export default function MonthlyReportTable({
         return countLate;
       case REPORT.Cutting:
         return countCutting;
-      case REPORT.Undertime:
-        return countUndertime;
+      case REPORT.Halfday:
+        return countHalfday;
       default:
         return 0;
     }
@@ -203,7 +215,7 @@ export default function MonthlyReportTable({
               <th className="font-normal px-2 py-3 uppercase">Absent</th>
               <th className="font-normal px-2 py-3 uppercase">Late</th>
               <th className="font-normal px-2 py-3 uppercase">Cutting</th>
-              <th className="font-normal px-2 py-3 uppercase">Undertime</th>
+              <th className="font-normal px-2 py-3 uppercase">Halfday</th>
             </tr>
           </thead>
           <tbody>
@@ -221,26 +233,35 @@ export default function MonthlyReportTable({
                       } cursor-pointer hover:bg-green-100`}
                       onClick={() => setSelectedRow(full_name)}
                     >
-                      <td className="whitespace-nowrap  px-4 py-2">
+                      <td className="whitespace-nowrap px-4 py-2">
                         {full_name}
                       </td>
                       {dateValues.map((dateValues, index) => (
                         <td
                           key={full_name + dateValues + index}
-                          className={`px-4 py-2 text-xs border 
-                          ${
-                            dateValues.record === REPORT.Absent
-                              ? "bg-red-400"
-                              : dateValues.record === REPORT.Late
-                              ? "bg-yellow-400"
-                              : dateValues.record === REPORT.Cutting
-                              ? "bg-green-400"
-                              : dateValues.record === REPORT.Undertime
-                              ? "bg-orange-400"
-                              : ""
-                          }`}
+                          className="text-xs border"
                         >
-                          {dateValues.record === REPORT.NoRecord ? "-:-" : ""}
+                          {dateValues.record === REPORT.NoRecord && (
+                            <div className="p-3">-:-</div>
+                          )}
+                          {dateValues.record === REPORT.Present && (
+                            <div className="p-4 bg-white"></div>
+                          )}
+                          {dateValues.record === REPORT.Absent && (
+                            <div className="p-5 bg-black"></div>
+                          )}
+                          {dateValues.record === REPORT.Cutting && (
+                            <div className="p-3 text-center">X</div>
+                          )}
+                          {dateValues.record === REPORT.Late && (
+                            <div className="p-5 bg-red-500"></div>
+                          )}
+                          {dateValues.record === REPORT.Halfday && (
+                            <div className="relative border border-black p-5">
+                              <div className="absolute left-0 top-0 w-full h-1/2 bg-black"></div>
+                              <div className="absolute left-0 bottom-0 w-full h-1/2 bg-white"></div>
+                            </div>
+                          )}
                         </td>
                       ))}
                       <td className="px-4 py-2 border">
@@ -253,7 +274,7 @@ export default function MonthlyReportTable({
                         {countResult(attendance, REPORT.Cutting)}
                       </td>
                       <td className="px-4 py-2 border">
-                        {countResult(attendance, REPORT.Undertime)}
+                        {countResult(attendance, REPORT.Halfday)}
                       </td>
                     </tr>
                   );
