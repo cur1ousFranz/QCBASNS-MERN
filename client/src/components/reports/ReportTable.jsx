@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import getWeekdaysAndFormattedDatesInMonth from "../../utils/GetWeekDaysInMonth";
-import formattedDate from "../../utils/FormattedDate";
 import { REPORT } from "../../constants/Report";
 import getWeeksInMonth from "../../utils/GetWeekDaysInWeek";
+import { countResult, getStudentsRecord } from "../../utils/ReportUtil";
 
 export default function MonthlyReportTable({
   selectedMonthIndex,
@@ -28,7 +28,7 @@ export default function MonthlyReportTable({
     if (tableShow === REPORT.Weekly) {
       const result = getWeeksInMonth(semesterYear, selectedMonthIndex);
       setWeekDaysAndDates(() => result[currentWeeklyIndex]); // Divided weeks in month
-      
+
       const indexes = [];
       for (let i = 0; i < result.length; i++) {
         indexes.push(i);
@@ -40,156 +40,14 @@ export default function MonthlyReportTable({
   useEffect(() => {
     // Set inital attendance record
     if (weekDaysAndDates && monthAttendances.length) {
-      const attendance = monthAttendances.sort((a, b) =>
-        a.createdAt.localeCompare(b.createdAt)
-      )[monthAttendances.length - 1];
-
-      const studentsListInitialRecord = [];
-      for (const student of attendance.students) {
-        let studentInitialRecord = {
-          student_id: student.student_id,
-          full_name: `${student.full_name}${
-            student.suffix !== "N/A" ? ", " + student.suffix : ""
-          }`,
-        };
-
-        for (const day of weekDaysAndDates) {
-          studentInitialRecord[day.date] = {
-            record: REPORT.NoRecord,
-            time_in_am: "",
-            time_out_am: "",
-            time_in_pm: "",
-            time_out_pm: "",
-          };
-        }
-        studentsListInitialRecord.push(studentInitialRecord);
-      }
-
-      for (const actualDate of weekDaysAndDates) {
-        for (const attendance of monthAttendances) {
-          const attendanceDate = formattedDate(attendance.createdAt);
-          if (attendanceDate === actualDate.date) {
-            for (const student of attendance.students) {
-              /**
-               * Present (No color)
-               * Absent (Red)
-               * Late (Yellow)
-               * Cutting (Green)
-               */
-
-              let dayRecord;
-              // PRESENT
-              if (student.time_in_am && student.time_out_pm) {
-                dayRecord = REPORT.Present;
-              }
-
-              // LATE
-              if (
-                isLate(currentSelectedSemester.timein_am, student.time_in_am) ||
-                isLate(currentSelectedSemester.timein_pm, student.time_in_pm)
-              ) {
-                dayRecord = REPORT.Late;
-              }
-              // CUTTING
-              if (
-                (student.time_in_am !== "" && student.time_out_am === "") ||
-                (student.time_in_pm !== "" && student.time_out_pm === "") ||
-                isCutting(
-                  currentSelectedSemester.timeout_am,
-                  student.time_out_am
-                ) ||
-                isCutting(
-                  currentSelectedSemester.timeout_pm,
-                  student.time_out_pm
-                )
-              ) {
-                dayRecord = REPORT.Cutting;
-              }
-              // HALFDAY
-              if (isHalfday(currentSelectedSemester.timeout_am, student)) {
-                dayRecord = REPORT.Halfday;
-              }
-              // ABSENT
-              if (!student.time_in_am && !student.time_out_pm) {
-                dayRecord = REPORT.Absent;
-              }
-              studentsListInitialRecord.map((attendance) => {
-                if (attendance.student_id === student.student_id) {
-                  attendance[attendanceDate] = {
-                    record: dayRecord,
-                    time_in_am: student.time_in_am,
-                    time_out_am: student.time_out_am,
-                    time_in_pm: student.time_in_pm,
-                    time_out_pm: student.time_out_pm,
-                  };
-                }
-                return attendance;
-              });
-            }
-          }
-        }
-      }
-
+      const studentsListInitialRecord = getStudentsRecord(
+        weekDaysAndDates,
+        monthAttendances,
+        currentSelectedSemester
+      );
       setMonthlyAttendance(() => studentsListInitialRecord);
     }
   }, [weekDaysAndDates]);
-
-  const isLate = (semesterTimeIn, studentTimeIn) => {
-    if (!studentTimeIn) return false;
-    const studentTimeMatch = studentTimeIn.match(/\d{2}:\d{2}/);
-    const studentTime = studentTimeMatch[0];
-    return studentTime > semesterTimeIn;
-  };
-
-  const isCutting = (semesterTimeOut, studentTimeOut) => {
-    if (!studentTimeOut) return false;
-    const studentTimeMatch = studentTimeOut.match(/\d{2}:\d{2}/);
-    const studentTime = studentTimeMatch[0];
-    return studentTime < semesterTimeOut;
-  };
-
-  const isHalfday = (semesterTimeOut, student) => {
-    if (
-      student.time_in_am &&
-      student.time_out_am &&
-      !student.time_in_pm &&
-      !student.time_out_pm
-    ) {
-      const studentTimeMatch = student.time_out_am.match(/\d{2}:\d{2}/);
-      const studentTime = studentTimeMatch[0];
-      if (studentTime > semesterTimeOut) {
-        return true;
-      }
-    }
-  };
-
-  const countResult = (attendance, toCount) => {
-    let countAbsent = 0;
-    let countLate = 0;
-    let countCutting = 0;
-    let countHalfday = 0;
-    const { student_id, full_name, ...dateDate } = attendance;
-    const dateValues = Object.values(dateDate);
-    dateValues.forEach((value) => {
-      if (value.record === REPORT.Absent) countAbsent++;
-      if (value.record === REPORT.Late) countLate++;
-      if (value.record === REPORT.Cutting) countCutting++;
-      if (value.record === REPORT.Halfday) countHalfday++;
-    });
-
-    switch (toCount) {
-      case REPORT.Absent:
-        return countAbsent;
-      case REPORT.Late:
-        return countLate;
-      case REPORT.Cutting:
-        return countCutting;
-      case REPORT.Halfday:
-        return countHalfday;
-      default:
-        return 0;
-    }
-  };
 
   return (
     <>
@@ -240,7 +98,7 @@ export default function MonthlyReportTable({
             {monthlyAttendance &&
               monthlyAttendance
                 .sort((a, b) => a.full_name.localeCompare(b.full_name))
-                .map((attendance) => {
+                .map((attendance, index) => {
                   const { student_id, full_name, ...dateDate } = attendance;
                   const dateValues = Object.values(dateDate);
                   return (
@@ -251,16 +109,16 @@ export default function MonthlyReportTable({
                       } cursor-pointer hover:bg-green-100`}
                       onClick={() => setSelectedRow(full_name)}
                     >
-                      <td className="whitespace-nowrap p-2">
-                        {full_name}
-                      </td>
+                      <td className="whitespace-nowrap p-2">{index + 1}. {full_name}</td>
                       {dateValues.map((dateValues, index) => (
                         <td
                           key={full_name + dateValues + index}
                           className="text-xs border"
                         >
                           {dateValues.record === REPORT.NoRecord && (
-                            <div className="p-3 text-center text-gray-400">-:-</div>
+                            <div className="p-3 text-center text-gray-400">
+                              -:-
+                            </div>
                           )}
                           {dateValues.record === REPORT.Present && (
                             <div className="p-3 bg-white"></div>

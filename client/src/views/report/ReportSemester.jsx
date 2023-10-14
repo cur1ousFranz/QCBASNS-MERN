@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import MonthlyReportTable from "../../components/reports/MonthlyReportTable";
+import React, { useEffect, useRef, useState } from "react";
+import ReportTable from "../../components/reports/ReportTable";
 import { useParams } from "react-router-dom";
 import axiosClient from "../../utils/AxiosClient";
 import Header from "../../components/header-text/Header";
 import { Absent, Cutting, Halfday, Late, REPORT } from "../../constants/Report";
+import { useReactToPrint } from "react-to-print";
+import ReportContent from "../../components/reports/ReportContent";
 
 export default function ReportSemester() {
   const { semesterId } = useParams();
@@ -18,6 +20,8 @@ export default function ReportSemester() {
   const [tableShow, setTableShow] = useState(REPORT.Monthly);
   const [currentWeeklyIndex, setCurrentWeeklyIndex] = useState(0);
   const [weeklyIndexes, setWeeklyIndexes] = useState([]);
+
+  const componentRef = useRef();
 
   useEffect(() => {
     const getSemester = async () => {
@@ -135,6 +139,10 @@ export default function ReportSemester() {
     }
   };
 
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
   return (
     <div className="w-full" style={{ minHeight: "100vh" }}>
       <div className="flex">
@@ -150,18 +158,20 @@ export default function ReportSemester() {
           </div>
           <div className="flex justify-between space-x-3">
             <div className="flex space-x-3">
-              <select
-                onChange={(e) => setTableShow(e.target.value)}
-                value={tableShow}
-                className="px-1 text-sm w-fit rounded-sm border border-gray-500"
-              >
-                <option value={REPORT.Monthly}>{REPORT.Monthly}</option>
-                <option value={REPORT.Weekly}>{REPORT.Weekly}</option>
-              </select>
+              {monthsList && (
+                <select
+                  onChange={(e) => setTableShow(e.target.value)}
+                  value={tableShow}
+                  className="px-1 h-fit text-sm w-fit rounded-sm border border-gray-500"
+                >
+                  <option value={REPORT.Monthly}>{REPORT.Monthly}</option>
+                  <option value={REPORT.Weekly}>{REPORT.Weekly}</option>
+                </select>
+              )}
               <select
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
                 value={selectedMonth ? selectedMonth : ""}
-                className="px-1 text-sm w-fit rounded-sm border border-gray-500"
+                className="px-1 h-fit text-sm w-fit rounded-sm border border-gray-500"
               >
                 {monthsList &&
                   monthsList.map((month) => (
@@ -172,11 +182,11 @@ export default function ReportSemester() {
                 {monthsList.length === 0 && <option>No record</option>}
               </select>
 
-              {tableShow === REPORT.Weekly && (
+              {monthsList && tableShow === REPORT.Weekly && (
                 <select
                   onChange={(e) => setCurrentWeeklyIndex(e.target.value)}
                   value={currentWeeklyIndex}
-                  className="px-1 text-sm w-fit rounded-sm border border-gray-500"
+                  className="px-1 h-fit text-sm w-fit rounded-sm border border-gray-500"
                 >
                   {weeklyIndexes.map((index) => (
                     <option key={`weekly ${index}`} value={index}>
@@ -185,27 +195,39 @@ export default function ReportSemester() {
                   ))}
                 </select>
               )}
+
+              <button
+                onClick={handlePrint}
+                className="flex space-x-2 text-sm h-fit px-1 rounded-sm border border-gray-500"
+              >
+                <p>Print</p>
+                <img src="/img/print.svg" alt="" className="mt-0.5" />
+              </button>
             </div>
-            <div className="flex space-x-3">
-              <div className="flex space-x-2 text-sm">
-                <p>Present</p>
-                <div className="w-fit mt-1 p-1.5 h-fit border border-gray-400"></div>
+            <div className="flex space-x-4">
+              <div>
+                <div className="flex space-x-2 text-sm">
+                  <p>Present</p>
+                  <div className="w-fit mt-1 p-1.5 h-fit border border-gray-400"></div>
+                </div>
+                <div className="flex space-x-2 text-sm">
+                  <p>Absent</p>
+                  <Absent />
+                </div>
               </div>
-              <div className="flex space-x-2 text-sm">
-                <p>Absent</p>
-                <Absent />
-              </div>
-              <div className="flex space-x-2 text-sm">
-                <p>Halfday</p>
-                <Halfday />
+              <div>
+                <div className="flex space-x-2 text-sm">
+                  <p>Halfday</p>
+                  <Halfday />
+                </div>
+                <div className="flex space-x-2 text-sm">
+                  <p>Cutting</p>
+                  <Cutting />
+                </div>
               </div>
               <div className="flex space-x-2 text-sm">
                 <p>Late</p>
                 <Late />
-              </div>
-              <div className="flex space-x-2 text-sm">
-                <p>Cutting</p>
-                <Cutting />
               </div>
             </div>
           </div>
@@ -221,7 +243,7 @@ export default function ReportSemester() {
               ))}
           </div>
           {monthAttendances.length > 0 && (
-            <MonthlyReportTable
+            <ReportTable
               selectedMonthIndex={selectedMonth}
               semesterYear={semesterYear}
               monthAttendances={monthAttendances}
@@ -231,18 +253,19 @@ export default function ReportSemester() {
               setWeeklyIndexes={setWeeklyIndexes}
             />
           )}
-          {/* {monthAttendances.length > 0 && tableShow === REPORT.Weekly && (
-            <WeeklyReportTable
+
+          <div className="hidden">
+            <ReportContent
+              ref={componentRef}
               selectedMonthIndex={selectedMonth}
               semesterYear={semesterYear}
               monthAttendances={monthAttendances}
               currentSelectedSemester={semester}
+              tableShow={tableShow}
+              currentWeeklyIndex={currentWeeklyIndex}
+              setWeeklyIndexes={setWeeklyIndexes}
             />
-          )} */}
-
-          {/* <div className="border-b align-middle text-center cursor-pointer text-gray-400 bg-gray-50">
-              <p className="py-24">No Record</p>
-            </div> */}
+          </div>
         </div>
       </div>
     </div>

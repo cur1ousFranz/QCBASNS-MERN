@@ -15,6 +15,7 @@
     "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
+    "react-to-print": "^2.14.15",
     "sweetalert2": "^11.7.22",
     "web-vitals": "^2.1.4"
   },
