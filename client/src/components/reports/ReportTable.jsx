@@ -70,8 +70,8 @@ export default function MonthlyReportTable({
                     {day.date}
                   </th>
                 ))}
-              <th colSpan={4} className="text-center px-6 py-3 uppercase">
-                Month
+              <th colSpan={4} className="text-center px-6 py-1 uppercase">
+                {tableShow === REPORT.Monthly ? "Month" : "Weekly"}
               </th>
             </tr>
             <tr className="text-center">
@@ -109,7 +109,9 @@ export default function MonthlyReportTable({
                       } cursor-pointer hover:bg-green-100`}
                       onClick={() => setSelectedRow(full_name)}
                     >
-                      <td className="whitespace-nowrap p-2">{index + 1}. {full_name}</td>
+                      <td className="whitespace-nowrap p-2">
+                        {index + 1}. {full_name}
+                      </td>
                       {dateValues.map((dateValues, index) => (
                         <td
                           key={full_name + dateValues + index}
