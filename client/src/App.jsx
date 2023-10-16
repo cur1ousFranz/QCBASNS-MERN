@@ -4,7 +4,6 @@ import Navbar from "./components/layouts/Navbar";
 import { useContext } from "react";
 import { AuthContext } from "./context/AuthContext";
 import { Register } from "./views/Register";
-import Message from "./views/Message";
 import Footer from "./components/layouts/Footer";
 import Attendance from "./views/attendance/Attendance";
 import SemesterAttendances from "./views/attendance/SemesterAttendances";
@@ -57,10 +56,6 @@ function App() {
           <Route
             path="/report/semester/:semesterId"
             element={user ? <ReportSemester /> : <Navigate to={"/login"} />}
-          />
-          <Route
-            path="/message"
-            element={user ? <Message /> : <Navigate to={"/login"} />}
           />
         </Routes>
         <Footer />

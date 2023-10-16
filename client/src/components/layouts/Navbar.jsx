@@ -48,7 +48,8 @@ export default function Navbar() {
           {adviser.middle_name !== "N/A"
             ? adviser.middle_name[0].toUpperCase() + "."
             : ""}{" "}
-          {UpperCaseWords(adviser.last_name)} {adviser.suffix !== "N/A" ? adviser.suffix : ""}
+          {UpperCaseWords(adviser.last_name)}{" "}
+          {adviser.suffix !== "N/A" ? adviser.suffix : ""}
         </h1>
       );
     }
@@ -110,16 +111,6 @@ export default function Navbar() {
                     }`}
                   >
                     Report
-                  </Link>
-                  <Link
-                    to={"/message"}
-                    className={`${
-                      currentPath === PATHNAME.MESSAGE
-                        ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
-                        : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
-                    }`}
-                  >
-                    Message
                   </Link>
                 </div>
               )}
