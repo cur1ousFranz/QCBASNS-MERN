@@ -5,9 +5,9 @@ export function Alert(string, icon = "success") {
   Swal.fire({
     title: string,
     icon: icon,
-    timer: 3000,
+    timer: 6000,
     toast: true,
-    position: "top-right",
+    position: "top",
     timerProgressBar: true,
     showConfirmButton: false,
   });
