@@ -80,38 +80,42 @@ export default function SemesterAttendances() {
   };
 
   useEffect(() => {
-    const matchAttendanceDate = async () => {
-      try {
-        const response = await axiosClient.get("/attendance");
-        if (response.status === 200) {
-          const attendancesData = response.data;
-          if (attendancesData.length) {
-            const attendance = attendancesData[attendancesData.length - 1];
-            const givenDate = new Date(attendance.createdAt);
-            const currentDate = new Date();
+    if (semester) {
+      const matchAttendanceDate = async () => {
+        try {
+          const response = await axiosClient.get(
+            `/attendance/adviser/${semester.adviser_id}`
+          );
+          if (response.status === 200) {
+            const attendancesData = response.data;
+            if (attendancesData.length) {
+              const attendance = attendancesData[attendancesData.length - 1];
+              const givenDate = new Date(attendance.createdAt);
+              const currentDate = new Date();
 
-            const givenYear = givenDate.getFullYear();
-            const givenMonth = givenDate.getMonth();
-            const givenDay = givenDate.getDate();
+              const givenYear = givenDate.getFullYear();
+              const givenMonth = givenDate.getMonth();
+              const givenDay = givenDate.getDate();
 
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth();
-            const currentDay = currentDate.getDate();
-            const matched =
-              givenYear === currentYear &&
-              givenMonth === currentMonth &&
-              givenDay === currentDay;
-            setHasAttendanceToday(() => matched);
-          } else {
-            setHasAttendanceToday(false);
+              const currentYear = currentDate.getFullYear();
+              const currentMonth = currentDate.getMonth();
+              const currentDay = currentDate.getDate();
+              const matched =
+                givenYear === currentYear &&
+                givenMonth === currentMonth &&
+                givenDay === currentDay;
+              setHasAttendanceToday(() => matched);
+            } else {
+              setHasAttendanceToday(false);
+            }
           }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    matchAttendanceDate();
-  }, [attendanceList]);
+      };
+      matchAttendanceDate();
+    }
+  }, [attendanceList, semester]);
 
   useEffect(() => {
     if (semester) {

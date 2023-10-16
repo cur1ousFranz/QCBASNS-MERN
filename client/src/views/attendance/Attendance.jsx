@@ -11,6 +11,11 @@ export default function Attendance() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // This adds a smooth scrolling animation
+    });
+    
     const getAllSemester = async () => {
       try {
         const response = await axiosClient.get("/semester");

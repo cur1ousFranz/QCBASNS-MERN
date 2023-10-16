@@ -25,6 +25,19 @@ const getAttendance = async (req, res) => {
   }
 };
 
+const getAllAdviserAttendances = async (req, res) => {
+  const { adviserId } = req.params;
+  if (!isValidObjectId(adviserId)) {
+    return res.status(404).json({ error: "No such attendance" });
+  }
+  try {
+    const attendances = await AttendanceModel.find({ adviser_id: adviserId });
+    return res.status(200).json(attendances);
+  } catch (error) {
+    return res.status(400).json({ error: "Something went wrong" });
+  }
+};
+
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
   const page = parseInt(req.query.page) || 1;
@@ -366,6 +379,7 @@ const sendSMS = (
 
 module.exports = {
   getAllAttendances,
+  getAllAdviserAttendances,
   getAttendance,
   getAllSemesterAttendances,
   createAttendance,
