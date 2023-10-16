@@ -6,6 +6,7 @@ import ValidationMessage from "../components/typography/ValidationMessage";
 import numbersOnly from "../utils/NumberKeys";
 import calculateAge from "../utils/CalculateAge";
 import axiosClient from "../utils/AxiosClient";
+import UpperCaseWords from "../utils/UpperCaseWords"
 
 export const Register = () => {
   const { dispatch } = useContext(AuthContext);
@@ -102,9 +103,9 @@ export const Register = () => {
       try {
         setIsLoading(true);
         const response = await axiosClient.post("/adviser", {
-          first_name: firstName,
-          middle_name: middleName ? middleName : "N/A",
-          last_name: lastName,
+          first_name: UpperCaseWords(firstName),
+          middle_name: middleName ? UpperCaseWords(middleName) : "N/A",
+          last_name: UpperCaseWords(lastName),
           suffix: currentSuffix,
           birthdate: birthDate,
           gender,

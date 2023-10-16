@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { PATHNAME } from "../../constants/Constant";
 import axiosClient from "../../utils/AxiosClient";
+import UpperCaseWords from "../../utils/UpperCaseWords";
 
 export default function Navbar() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -43,11 +44,11 @@ export default function Navbar() {
     if (adviser) {
       return (
         <h1 className="mt-2 text-sm font-semibold text-gray-600">
-          {adviser.first_name}{" "}
+          {UpperCaseWords(adviser.first_name)}{" "}
           {adviser.middle_name !== "N/A"
             ? adviser.middle_name[0].toUpperCase() + "."
             : ""}{" "}
-          {adviser.last_name} {adviser.suffix !== "N/A" ? adviser.suffix : ""}
+          {UpperCaseWords(adviser.last_name)} {adviser.suffix !== "N/A" ? adviser.suffix : ""}
         </h1>
       );
     }
