@@ -44,11 +44,12 @@ export default function SemesterStudents() {
       const school_year = `S.Y ${currentSemester.start_year}-${currentSemester.end_year}`;
       const semesterValue =
         currentSemester.semester === "1" ? "1st Semester" : "2nd Semester";
+      const gradeLevel = currentSemester.grade_level;
       const track = currentSemester.track;
       const strand =
         currentSemester.strand !== "N/A" ? currentSemester.strand : "";
       const section = currentSemester.section;
-      const tableDetails = [school_year, semesterValue, section, track];
+      const tableDetails = [school_year, semesterValue, gradeLevel, track, section];
       if (strand) tableDetails.push(strand);
       setAttendanceTableDetailsList(() => tableDetails);
     }

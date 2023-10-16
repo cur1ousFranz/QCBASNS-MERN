@@ -54,10 +54,11 @@ export default function ReportSemester() {
       const school_year = `S.Y ${semester.start_year}-${semester.end_year}`;
       const semesterValue =
         semester.semester === "1" ? "1st Semester" : "2nd Semester";
+      const gradeLevel = semester.grade_level;
       const track = semester.track;
       const strand = semester.strand !== "N/A" ? semester.strand : "";
       const section = semester.section;
-      const tableDetails = [school_year, semesterValue, section, track];
+      const tableDetails = [school_year, semesterValue, gradeLevel, track, section];
       if (strand) tableDetails.push(strand);
       setTableDetails(() => tableDetails);
     }
@@ -252,6 +253,12 @@ export default function ReportSemester() {
               currentWeeklyIndex={currentWeeklyIndex}
               setWeeklyIndexes={setWeeklyIndexes}
             />
+          )}
+
+          {monthAttendances.length === 0 && (
+            <div className="text-center py-44 rounded-sm text-gray-400 bg-gray-100">
+              <p>No record yet.</p>
+            </div>
           )}
 
           <div className="hidden">

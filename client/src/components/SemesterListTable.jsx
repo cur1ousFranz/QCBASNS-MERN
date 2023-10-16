@@ -39,6 +39,9 @@ export default function SemesterListTable({
                 Semester
               </th>
               <th scope="col" className="px-6 py-3">
+                Grade Level
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Track
               </th>
               <th scope="col" className="px-6 py-3">
@@ -46,9 +49,6 @@ export default function SemesterListTable({
               </th>
               <th scope="col" className="px-6 py-3">
                 Section
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Grade Level
               </th>
               <th scope="col" className="px-6 py-3">
                 Status
@@ -79,6 +79,12 @@ export default function SemesterListTable({
                     onClick={() => navigate(semester._id)}
                     className="px-6 py-4"
                   >
+                    {semester.grade_level}
+                  </td>
+                  <td
+                    onClick={() => navigate(semester._id)}
+                    className="px-6 py-4"
+                  >
                     {semester.track}
                   </td>
                   <td
@@ -94,12 +100,6 @@ export default function SemesterListTable({
                   >
                     {semester.section}
                   </th>
-                  <td
-                    onClick={() => navigate(semester._id)}
-                    className="px-6 py-4"
-                  >
-                    {semester.grade_level}
-                  </td>
                   <td className="px-6 py-4 flex justify-between">
                     {semester.active ? (
                       <p className="mt-2">
