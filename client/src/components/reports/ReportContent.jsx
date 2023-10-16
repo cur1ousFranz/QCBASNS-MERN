@@ -98,11 +98,10 @@ const ReportContent = forwardRef((props, ref) => {
               <img src="/img/logo-kagawaran.svg" className="w-32" alt="" />
             </div>
             <h1 className="mt-12">
-              School Form 2 Daily Attendance Report of Learners For Senior High
-              School (SF2-SHS)
+              Daily Attendance Report of Learners For Senior High School
             </h1>
             <div>
-              <img src="/img/logo-deped.png" className="mt-4 w-40" alt="" />
+              <img src="/img/GSCNHS.png" className="mt-1" alt="" style={{ width: "8.5rem"}} />
             </div>
           </div>
           <div className="space-y-4">
