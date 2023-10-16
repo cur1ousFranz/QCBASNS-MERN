@@ -78,10 +78,10 @@ export default function Navbar() {
             </Link>
           </div>
         ) : (
-          <div className="flex space-x-24">
+          <div className="flex space-x-28">
             <div>
               {user && (
-                <div className="hidden md:flex space-x-6 mt-0.5 uppercase text-gray-500">
+                <div className="hidden md:flex space-x-16 mt-0.5 uppercase text-gray-500">
                   <Link
                     to={"/attendance"}
                     className={`${
