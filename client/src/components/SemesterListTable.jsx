@@ -96,7 +96,7 @@ export default function SemesterListTable({
                   <th
                     onClick={() => navigate(semester._id)}
                     scope="row"
-                    className="px-6 py-4 font-medium"
+                    className="px-6 py-4 font-normal"
                   >
                     {semester.section}
                   </th>
