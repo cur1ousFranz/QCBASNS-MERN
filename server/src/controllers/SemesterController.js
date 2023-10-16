@@ -301,6 +301,57 @@ const addExistingStudentsToSemester = async (req, res) => {
   }
 };
 
+const removeStudentToSemester = async (req, res) => {
+  const { id: semesterId, studentId } = req.params;
+  if (!isValidObjectId(semesterId)) {
+    return res.status(404).json({ error: "No such semeester" });
+  }
+  if (!isValidObjectId(studentId)) {
+    return res.status(404).json({ error: "No such student" });
+  }
+
+  try {
+    const semester = await Semester.findById({ _id: semesterId });
+    const semesterStudents = semester.students;
+    const updatedStudents = semesterStudents.filter((student) => {
+      if (student.student_id.toString() !== studentId) {
+        return student;
+      }
+    });
+    await Semester.findByIdAndUpdate(
+      { _id: semesterId },
+      { students: updatedStudents }
+    );
+
+    // Remove the student in Active attendance if there is
+    const attendance = await AttendanceModel.find({
+      semester_id: semesterId,
+      status: true,
+    });
+    if (attendance[0]) {
+      const currentStudents = attendance[0].students;
+      const newStudents = currentStudents.filter(
+        (student) => student.student_id.toString() !== studentId
+      );
+      await AttendanceModel.findByIdAndUpdate(
+        { _id: attendance[0]._id },
+        { students: newStudents }
+      );
+    }
+
+    const updatedSemester = await Semester.findById({ _id: semesterId });
+    const updatedSemesterStudents = updatedSemester.students;
+    const studentList = [];
+    for (const student of updatedSemesterStudents) {
+      const result = await Student.findById({ _id: student.student_id });
+      studentList.push(result);
+    }
+    return res.status(200).json(studentList);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 const getSemesterStudents = async (req, res) => {
   const { id } = req.params;
 
@@ -322,4 +373,5 @@ module.exports = {
   getSemesterStudents,
   addStudentToSemester,
   addExistingStudentsToSemester,
+  removeStudentToSemester,
 };

@@ -6,7 +6,8 @@ const {
   updateSemester,
   getSemesterStudents,
   addStudentToSemester,
-  addExistingStudentsToSemester
+  addExistingStudentsToSemester,
+  removeStudentToSemester
 } = require("../controllers/SemesterController");
 const requireAuth = require("../middleware/RequiredAuth");
 const router = express.Router();
@@ -20,5 +21,6 @@ router.post("/api/v1/semester", createSemester);
 router.put("/api/v1/semester/:id", updateSemester);
 router.put("/api/v1/semester/:id/existing", addExistingStudentsToSemester);
 router.post("/api/v1/semester/:id", addStudentToSemester);
+router.delete("/api/v1/semester/:id/student/:studentId", removeStudentToSemester)
 
 module.exports = router;

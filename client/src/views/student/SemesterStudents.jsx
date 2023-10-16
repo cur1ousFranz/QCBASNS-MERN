@@ -8,6 +8,7 @@ import CreateStudentModal from "../../components/modals/CreateStudentModal";
 import QrCodeModal from "../../components/modals/QrCodeModal";
 import EditStudentModal from "../../components/modals/EditStudentModal";
 import StudentParentDetailsModal from "../../components/modals/StudentParentDetailsModal";
+import ConfirmModal from "../../components/modals/ConfirmModal";
 
 export default function SemesterStudents() {
   const { semesterId } = useParams();
@@ -21,9 +22,11 @@ export default function SemesterStudents() {
   const [showOptionMenu, setShowOptionMenu] = useState(false);
   const [selectedOptionIndex, setSeletedOptionIndex] = useState(null);
   const [selectedStudentIdEdit, setSelectedStudentIdEdit] = useState("");
+  const [selectedStudentIdRemove, setSelectedStudentIdRemove] = useState("");
   const [selectedStudentIdDetails, setSelecedStudentIdDetails] = useState("");
 
   const [showEditStudentModal, setShowEditStudentModal] = useState(false);
+  const [showRemoveStudentModal, setShowRemoveStudentModal] = useState(false);
   const [showQrCodeModal, setShowQrCodeModal] = useState(false);
   const [showStudentListModal, setShowStudentListModal] = useState(false);
   const [showCreateStudentModal, setShowCreateStudentModal] = useState(false);
@@ -51,7 +54,7 @@ export default function SemesterStudents() {
       const section = currentSemester.section;
       const tableDetails = [school_year, semesterValue, gradeLevel, track];
       if (strand) tableDetails.push(strand);
-      tableDetails.push(section)
+      tableDetails.push(section);
       setAttendanceTableDetailsList(() => tableDetails);
     }
   }, [currentSemester]);
@@ -99,6 +102,20 @@ export default function SemesterStudents() {
     }
   };
 
+  const handleRemoveStudent = async () => {
+    try {
+      const response = await axiosClient.delete(`/semester/${semesterId}/student/${selectedStudentIdRemove}`);
+      if (response.status === 200) {
+        setStudentList(() => response.data);
+        getSemester();
+        toggleStudentListModal(false);
+        Alert("Removed student successfully");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     setSortedStudents(() =>
       studentList.sort((a, b) => a.last_name.localeCompare(b.last_name))
@@ -109,6 +126,7 @@ export default function SemesterStudents() {
   const toggleQrCodeModal = (value = false) => setShowQrCodeModal(value);
   const toggleCreateStudentModal = (value) => setShowCreateStudentModal(value);
   const toggleEditStudentModal = (value) => setShowEditStudentModal(value);
+  const toggleRemoveStudentModal = (value) => setShowRemoveStudentModal(value);
   const toggleStudentParentDetailsModal = (value) =>
     setShowStudentDetailsModal(value);
 
@@ -197,7 +215,7 @@ export default function SemesterStudents() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="relative">
                   {studentList &&
                     sortedStudents.map((student, index) => (
                       <tr
@@ -301,6 +319,18 @@ export default function SemesterStudents() {
                                   <img src="/img/edit.svg" alt="" />
                                   <p className="me-4">Edit</p>
                                 </div>
+                                <div
+                                  onClick={() => {
+                                    toggleRemoveStudentModal(true);
+                                    setSelectedStudentIdRemove(
+                                      () => student._id
+                                    );
+                                  }}
+                                  className="p-3 flex space-x-3 hover:bg-gray-100"
+                                >
+                                  <img src="/img/remove.svg" alt="" />
+                                  <p className="me-4">Remove</p>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -360,6 +390,15 @@ export default function SemesterStudents() {
           toggleModal={toggleQrCodeModal}
           title={selectedStudentName}
           student={selectedStudent}
+        />
+      )}
+
+      {showRemoveStudentModal && (
+        <ConfirmModal
+          title={"Remove"}
+          body={"Are you sure you want to remove?"}
+          toggleModal={toggleRemoveStudentModal}
+          submit={handleRemoveStudent}
         />
       )}
     </>
