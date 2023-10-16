@@ -61,8 +61,9 @@ export default function AttendanceStudents() {
         currentSemester.strand !== "N/A" ? currentSemester.strand : "";
       const section = currentSemester.section;
       const attendanceDate = ConvertDate(attendance.createdAt);
-      const tableDetails = [school_year, semester, gradeLevel, track, section];
+      const tableDetails = [school_year, semester, gradeLevel, track];
       if (strand) tableDetails.push(strand);
+      tableDetails.push(section)
       tableDetails.push(attendanceDate);
       setStudentTableDetailsList(() => tableDetails);
     }

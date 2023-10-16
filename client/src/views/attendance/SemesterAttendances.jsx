@@ -126,8 +126,9 @@ export default function SemesterAttendances() {
         const track = semester.track;
         const strand = semester.strand !== "N/A" ? semester.strand : "";
         const section = semester.section;
-        const tableDetails = [school_year, semesterValue, gradeLevel, track, section];
+        const tableDetails = [school_year, semesterValue, gradeLevel, track];
       if (strand) tableDetails.push(strand);
+      tableDetails.push(section)
       setAttendanceTableDetailsList(() => tableDetails);
     }
   }, [semester]);

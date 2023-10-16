@@ -49,8 +49,9 @@ export default function SemesterStudents() {
       const strand =
         currentSemester.strand !== "N/A" ? currentSemester.strand : "";
       const section = currentSemester.section;
-      const tableDetails = [school_year, semesterValue, gradeLevel, track, section];
+      const tableDetails = [school_year, semesterValue, gradeLevel, track];
       if (strand) tableDetails.push(strand);
+      tableDetails.push(section)
       setAttendanceTableDetailsList(() => tableDetails);
     }
   }, [currentSemester]);
