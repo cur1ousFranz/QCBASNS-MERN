@@ -1,9 +1,11 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { forwardRef, useContext, useEffect, useState } from "react";
 import getWeekdaysAndFormattedDatesInMonth from "../../utils/GetWeekDaysInMonth";
-import { REPORT } from "../../constants/Report";
+import { Absent, Cutting, Halfday, Late, REPORT } from "../../constants/Report";
 import getWeeksInMonth from "../../utils/GetWeekDaysInWeek";
 import { countResult, getStudentsRecord } from "../../utils/ReportUtil";
 import ReportHeader from "./ReportContentHeader";
+import { AuthContext } from "../../context/AuthContext";
+import axiosClient from "../../utils/AxiosClient";
 
 const ReportContent = forwardRef((props, ref) => {
   const {
@@ -18,6 +20,24 @@ const ReportContent = forwardRef((props, ref) => {
   const [weekDaysAndDates, setWeekDaysAndDates] = useState([]);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [reportDateRange, setReportDateRange] = useState("");
+  const { user } = useContext(AuthContext);
+  const [adviser, setAdviser] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      const getAdviser = async () => {
+        try {
+          const response = await axiosClient.get("/adviser");
+          if (response.status === 200) {
+            setAdviser(() => response.data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getAdviser();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (tableShow === REPORT.Monthly) {
@@ -91,7 +111,10 @@ const ReportContent = forwardRef((props, ref) => {
 
   return (
     <>
-      <div ref={ref} className="px-12 py-4">
+      <div
+        ref={ref}
+        className="px-12 py-4 flex flex-col min-h-[100vh] box-content"
+      >
         <div className="mt-12 mb-2">
           <div className="text-center pb-8 font-bold text-2xl flex justify-between">
             <div>
@@ -101,7 +124,12 @@ const ReportContent = forwardRef((props, ref) => {
               Daily Attendance Report of Learners For Senior High School
             </h1>
             <div>
-              <img src="/img/GSCNHS.png" className="mt-1" alt="" style={{ width: "8.5rem"}} />
+              <img
+                src="/img/GSCNHS.png"
+                className="mt-1"
+                alt=""
+                style={{ width: "8.5rem" }}
+              />
             </div>
           </div>
           <div className="space-y-4">
@@ -154,6 +182,32 @@ const ReportContent = forwardRef((props, ref) => {
                     title="Section"
                     value={currentSelectedSemester.section}
                   />
+                  <div className="flex space-x-4">
+                    <div>
+                      <div className="flex space-x-2">
+                        <p>Present</p>
+                        <div className="w-fit mt-1 p-1.5 h-fit border border-gray-400"></div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <p>Absent</p>
+                        <Absent />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex space-x-2">
+                        <p>Halfday</p>
+                        <Halfday />
+                      </div>
+                      <div className="flex space-x-2">
+                        <p>Cutting</p>
+                        <Cutting />
+                      </div>
+                    </div>
+                    <div className="flex space-x-2">
+                      <p>Late</p>
+                      <Late />
+                    </div>
+                  </div>
                   <ReportHeader
                     title="Month of"
                     value={getMonthByIndex(selectedMonthIndex)}
@@ -223,7 +277,9 @@ const ReportContent = forwardRef((props, ref) => {
                       <td className="text-center border text-gray-700">
                         {index + 1}.
                       </td>
-                      <td className="whitespace-nowrap p-2">{full_name}</td>
+                      <td className="whitespace-nowrap text-base p-2">
+                        {full_name}
+                      </td>
                       {dateValues.map((dateValues, index) => (
                         <td
                           key={full_name + dateValues + index}
@@ -271,6 +327,23 @@ const ReportContent = forwardRef((props, ref) => {
                 })}
           </tbody>
         </table>
+        <div className="flex justify-start mt-12">
+          <div className="text-center px-16">
+            {adviser && (
+              <p className="uppercase text-xl px-24">
+                {adviser.first_name}{" "}
+                {adviser.middle_name !== "N/A"
+                  ? adviser.middle_name[0].toUpperCase() + "."
+                  : ""}{" "}
+                {adviser.last_name}{" "}
+                {adviser.suffix !== "N/A" ? adviser.suffix : ""}
+              </p>
+            )}
+            <p className="mt-1 uppercase text-xl border-t px-24 border-gray-800">
+              Adviser
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

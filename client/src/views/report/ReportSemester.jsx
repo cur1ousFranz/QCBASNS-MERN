@@ -3,7 +3,7 @@ import ReportTable from "../../components/reports/ReportTable";
 import { useParams } from "react-router-dom";
 import axiosClient from "../../utils/AxiosClient";
 import Header from "../../components/header-text/Header";
-import { Absent, Cutting, Halfday, Late, REPORT } from "../../constants/Report";
+import { Absent, Cutting, Halfday, Late, Present, REPORT } from "../../constants/Report";
 import { useReactToPrint } from "react-to-print";
 import ReportContent from "../../components/reports/ReportContent";
 
@@ -209,26 +209,26 @@ export default function ReportSemester() {
             <div className="flex space-x-4">
               <div>
                 <div className="flex space-x-2 text-sm">
-                  <p>Present</p>
-                  <div className="w-fit mt-1 p-1.5 h-fit border border-gray-400"></div>
+                  <p className="mt-0.5">Present</p>
+                  <Present/>
                 </div>
                 <div className="flex space-x-2 text-sm">
-                  <p>Absent</p>
+                  <p className="mt-0.5">Absent</p>
                   <Absent />
                 </div>
               </div>
               <div>
                 <div className="flex space-x-2 text-sm">
-                  <p>Halfday</p>
+                  <p className="mt-0.5">Halfday</p>
                   <Halfday />
                 </div>
                 <div className="flex space-x-2 text-sm">
-                  <p>Cutting</p>
+                  <p className="mt-0.5">Cutting</p>
                   <Cutting />
                 </div>
               </div>
               <div className="flex space-x-2 text-sm">
-                <p>Late</p>
+                <p className="mt-0.5">Late</p>
                 <Late />
               </div>
             </div>
