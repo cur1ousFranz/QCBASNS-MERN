@@ -14,6 +14,7 @@ export default function StudentListModal({
   const [selectedStudentList, setSelectedStudentList] = useState([]);
   const [studentListExist, setStudentListExist] = useState([]);
   const [sortedStudents, setSortedStudents] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const getAllStudents = async () => {
@@ -75,10 +76,27 @@ export default function StudentListModal({
   }, [currentSemester]);
 
   useEffect(() => {
+    if (!search) {
+      setSortedStudents(() => []);
+      return;
+    }
+    const searchValue = search.toLocaleLowerCase()
+    const searchedStudentsList = studentList.filter((student) => {
+      if (
+        student.first_name.toLowerCase().includes(searchValue) ||
+        student.middle_name.toLowerCase().includes(searchValue) ||
+        student.last_name.toLowerCase().includes(searchValue) ||
+        student.school_id.toLowerCase().includes(searchValue)
+      ) {
+        return student;
+      }
+    });
     setSortedStudents(() =>
-      studentList.sort((a, b) => a.last_name.localeCompare(b.last_name))
+      searchedStudentsList.sort((a, b) =>
+        a.last_name.localeCompare(b.last_name)
+      )
     );
-  }, [studentList]);
+  }, [search]);
 
   return (
     <div
@@ -87,23 +105,35 @@ export default function StudentListModal({
     >
       <div className="modal w-full md:w-8/12 bg-white rounded-lg shadow-lg">
         <header className="modal-header border-b px-4 py-3 mt-4">
-          <p className="text-lg">Exisitng Students</p>
+          <p className="text-lg uppercase">Add Students</p>
         </header>
 
-        <main className="px-4 h-96 overflow-y-auto">
-          <div className="w-full flex rounded-md bg-gray-50">
+        <main className="px-4 max-h-96 overflow-y-auto">
+          <div className="px-2 flex mt-3 py-2 w-full bg-gray-100 rounded-md">
+            <input
+              onChange={(e) => setSearch(e.target.value)}
+              value={search}
+              type="text"
+              className="w-full outline-none bg-gray-100"
+              placeholder="Search student"
+            />
+            <img src="/img/search.svg" alt="" />
+          </div>
+          <div className="w-full flex mt-4 border-t">
             <p className="w-full text-center">Name</p>
             <p className="w-full text-center">LRN</p>
           </div>
           <ul className="my-6">
-            <li className="px-2 py-1 flex space-x-3">
-              <input
-                onChange={(e) => toggleCheckAll(e.target.checked)}
-                type="checkbox"
-                className={`${CHECKBOX_DEFAULT_STYLE}`}
-              />
-              <p className="text-sm mt-1">Check All</p>
-            </li>
+            {sortedStudents.length > 0 && (
+              <li className="px-2 py-1 flex space-x-3">
+                <input
+                  onChange={(e) => toggleCheckAll(e.target.checked)}
+                  type="checkbox"
+                  className={`${CHECKBOX_DEFAULT_STYLE}`}
+                />
+                <p className="text-sm mt-1">Check All</p>
+              </li>
+            )}
             {studentList.length > 0 &&
               sortedStudents.map((student, index) => (
                 <li
@@ -133,7 +163,7 @@ export default function StudentListModal({
                       {student.middle_name !== "N/A"
                         ? student.middle_name[0].toUpperCase() + "."
                         : ""}
-                      {student.suffix !== "N/A" ? `, ${student.suffix}` : ""}
+                      {student.suffix !== "N/A" ? ` ${student.suffix}` : ""}
                     </p>
                   </div>
                   <div className="w-full flex justify-center space-x-4">
