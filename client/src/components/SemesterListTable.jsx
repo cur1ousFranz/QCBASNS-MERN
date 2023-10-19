@@ -114,7 +114,7 @@ export default function SemesterListTable({
                         </span>
                       </p>
                     )}
-                    {currentPath === "/student" && (
+                    {currentPath === "/student" && semester.active && (
                       <>
                         <img
                           onClick={() => {
