@@ -35,6 +35,14 @@ const semesterSchema = new Schema(
         },
       ],
     },
+    start_month: {
+      type: String,
+      required: true,
+    },
+    end_month: {
+      type: String,
+      required: true,
+    },
     start_year: {
       type: String,
       required: true,

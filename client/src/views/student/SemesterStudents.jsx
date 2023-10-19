@@ -156,7 +156,7 @@ export default function SemesterStudents() {
                       <span className="me-2">
                         <img src="/img/person-check.svg" alt="" />
                       </span>
-                      Existing
+                      Add Student
                     </button>
 
                     <button
@@ -167,7 +167,7 @@ export default function SemesterStudents() {
                       <span className="me-2">
                         <img src="/img/person-plus.svg" alt="" />
                       </span>
-                      New
+                      Register
                     </button>
                   </>
                 )}

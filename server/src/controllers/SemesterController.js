@@ -54,6 +54,8 @@ const createSemester = async (req, res) => {
     strand,
     grade_level,
     section,
+    start_month,
+    end_month,
     start_year,
     end_year,
     active,
@@ -71,6 +73,8 @@ const createSemester = async (req, res) => {
   if (!track) errorFields.push("track");
   if (!grade_level) errorFields.push("grade_level");
   if (!section) errorFields.push("section");
+  if (!start_month) errorFields.push("start_month");
+  if (!end_month) errorFields.push("end_month");
   if (!start_year) errorFields.push("school_year");
   if (!end_year) errorFields.push("school_year");
   if (!active) errorFields.push("active");
@@ -105,6 +109,8 @@ const createSemester = async (req, res) => {
       grade_level,
       section,
       students: [],
+      start_month,
+      end_month,
       start_year,
       end_year,
       active,

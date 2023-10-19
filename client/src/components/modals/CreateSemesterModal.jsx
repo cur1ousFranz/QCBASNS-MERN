@@ -15,6 +15,8 @@ const CreateSemesterModal = ({
   const [track, setTrack] = useState("");
   const [selectedStrand, setSelectedStrand] = useState("N/A");
   const [section, setSection] = useState("");
+  const [startMonth, setStartMonth] = useState("Jan");
+  const [endMonth, setEndMonth] = useState("Mar");
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
   const [timein_am, setTimeinAm] = useState("07:30");
@@ -28,8 +30,6 @@ const CreateSemesterModal = ({
   const [tracks, setTracks] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 2 }, (_, index) => currentYear + index);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isVerificationChecked, setIsVerificationChecked] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState("");
@@ -38,6 +38,9 @@ const CreateSemesterModal = ({
   const [pmTimeInErrorMessage, setPmTimeInErrorMessage] = useState("");
   const [pmTimeOutErrorMessage, setPmTimeOutErrorMessage] = useState("");
   const [lastSelectedMeridiem, setLastSelectedMeridiem] = useState("");
+
+  const [years, setYears] = useState([]);
+  const [months, setMonths] = useState([]);
 
   // const { semesterList, dispatch } = useContext(SemesterContext);
 
@@ -58,9 +61,25 @@ const CreateSemesterModal = ({
     };
 
     getAllTracks();
-
-    setStartYear(() => years[0]);
-    setEndYear(() => years[1]);
+    const currentYear = new Date().getFullYear();
+    const yearList = [currentYear - 1, currentYear, currentYear + 1];
+    setStartYear(() => (currentYear - 1).toString());
+    setEndYear(() => currentYear.toString());
+    setYears(() => yearList);
+    setMonths(() => [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ]);
   }, []);
 
   useEffect(() => {
@@ -113,6 +132,8 @@ const CreateSemesterModal = ({
       track,
       strand: selectedStrand,
       section: UpperCaseWords(section),
+      start_month: startMonth,
+      end_month: endMonth,
       start_year: startYear,
       end_year: endYear,
       active: true,
@@ -432,20 +453,72 @@ const CreateSemesterModal = ({
               <div className="flex space-x-3">
                 <div className="w-full">
                   <label>School Year</label>
-                  <div className="flex space-x-4">
-                    <input
-                      disabled
-                      value={startYear}
-                      type="text"
-                      className="px-2 py-2 w-full bg-gray-100 rounded-md text-gray-600"
-                    />
+                  <div className="flex space-x-3">
+                    <div className="flex w-full space-x-1">
+                      <select
+                        onChange={(e) => setStartMonth(() => e.target.value)}
+                        value={startMonth}
+                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                      >
+                        {months.length > 0 &&
+                          months.map((month, index) => (
+                            <option
+                              key={`start-month-${month}-${index}`}
+                              value={month}
+                            >
+                              {month}
+                            </option>
+                          ))}
+                      </select>
+                      <select
+                        onChange={(e) => setStartYear(() => e.target.value)}
+                        value={startYear}
+                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                      >
+                        {years.length > 0 &&
+                          years.map((year, index) => (
+                            <option
+                              key={`start-year-${year}-${index}`}
+                              value={year}
+                            >
+                              {year}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
                     <p className="font-bold mt-2 text-gray-600">—</p>
-                    <input
-                      disabled
-                      value={endYear}
-                      type="text"
-                      className="px-2 py-2 w-full bg-gray-100 rounded-md text-gray-600"
-                    />
+                    <div className="flex w-full space-x-1">
+                      <select
+                        onChange={(e) => setEndMonth(() => e.target.value)}
+                        value={endMonth}
+                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                      >
+                        {months.length > 0 &&
+                          months.map((month, index) => (
+                            <option
+                              key={`end-month-${month}-${index}`}
+                              value={month}
+                            >
+                              {month}
+                            </option>
+                          ))}
+                      </select>
+                      <select
+                        onChange={(e) => setEndYear(() => e.target.value)}
+                        value={endYear}
+                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                      >
+                        {years.length > 0 &&
+                          years.map((year, index) => (
+                            <option
+                              key={`end-year-${year}-${index}`}
+                              value={year}
+                            >
+                              {year}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -484,7 +557,7 @@ const CreateSemesterModal = ({
             form="semester-form"
             disabled={!isVerificationChecked}
           >
-            Creat Semester
+            Create Semester
           </button>
         </footer>
       </div>
