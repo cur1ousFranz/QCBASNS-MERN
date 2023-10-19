@@ -231,7 +231,9 @@ const createStudentAttendance = async (req, res) => {
     _id: student_id,
   });
 
-  const time = new Date();
+  const singaporeOffset = 8 * 60;
+  const utcTime = new Date();
+  const time = new Date(utcTime.getTime() + singaporeOffset * 60000);
   // TIME IN AM
   if (!student.time_in_am) {
     await AttendanceModel.findOneAndUpdate(
