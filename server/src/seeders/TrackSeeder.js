@@ -31,13 +31,7 @@ const tracks = [
       },
       {
         strand_name: "ABM",
-      },
-      {
-        strand_name: "ARTS AND DESIGN",
-      },
-      {
-        strand_name: "SPORTS",
-      },
+      }
     ],
   },
   {
