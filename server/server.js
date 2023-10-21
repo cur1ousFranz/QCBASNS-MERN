@@ -11,6 +11,7 @@ const student = require("./src/routes/student");
 const barangay = require("./src/routes/barangay");
 const attendance = require("./src/routes/attendance");
 const report = require("./src/routes/report");
+const subject_teacher = require("./src/routes/subject_teacher");
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -40,3 +41,4 @@ app.use(student);
 app.use(barangay);
 app.use(attendance);
 app.use(report);
+app.use(subject_teacher);

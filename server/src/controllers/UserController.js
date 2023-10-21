@@ -8,7 +8,7 @@ const login = async (req, res) => {
     const user = await User.login(email, password);
     const adviser = await Adviser.find({ user_id: user._id });
     const token = createToken(user._id);
-    return res.status(200).json({ email, token, id: adviser._id });
+    return res.status(200).json({ email, token, id: adviser._id, role: user.role });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

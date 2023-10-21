@@ -6,21 +6,36 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const Student = require("../models/StudentModel");
 const AttendanceModel = require("../models/AttendanceModel");
+const User = require("../models/UserModel");
+const SubjectTeacher = require("../models/SubjectTeacherModel")
+const { ADVISER, SUBJECT_TEACHER } = require("../constants/Roles");
+
 
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
   const page = parseInt(req.query.page) || 1;
   const perPage = parseInt(req.query.perPage) || 10;
+  const user = await User.findOne({ _id: userId });
   try {
-    const adviser = await Adviser.findOne({ user_id: userId });
+    let adviserId = "";
+
+    if (user.role === ADVISER) {
+      const adviser = await Adviser.findOne({ user_id: userId });
+      adviserId = adviser._id;
+    }
+
+    if (user.role === SUBJECT_TEACHER) {
+      const subj_teacher = await SubjectTeacher.findOne({ user_id: userId });
+      adviserId = subj_teacher.adviser_id;
+    }
 
     const totalSemesters = await Semester.countDocuments({
-      adviser_id: adviser._id,
+      adviser_id: adviserId,
     });
 
     const totalPages = Math.ceil(totalSemesters / perPage);
 
-    const semesters = await Semester.find({ adviser_id: adviser._id })
+    const semesters = await Semester.find({ adviser_id: adviserId })
       .sort({ createdAt: -1 })
       .skip((page - 1) * perPage)
       .limit(perPage);
@@ -31,7 +46,7 @@ const getAllSemester = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    return res.status(400).json({ error: "Something went wrong!" });
+    return res.status(400).json({ error: error.errorMessage});
   }
 };
 
@@ -42,8 +57,20 @@ const getSemester = async (req, res) => {
     return res.status(404).json({ error: "No such semeester" });
   }
   const userId = extractUserID(req);
-  const adviser = await Adviser.findOne({ user_id: userId });
-  const semester = await Semester.findOne({ _id: id, adviser_id: adviser._id });
+  const user = await User.findOne({ _id: userId });
+  let adviserId = "";
+
+  if (user.role === ADVISER) {
+    const adviser = await Adviser.findOne({ user_id: userId });
+    adviserId = adviser._id;
+  }
+
+  if (user.role === SUBJECT_TEACHER) {
+    const subj_teacher = await SubjectTeacher.findOne({ user_id: userId });
+    adviserId = subj_teacher.adviser_id;
+  }
+
+  const semester = await Semester.findOne({ _id: id, adviser_id: adviserId });
   return res.status(200).json(semester);
 };
 

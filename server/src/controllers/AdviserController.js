@@ -5,6 +5,7 @@ const createToken = require("../utils/CreateToken");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const extractUserID = require("../utils/ExtractUserId");
+const SubjectTeacher = require("../models/SubjectTeacherModel");
 
 const getAdviser = async (req, res) => {
   const userId = extractUserID(req);
@@ -78,7 +79,57 @@ const createAdviser = async (req, res) => {
   }
 };
 
+const getAdviserSubjectTeachers = async (req, res) => {
+  const userId = extractUserID(req);
+  const adviser = await Adviser.findOne({ user_id: userId });
+  const page = parseInt(req.query.page) || 1;
+  const perPage = parseInt(req.query.perPage) || 10;
+
+  if (!adviser) return res.stats(404).json({ error: "No such adviser" });
+
+  try {
+    const subjectTeachers = await SubjectTeacher.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user", // Unwind the array created by $lookup (optional)
+      },
+      {
+        $match: {
+          adviser_id: adviser._id,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+      {
+        $project: {
+          "user.password": 0, // Exclude the 'password' field
+        },
+      },
+      {
+        $skip: (page - 1) * perPage,
+      },
+      {
+        $limit: perPage,
+      },
+    ]);
+    return res.status(200).json(subjectTeachers);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   createAdviser,
   getAdviser,
+  getAdviserSubjectTeachers,
 };

@@ -4,8 +4,11 @@ const extractUserID = require("../utils/ExtractUserId");
 const AttendanceModel = require("../models/AttendanceModel");
 const SemesterModel = require("../models/SemesterModel");
 const StudentModel = require("../models/StudentModel");
+const User = require("../models/UserModel");
 const { messageBody } = require("../constants/MessageBody");
 const { sendSms } = require("../utils/SendSMS");
+const SubjectTeacherModel = require("../models/SubjectTeacherModel");
+const { ADVISER, SUBJECT_TEACHER } = require("../constants/Roles");
 
 const getAllAttendances = async (req, res) => {
   const attendances = await AttendanceModel.find();
@@ -48,10 +51,22 @@ const getAllSemesterAttendances = async (req, res) => {
   }
 
   const userId = extractUserID(req);
-  const adviser = await AdviserModel.findOne({ user_id: userId });
+  const user = await User.findOne({ _id: userId });
+
+  let adviserId = "";
+
+  if (user.role === ADVISER) {
+    const adviser = await AdviserModel.findOne({ user_id: userId });
+    adviserId = adviser._id;
+  }
+
+  if (user.role === SUBJECT_TEACHER) {
+    const subj_teacher = await SubjectTeacherModel.findOne({ user_id: userId });
+    adviserId = subj_teacher.adviser_id;
+  }
 
   const totalAttendances = await AttendanceModel.countDocuments({
-    adviser_id: adviser._id,
+    adviser_id: adviserId,
     semester_id,
   });
 
@@ -71,7 +86,7 @@ const getAllSemesterAttendances = async (req, res) => {
     {
       $match: {
         semester_id: new mongoose.Types.ObjectId(semester_id),
-        adviser_id: new mongoose.Types.ObjectId(adviser._id),
+        adviser_id: new mongoose.Types.ObjectId(adviserId),
       },
     },
     {
@@ -104,10 +119,21 @@ const createAttendance = async (req, res) => {
   }
 
   const userId = extractUserID(req);
-  const adviser = await AdviserModel.findOne({ user_id: userId });
+  const user = await User.findOne({ _id: userId });
+  let adviserId = "";
+  
+  if (user.role === ADVISER) {
+    const adviser = await Adviser.findOne({ user_id: userId });
+    adviserId = adviser._id;
+  }
+
+  if (user.role === SUBJECT_TEACHER) {
+    const subj_teacher = await SubjectTeacherModel.findOne({ user_id: userId });
+    adviserId = subj_teacher.adviser_id;
+  }
 
   const totalAttendances = await AttendanceModel.countDocuments({
-    adviser_id: adviser._id,
+    adviser_id: adviserId,
     semester_id,
   });
   const totalPages = Math.ceil(totalAttendances / perPage);
@@ -135,7 +161,7 @@ const createAttendance = async (req, res) => {
 
   await AttendanceModel.create({
     semester_id,
-    adviser_id: adviser._id,
+    adviser_id: adviserId,
     status: true,
     students: studentsList,
   });
@@ -155,7 +181,7 @@ const createAttendance = async (req, res) => {
     {
       $match: {
         semester_id: new mongoose.Types.ObjectId(semester_id),
-        adviser_id: new mongoose.Types.ObjectId(adviser._id),
+        adviser_id: new mongoose.Types.ObjectId(adviserId),
       },
     },
     {
