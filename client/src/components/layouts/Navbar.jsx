@@ -4,6 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { PATHNAME } from "../../constants/Constant";
 import axiosClient from "../../utils/AxiosClient";
 import UpperCaseWords from "../../utils/UpperCaseWords";
+import ROLE from "../../utils/Role";
 
 export default function Navbar() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -11,6 +12,7 @@ export default function Navbar() {
 
   const location = useLocation();
   const [adviser, setAdviser] = useState(null);
+  const [subTeacher, setSubTeacher] = useState(null);
   const [currentPath, setCurrentPath] = useState("");
 
   const handleLogout = () => {
@@ -20,7 +22,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && user.role === ROLE.ADVISER) {
       const getAdviser = async () => {
         try {
           const response = await axiosClient.get("/adviser");
@@ -32,6 +34,20 @@ export default function Navbar() {
         }
       };
       getAdviser();
+    }
+
+    if (user && user.role === ROLE.SUBJECT_TEACHER) {
+      const getSubTeacher = async () => {
+        try {
+          const response = await axiosClient.get("/subject/teacher");
+          if (response.status === 200) {
+            setSubTeacher(() => response.data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getSubTeacher();
     }
   }, [user]);
 
@@ -78,10 +94,10 @@ export default function Navbar() {
             </Link>
           </div>
         ) : (
-          <div className="flex space-x-28">
+          <div className="flex space-x-24">
             <div>
               {user && (
-                <div className="hidden md:flex space-x-16 mt-0.5 uppercase text-gray-500">
+                <div className="hidden md:flex space-x-10 mt-0.5 uppercase text-gray-500">
                   <Link
                     to={"/attendance"}
                     className={`${
@@ -92,26 +108,30 @@ export default function Navbar() {
                   >
                     Attendance
                   </Link>
-                  <Link
-                    to={"/student"}
-                    className={`${
-                      currentPath === PATHNAME.STUDENT
-                        ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
-                        : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
-                    }`}
-                  >
-                    Student
-                  </Link>
-                  <Link
-                    to={"/report"}
-                    className={`${
-                      currentPath === PATHNAME.REPORT
-                        ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
-                        : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
-                    }`}
-                  >
-                    Report
-                  </Link>
+                  {user.role === ROLE.ADVISER && (
+                    <>
+                      <Link
+                        to={"/student"}
+                        className={`${
+                          currentPath === PATHNAME.STUDENT
+                            ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                            : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
+                        }`}
+                      >
+                        Student
+                      </Link>
+                      <Link
+                        to={"/report"}
+                        className={`${
+                          currentPath === PATHNAME.REPORT
+                            ? "h-fit py-1 px-2 rounded-md text-white bg-green-400"
+                            : "h-fit py-1 px-2 bg-white text-gray-500 hover:text-gray-800"
+                        }`}
+                      >
+                        Report
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -126,6 +146,11 @@ export default function Navbar() {
                       : ""}{" "}
                     {adviser.last_name}{" "}
                     {adviser.suffix !== "N/A" ? adviser.suffix : ""}
+                  </h1>
+                )}
+                {subTeacher && (
+                  <h1 className="mt-2 text-sm font-semibold text-gray-600">
+                    {subTeacher.subject}
                   </h1>
                 )}
                 <img
@@ -149,11 +174,32 @@ export default function Navbar() {
                         <AdviserName />
                       </div>
                     )}
+                    {subTeacher && (
+                      <div className="flex px-3 py-2 border-b bg-gray-50">
+                        <span className="mr-2 mt-1">
+                          <img src="/img/person.svg" alt="" />
+                        </span>
+                        {subTeacher.subject}
+                      </div>
+                    )}
+                    {user.role === ROLE.ADVISER && (
+                      <div className="p-2 border-b hover:bg-gray-100">
+                        <Link
+                          to={"/subject/teacher"}
+                          className="w-full flex text-gray-500 hover:text-gray-700"
+                        >
+                          <span className="mr-2 mt-1">
+                            <img src="/img/person-gear.svg" alt="" />
+                          </span>
+                          Subject Teacher
+                        </Link>
+                      </div>
+                    )}
                     <div className="p-2 hover:bg-gray-100">
                       <Link
                         to={"/"}
                         onClick={handleLogout}
-                        className="w-full font-semibold flex text-red-400"
+                        className="w-full flex text-red-400 hover:text-red-600"
                       >
                         <span className="mr-2 mt-1">
                           <img src="/img/logout.svg" alt="" />

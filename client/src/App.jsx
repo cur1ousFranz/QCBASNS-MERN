@@ -12,6 +12,7 @@ import Students from "./views/student/Students";
 import SemesterStudents from "./views/student/SemesterStudents";
 import Report from "./views/report/Report";
 import ReportSemester from "./views/report/ReportSemester";
+import SubjectTeacher from "./views/subject_teacher/SubjectTeacher";
 
 function App() {
   const { user } = useContext(AuthContext);
@@ -56,6 +57,10 @@ function App() {
           <Route
             path="/report/semester/:semesterId"
             element={user ? <ReportSemester /> : <Navigate to={"/login"} />}
+          />
+          <Route
+            path="/subject/teacher"
+            element={user ? <SubjectTeacher /> : <Navigate to={"/login"} />}
           />
         </Routes>
         <Footer />

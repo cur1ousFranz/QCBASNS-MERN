@@ -67,7 +67,7 @@ export default function MonthlyReportTable({
                     key={day.date}
                     className="font-normal italic text-gray-400 bg-gray-50"
                   >
-                    {day.date}
+                    {day.date.split(" ")[1]}
                   </th>
                 ))}
               <th colSpan={4} className="text-center px-6 py-1 uppercase">
@@ -157,6 +157,11 @@ export default function MonthlyReportTable({
                     </tr>
                   );
                 })}
+                {monthlyAttendance && monthlyAttendance.length === 0 && (
+                  <tr>
+                    <td colSpan={5 + weekDaysAndDates.length} className="py-2 border-t text-center">No data to show.</td>
+                  </tr>
+                )}
           </tbody>
         </table>
       </div>
