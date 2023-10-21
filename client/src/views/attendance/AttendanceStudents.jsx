@@ -63,7 +63,7 @@ export default function AttendanceStudents() {
       const attendanceDate = ConvertDate(attendance.createdAt);
       const tableDetails = [school_year, semester, gradeLevel, track];
       if (strand) tableDetails.push(strand);
-      tableDetails.push(section)
+      tableDetails.push(section);
       tableDetails.push(attendanceDate);
       setStudentTableDetailsList(() => tableDetails);
     }
@@ -196,17 +196,23 @@ export default function AttendanceStudents() {
                       </span>
                     )}
                   </div>
-                  <div>
-                    {!showScanner && (
-                      <div
-                        onClick={() => setShowScanner(true)}
-                        className="p-2 flex space-x-3 rounded-lg cursor-pointer bg-green-400 text-white  hover:bg-green-300"
-                      >
-                        <img src="/img/qrcode-scan.svg" className="w-4" alt="" />
-                        <p className="uppercase text-gray-900">Scan QR</p>
-                      </div>
-                    )}
-                  </div>
+                  {currentSemester && currentSemester.active && (
+                    <div>
+                      {!showScanner && (
+                        <div
+                          onClick={() => setShowScanner(true)}
+                          className="p-2 flex space-x-3 rounded-lg cursor-pointer bg-green-400 text-white  hover:bg-green-300"
+                        >
+                          <img
+                            src="/img/qrcode-scan.svg"
+                            className="w-4"
+                            alt=""
+                          />
+                          <p className="uppercase text-gray-900">Scan QR</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex mt-1 justify-between">
                   <div className="flex">
