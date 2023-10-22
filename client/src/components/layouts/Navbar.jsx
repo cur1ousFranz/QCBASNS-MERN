@@ -19,6 +19,8 @@ export default function Navbar() {
     dispatch({ type: "LOGOUT" });
     setShowProfileDropdown(false);
     localStorage.removeItem("user");
+    setAdviser(null)
+    setSubTeacher(null)
   };
 
   useEffect(() => {
@@ -166,7 +168,7 @@ export default function Navbar() {
                   className="origin-top-right absolute right-0 mr-12 mt-1 w-72 z-10 rounded-md shadow-lg"
                 >
                   <div className="rounded-md border shadow-xs text-start bg-white">
-                    {adviser && (
+                    {adviser && user.role === ROLE.ADVISER && (
                       <div className="flex px-3 py-2 border-b bg-gray-50">
                         <span className="mr-2 mt-1">
                           <img src="/img/person.svg" alt="" />
@@ -174,7 +176,7 @@ export default function Navbar() {
                         <AdviserName />
                       </div>
                     )}
-                    {subTeacher && (
+                    {subTeacher && user.role === ROLE.SUBJECT_TEACHER && (
                       <div className="flex px-3 py-2 border-b bg-gray-50">
                         <span className="mr-2 mt-1">
                           <img src="/img/person.svg" alt="" />
