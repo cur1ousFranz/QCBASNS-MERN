@@ -184,7 +184,7 @@ export default function Navbar() {
                         {subTeacher.subject}
                       </div>
                     )}
-                    {user.role === ROLE.ADVISER && (
+                    {/* {user.role === ROLE.ADVISER && (
                       <div className="p-2 border-b hover:bg-gray-100">
                         <Link
                           to={"/subject/teacher"}
@@ -196,7 +196,7 @@ export default function Navbar() {
                           Subject Teacher
                         </Link>
                       </div>
-                    )}
+                    )} */}
                     <div className="p-2 hover:bg-gray-100">
                       <Link
                         to={"/"}
