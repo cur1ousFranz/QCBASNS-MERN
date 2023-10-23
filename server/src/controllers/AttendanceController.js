@@ -123,7 +123,7 @@ const createAttendance = async (req, res) => {
   let adviserId = "";
   
   if (user.role === ADVISER) {
-    const adviser = await Adviser.findOne({ user_id: userId });
+    const adviser = await AdviserModel.findOne({ user_id: userId });
     adviserId = adviser._id;
   }
 
