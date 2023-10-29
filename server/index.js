@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 });
 app.use(cors(
   { 
-    origin: "*",
+    origin: ["https://realtimeattendance.vercel.app"],
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true 
   }
