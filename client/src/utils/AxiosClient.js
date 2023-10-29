@@ -10,7 +10,7 @@ const GetToken = () => {
 }
 
 const axiosClient = axios.create({
-  baseURL: `qcbasns-mern.vercel.app/api/v1`
+  baseURL: `https://qcbasns-mern.vercel.app/`
 })
 
 axiosClient.interceptors.request.use(config => {
