@@ -19,16 +19,14 @@ app.use(express.json());
 app.use((req, res, next) => {
   next();
 });
-app.get("/", (req, res) => {
-  res.send("Express on Vercel");
-});
-app.use(cors(
-  { 
+
+app.use(
+  cors({
     origin: "*",
     methods: ["POST", "GET", "PUT", "DELETE"],
-    credentials: true 
-  }
-  ));
+    credentials: true,
+  })
+);
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
@@ -40,6 +38,10 @@ mongoose
   .catch((error) => {
     console.log(`Something went wrong: ${error}`);
   });
+
+app.get("/", (req, res) => {
+  res.send("App");
+});
 
 // Routes
 app.use(adviser);
