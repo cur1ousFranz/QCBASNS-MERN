@@ -19,7 +19,13 @@ app.use(express.json());
 app.use((req, res, next) => {
   next();
 });
-app.use(cors({ origin: "*" }));
+app.use(cors(
+  { 
+    origin: "*",
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true 
+  }
+  ));
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
