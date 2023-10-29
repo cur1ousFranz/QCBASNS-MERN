@@ -10,7 +10,7 @@ const GetToken = () => {
 }
 
 const axiosClient = axios.create({
-  baseURL: `https://qcbasns-mern.vercel.app/api/v1`
+  baseURL: `https://realtimeattendance.onrender.com/api/v1`
 })
 
 axiosClient.interceptors.request.use(config => {
