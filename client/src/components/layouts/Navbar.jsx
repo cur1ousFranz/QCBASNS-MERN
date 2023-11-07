@@ -81,7 +81,7 @@ export default function Navbar() {
         </Link>
         <div className="hidden mt-2 -ml-12 text-gray-700 md:block">
           <p className="text-xs">GENERAL SANTOS CITY NATIONAL HIGH SCHOOL</p>
-          <p className="text-xs">NATIONAL HIGH SCHOOL 304642</p>
+          <p className="text-xs">304642</p>
           <p className="text-xs">Rizal Street, Barangay Calumpang, GSC </p>
         </div>
       </div>

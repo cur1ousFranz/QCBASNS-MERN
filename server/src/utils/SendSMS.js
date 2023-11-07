@@ -13,7 +13,7 @@ const sendSms = (body, phoneNumber = verifiedNumber) => {
       from: twilioNumber,
       to: phoneNumber,
     })
-    .then((message) => console.log("SMS SENT"))
+    .then((message) => console.log("[SMS SENT]", message))
     .catch((error) => console.log(error));
 };
 
