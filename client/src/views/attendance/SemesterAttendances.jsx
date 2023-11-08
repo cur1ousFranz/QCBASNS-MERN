@@ -25,6 +25,8 @@ export default function SemesterAttendances() {
     []
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingCreateAttendance, setIsLoadingCreateAttendance] =
+    useState(false);
 
   useEffect(() => {
     const getSemesterAttendances = async () => {
@@ -89,7 +91,7 @@ export default function SemesterAttendances() {
       const matchAttendanceDate = async () => {
         try {
           const response = await axiosClient.get(
-            `/attendance/adviser/${semester.adviser_id}`
+            `/attendance/adviser/${semester.adviser_id}/semester/${semester._id}`
           );
           if (response.status === 200) {
             const attendancesData = response.data;
@@ -148,6 +150,7 @@ export default function SemesterAttendances() {
     }
     if (semester) {
       try {
+        setIsLoadingCreateAttendance(true);
         const newAttendance = {
           semester_id: semesterId,
         };
@@ -188,6 +191,8 @@ export default function SemesterAttendances() {
         }
       } catch (error) {
         setErrorModalMessage(error.message);
+      } finally {
+        setIsLoadingCreateAttendance(false);
       }
     } else {
       Alert("You don`t have semester yet", "error");
@@ -216,7 +221,7 @@ export default function SemesterAttendances() {
               <div>
                 <button
                   onClick={() => {
-                    if (!hasAttendanceToday) {
+                    if (!hasAttendanceToday && !isLoadingCreateAttendance) {
                       toggleCreateAttendanceModal(true);
                     }
                   }}
@@ -314,17 +319,19 @@ export default function SemesterAttendances() {
                   )}
               </tbody>
             </table>
-            <div className="mt-2 flex justify-between">
-              <h1 className="text-sm text-gray-600">
-                Total Pages: {data.totalPages}
-              </h1>
-              {data.totalPages !== 0 && (
-                <Pagination
-                  pagination={paginationData}
-                  onChange={handlePageChange}
-                />
-              )}
-            </div>
+            {!isLoading && (
+              <div className="mt-2 flex justify-between">
+                <h1 className="text-sm text-gray-600">
+                  Total Pages: {data.totalPages}
+                </h1>
+                {data.totalPages !== 0 && (
+                  <Pagination
+                    pagination={paginationData}
+                    onChange={handlePageChange}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
         {errorModalMessage && <ErrorModal title={errorModalMessage} />}

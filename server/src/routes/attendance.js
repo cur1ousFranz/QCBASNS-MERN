@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 router.get("/api/v1/attendance", getAllAttendances);
-router.get("/api/v1/attendance/adviser/:adviserId", getAllAdviserAttendances);
+router.get("/api/v1/attendance/adviser/:adviserId/semester/:semesterId", getAllAdviserAttendances);
 router.get("/api/v1/attendance/:id", getAttendance);
 router.get("/api/v1/attendance/semester/:id", getAllSemesterAttendances);
 router.post("/api/v1/attendance", createAttendance);

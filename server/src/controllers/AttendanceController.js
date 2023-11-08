@@ -29,12 +29,15 @@ const getAttendance = async (req, res) => {
 };
 
 const getAllAdviserAttendances = async (req, res) => {
-  const { adviserId } = req.params;
+  const { adviserId, semesterId } = req.params;
   if (!isValidObjectId(adviserId)) {
     return res.status(404).json({ error: "No such attendance" });
   }
   try {
-    const attendances = await AttendanceModel.find({ adviser_id: adviserId });
+    const attendances = await AttendanceModel.find({
+      adviser_id: adviserId,
+      semester_id: semesterId,
+    });
     return res.status(200).json(attendances);
   } catch (error) {
     return res.status(400).json({ error: "Something went wrong" });
@@ -121,7 +124,7 @@ const createAttendance = async (req, res) => {
   const userId = extractUserID(req);
   const user = await User.findOne({ _id: userId });
   let adviserId = "";
-  
+
   if (user.role === ADVISER) {
     const adviser = await AdviserModel.findOne({ user_id: userId });
     adviserId = adviser._id;
