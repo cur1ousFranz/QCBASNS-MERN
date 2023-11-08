@@ -36,6 +36,7 @@ export default function EditSemesterModal({
   const [amTimeOutErrorMessage, setAmTimeOutErrorMessage] = useState("");
   const [pmTimeInErrorMessage, setPmTimeInErrorMessage] = useState("");
   const [pmTimeOutErrorMessage, setPmTimeOutErrorMessage] = useState("");
+  const [schoolYearError, setSchoolYearError] = useState("");
   const [lastSelectedMeridiem, setLastSelectedMeridiem] = useState("");
 
   const [years, setYears] = useState([]);
@@ -282,6 +283,16 @@ export default function EditSemesterModal({
     }
   }, [timein_pm, timeout_pm]);
 
+  useEffect(() => {
+    if (startYear && endYear) {
+      if (startYear >= endYear) {
+        setSchoolYearError("Invalid school year.");
+      } else {
+        setSchoolYearError("");
+      }
+    }
+  }, [startYear, endYear]);
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center modal-backdrop bg-opacity-50 bg-gray-50"
@@ -493,21 +504,31 @@ export default function EditSemesterModal({
                             </option>
                           ))}
                       </select>
-                      <select
-                        onChange={(e) => setStartYear(() => e.target.value)}
-                        value={startYear}
-                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
-                      >
-                        {years.length > 0 &&
-                          years.map((year, index) => (
-                            <option
-                              key={`start-year-${year}-${index}`}
-                              value={year}
-                            >
-                              {year}
-                            </option>
-                          ))}
-                      </select>
+                      <div className="relative w-full">
+                        <select
+                          onChange={(e) => setStartYear(() => e.target.value)}
+                          value={startYear}
+                          className={
+                            !schoolYearError
+                              ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                              : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                          }
+                        >
+                          {years.length > 0 &&
+                            years.map((year, index) => (
+                              <option
+                                key={`start-year-${year}-${index}`}
+                                value={year}
+                              >
+                                {year}
+                              </option>
+                            ))}
+                        </select>
+                        {/* HERE */}
+                        {schoolYearError && (
+                          <ValidationMessage message={schoolYearError} />
+                        )}
+                      </div>
                     </div>
                     <p className="font-bold mt-2 text-gray-600">—</p>
                     <div className="flex w-full space-x-1">
@@ -529,7 +550,11 @@ export default function EditSemesterModal({
                       <select
                         onChange={(e) => setEndYear(() => e.target.value)}
                         value={endYear}
-                        className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                        className={
+                          !schoolYearError
+                            ? "px-2 py-2 w-full bg-gray-100 rounded-md"
+                            : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
+                        }
                       >
                         {years.length > 0 &&
                           years.map((year, index) => (
