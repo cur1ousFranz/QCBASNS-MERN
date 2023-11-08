@@ -65,7 +65,7 @@ export default function EditSemesterModal({
         setSelectedStrand(() => "N/A");
       }
     });
-  }, [tracks]);
+  }, [track]);
 
   useEffect(() => {
     const getSemester = async () => {
