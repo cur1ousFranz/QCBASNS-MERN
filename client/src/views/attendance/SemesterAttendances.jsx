@@ -8,6 +8,7 @@ import Pagination from "../../components/layouts/Pagination";
 import ConfirmModal from "../../components/modals/ConfirmModal";
 import { Alert } from "../../utils/Alert";
 import ErrorModal from "../../components/modals/ErrorModal";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function SemesterAttendances() {
   const { semesterId } = useParams();
@@ -23,10 +24,12 @@ export default function SemesterAttendances() {
   const [attendanceTableDetailsList, setAttendanceTableDetailsList] = useState(
     []
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getSemesterAttendances = async () => {
       if (semesterId) {
+        setIsLoading(true);
         try {
           const response = await axiosClient.get(
             `attendance/semester/${semesterId}`
@@ -46,6 +49,8 @@ export default function SemesterAttendances() {
           }
         } catch (error) {
           console.log(error);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -122,13 +127,13 @@ export default function SemesterAttendances() {
       const school_year = `S.Y ${semester.start_year}-${semester.end_year}`;
       const semesterValue =
         semester.semester === "1" ? "1st Semester" : "2nd Semester";
-        const gradeLevel = semester.grade_level;
-        const track = semester.track;
-        const strand = semester.strand !== "N/A" ? semester.strand : "";
-        const section = semester.section;
-        const tableDetails = [school_year, semesterValue, gradeLevel, track];
+      const gradeLevel = semester.grade_level;
+      const track = semester.track;
+      const strand = semester.strand !== "N/A" ? semester.strand : "";
+      const section = semester.section;
+      const tableDetails = [school_year, semesterValue, gradeLevel, track];
       if (strand) tableDetails.push(strand);
-      tableDetails.push(section)
+      tableDetails.push(section);
       setAttendanceTableDetailsList(() => tableDetails);
     }
   }, [semester]);
@@ -256,6 +261,7 @@ export default function SemesterAttendances() {
               </thead>
               <tbody>
                 {attendanceList &&
+                  !isLoading &&
                   attendanceList.map((attendance) => (
                     <tr
                       onClick={() => navigateAttendanceStudents(attendance._id)}
@@ -294,16 +300,18 @@ export default function SemesterAttendances() {
                     </tr>
                   ))}
 
-                {attendanceList && attendanceList.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-4 text-center border-b cursor-pointer bg-white"
-                    >
-                      No attendances to show.
-                    </td>
-                  </tr>
-                )}
+                {attendanceList &&
+                  attendanceList.length === 0 &&
+                  !isLoading && (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-6 py-4 text-center border-b cursor-pointer bg-white"
+                      >
+                        No attendances to show.
+                      </td>
+                    </tr>
+                  )}
               </tbody>
             </table>
             <div className="mt-2 flex justify-between">
@@ -331,6 +339,7 @@ export default function SemesterAttendances() {
             submit={handleCreateAttendance}
           />
         )}
+        {isLoading && <LoadState />}
       </div>
     </>
   );

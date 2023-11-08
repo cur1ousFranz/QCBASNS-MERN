@@ -39,7 +39,7 @@ export default function MonthlyReportTable({
 
   useEffect(() => {
     // Set inital attendance record
-    if (weekDaysAndDates && monthAttendances.length) {
+    if (weekDaysAndDates && monthAttendances.length && currentSelectedSemester) {
       const studentsListInitialRecord = getStudentsRecord(
         weekDaysAndDates,
         monthAttendances,

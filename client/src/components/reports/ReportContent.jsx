@@ -68,7 +68,7 @@ const ReportContent = forwardRef((props, ref) => {
 
   useEffect(() => {
     // Set inital attendance record
-    if (weekDaysAndDates && monthAttendances.length) {
+    if (weekDaysAndDates && monthAttendances.length > 0 && currentSelectedSemester) {
       const studentsListInitialRecord = getStudentsRecord(
         weekDaysAndDates,
         monthAttendances,

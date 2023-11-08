@@ -4,19 +4,22 @@ import Header from "../../components/header-text/Header";
 import SemesterListTable from "../../components/SemesterListTable";
 import axiosClient from "../../utils/AxiosClient";
 import { useNavigate } from "react-router-dom";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function Attendance() {
   const [semesterList, setSemesterList] = useState([]);
   const [paginationData, setPaginationData] = useState({});
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: "smooth", // This adds a smooth scrolling animation
     });
-    
+
     const getAllSemester = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosClient.get("/semester");
         if (response.status === 200) {
@@ -28,6 +31,8 @@ export default function Attendance() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -74,6 +79,7 @@ export default function Attendance() {
           />
         </div>
       </div>
+      {isLoading && <LoadState />}
     </div>
   );
 }

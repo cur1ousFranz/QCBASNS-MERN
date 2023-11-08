@@ -9,6 +9,7 @@ import QrCodeModal from "../../components/modals/QrCodeModal";
 import EditStudentModal from "../../components/modals/EditStudentModal";
 import StudentParentDetailsModal from "../../components/modals/StudentParentDetailsModal";
 import ConfirmModal from "../../components/modals/ConfirmModal";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function SemesterStudents() {
   const { semesterId } = useParams();
@@ -32,6 +33,7 @@ export default function SemesterStudents() {
   const [showCreateStudentModal, setShowCreateStudentModal] = useState(false);
   const [showStudentDetailsModal, setShowStudentDetailsModal] = useState(false);
   const [sortedStudents, setSortedStudents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getSemesterStudents();
@@ -76,11 +78,16 @@ export default function SemesterStudents() {
 
   const getSemester = async () => {
     try {
+      setIsLoading(true);
       const response = await axiosClient.get(`/semester/${semesterId}`);
       if (response.status === 200) {
         setCurrentSemester(() => response.data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddExistingStudents = async (studentsId) => {
@@ -104,7 +111,9 @@ export default function SemesterStudents() {
 
   const handleRemoveStudent = async () => {
     try {
-      const response = await axiosClient.delete(`/semester/${semesterId}/student/${selectedStudentIdRemove}`);
+      const response = await axiosClient.delete(
+        `/semester/${semesterId}/student/${selectedStudentIdRemove}`
+      );
       if (response.status === 200) {
         setStudentList(() => response.data);
         getSemester();
@@ -217,6 +226,7 @@ export default function SemesterStudents() {
                 </thead>
                 <tbody className="relative">
                   {studentList &&
+                    !isLoading &&
                     sortedStudents.map((student, index) => (
                       <tr
                         key={student._id}
@@ -337,7 +347,7 @@ export default function SemesterStudents() {
                         </td>
                       </tr>
                     ))}
-                  {studentList && studentList.length === 0 && (
+                  {studentList && studentList.length === 0 && !isLoading && (
                     <tr className="border-b cursor-pointer bg-white">
                       <td colSpan={6} className="px-6 py-4 text-center">
                         No students to show
@@ -349,6 +359,8 @@ export default function SemesterStudents() {
             </div>
           </div>
         </div>
+
+        {isLoading && <LoadState />}
       </div>
 
       {showStudentDetailsModal && (

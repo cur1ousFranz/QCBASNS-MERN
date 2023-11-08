@@ -3,14 +3,17 @@ import Header from "../../components/header-text/Header";
 import axiosClient from "../../utils/AxiosClient";
 import SemesterListTable from "../../components/SemesterListTable";
 import { useNavigate } from "react-router-dom";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function Report() {
   const navigate = useNavigate();
   const [semesterList, setSemesterList] = useState([]);
   const [paginationData, setPaginationData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getAllSemester = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosClient.get("/semester");
         if (response.status === 200) {
@@ -22,6 +25,8 @@ export default function Report() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -64,6 +69,7 @@ export default function Report() {
           />
         </div>
       </div>
+      {isLoading && <LoadState />}
     </div>
   );
 }

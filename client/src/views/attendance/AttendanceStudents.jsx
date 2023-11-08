@@ -6,6 +6,7 @@ import Header from "../../components/header-text/Header";
 import { Alert } from "../../utils/Alert";
 import ConvertDate from "../../utils/ConvertDate";
 import QrCodeScannerModal from "../../components/modals/QrCodeScannerModal";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function AttendanceStudents() {
   const { semesterId, attendanceId } = useParams();
@@ -24,6 +25,7 @@ export default function AttendanceStudents() {
   const [totalAmOutScanned, setTotalAmOutScanned] = useState(0);
   const [totalPmInScanned, setTotalPmInScanned] = useState(0);
   const [totalPmOutScanned, setTotalPmOutScanned] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getAttendanceStudents = async () => {
     try {
@@ -39,12 +41,17 @@ export default function AttendanceStudents() {
 
   useEffect(() => {
     const getSemester = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosClient.get(`/semester/${semesterId}`);
         if (response.status === 200) {
           setCurrentSemester(() => response.data);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     getAttendanceStudents();
     getSemester();
@@ -269,6 +276,7 @@ export default function AttendanceStudents() {
                 </thead>
                 <tbody>
                   {studentsList &&
+                    !isLoading &&
                     sortedStudents.map((student) => (
                       <tr
                         key={student.student_id}
@@ -309,7 +317,8 @@ export default function AttendanceStudents() {
 
                   {studentsList &&
                     studentsList.students &&
-                    studentsList.students.length === 0 && (
+                    studentsList.students.length === 0 &&
+                    !isLoading && (
                       <tr>
                         <td
                           colSpan={6}
@@ -344,6 +353,7 @@ export default function AttendanceStudents() {
             setLastScannedStudentId={setLastScannedStudentId}
           />
         )}
+        {isLoading && <LoadState />}
       </div>
     </>
   );

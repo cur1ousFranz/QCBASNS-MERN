@@ -6,6 +6,7 @@ import Header from "../../components/header-text/Header";
 import { Absent, Cutting, Halfday, Late, Present, REPORT } from "../../constants/Report";
 import { useReactToPrint } from "react-to-print";
 import ReportContent from "../../components/reports/ReportContent";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function ReportSemester() {
   const { semesterId } = useParams();
@@ -20,11 +21,13 @@ export default function ReportSemester() {
   const [tableShow, setTableShow] = useState(REPORT.Monthly);
   const [currentWeeklyIndex, setCurrentWeeklyIndex] = useState(0);
   const [weeklyIndexes, setWeeklyIndexes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const componentRef = useRef();
 
   useEffect(() => {
     const getSemester = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosClient.get(`/semester/${semesterId}`);
         if (response.status === 200) {
@@ -34,6 +37,8 @@ export default function ReportSemester() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getSemester();
@@ -244,7 +249,7 @@ export default function ReportSemester() {
                 </div>
               ))}
           </div>
-          {monthAttendances.length > 0 && (
+          {monthAttendances.length > 0 && !isLoading && (
             <ReportTable
               selectedMonthIndex={selectedMonth}
               semesterYear={semesterYear}
@@ -256,7 +261,7 @@ export default function ReportSemester() {
             />
           )}
 
-          {monthAttendances.length === 0 && (
+          {monthAttendances.length === 0 && !isLoading && (
             <div className="text-center py-44 rounded-sm text-gray-400 bg-gray-100">
               <p>No record yet.</p>
             </div>
@@ -276,6 +281,7 @@ export default function ReportSemester() {
           </div>
         </div>
       </div>
+      {isLoading && <LoadState />}
     </div>
   );
 }

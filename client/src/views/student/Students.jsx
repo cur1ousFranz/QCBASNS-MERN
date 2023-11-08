@@ -4,6 +4,7 @@ import CreateSemesterModal from "../../components/modals/CreateSemesterModal";
 import axiosClient from "../../utils/AxiosClient";
 import { useNavigate } from "react-router-dom";
 import SemesterListTable from "../../components/SemesterListTable";
+import LoadState from "../../components/header-text/LoadState";
 
 export default function Students() {
   const [semesterList, setSemesterList] = useState([]);
@@ -12,12 +13,14 @@ export default function Students() {
 
   const [showSemesterModal, setShowSemesterModal] = useState(false);
   const handleShowSemesterModal = (value) => setShowSemesterModal(() => value);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getAllSemester();
   }, []);
 
   const getAllSemester = async () => {
+    setIsLoading(true);
     try {
       const response = await axiosClient.get("/semester");
       if (response.status === 200) {
@@ -27,7 +30,11 @@ export default function Students() {
           last_page: response.data.totalPages,
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePageChange = async (newPage) => {
@@ -94,6 +101,7 @@ export default function Students() {
           )}
         </div>
       </div>
+      {isLoading && <LoadState />}
     </div>
   );
 }
