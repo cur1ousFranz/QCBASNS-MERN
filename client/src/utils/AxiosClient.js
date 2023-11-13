@@ -10,7 +10,7 @@ const GetToken = () => {
 }
 // https://realtimeattendance.onrender.com
 const axiosClient = axios.create({
-  baseURL: `https://realtimeattendance.onrender.com/api/v1`
+  baseURL: `http://localhost:4000/api/v1`
 })
 
 axiosClient.interceptors.request.use(config => {
