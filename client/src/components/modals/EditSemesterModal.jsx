@@ -16,8 +16,8 @@ export default function EditSemesterModal({
   const [track, setTrack] = useState("");
   const [selectedStrand, setSelectedStrand] = useState("N/A");
   const [section, setSection] = useState("");
-  const [startMonth, setStartMonth] = useState("Jan");
-  const [endMonth, setEndMonth] = useState("Mar");
+  const [startMonth, setStartMonth] = useState("");
+  const [endMonth, setEndMonth] = useState("");
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
   const [timein_am, setTimeinAm] = useState("");
@@ -489,7 +489,7 @@ export default function EditSemesterModal({
                   <label>School Year</label>
                   <div className="flex space-x-3">
                     <div className="flex w-full space-x-1">
-                      <select
+                      {/* <select
                         onChange={(e) => setStartMonth(() => e.target.value)}
                         value={startMonth}
                         className="px-2 py-2 w-full bg-gray-100 rounded-md"
@@ -503,7 +503,7 @@ export default function EditSemesterModal({
                               {month}
                             </option>
                           ))}
-                      </select>
+                      </select> */}
                       <div className="relative w-full">
                         <select
                           onChange={(e) => setStartYear(() => e.target.value)}
@@ -532,7 +532,7 @@ export default function EditSemesterModal({
                     </div>
                     <p className="font-bold mt-2 text-gray-600">—</p>
                     <div className="flex w-full space-x-1">
-                      <select
+                      {/* <select
                         onChange={(e) => setEndMonth(() => e.target.value)}
                         value={endMonth}
                         className="px-2 py-2 w-full bg-gray-100 rounded-md"
@@ -546,7 +546,7 @@ export default function EditSemesterModal({
                               {month}
                             </option>
                           ))}
-                      </select>
+                      </select> */}
                       <select
                         onChange={(e) => setEndYear(() => e.target.value)}
                         value={endYear}
