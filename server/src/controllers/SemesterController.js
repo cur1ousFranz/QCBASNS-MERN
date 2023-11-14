@@ -14,7 +14,7 @@ const { ADVISER, SUBJECT_TEACHER } = require("../constants/Roles");
 const getAllSemester = async (req, res) => {
   const userId = extractUserID(req);
   const page = parseInt(req.query.page) || 1;
-  const perPage = parseInt(req.query.perPage) || 10;
+  const perPage = parseInt(req.query.perPage) || 7;
   const user = await User.findOne({ _id: userId });
   try {
     let adviserId = "";

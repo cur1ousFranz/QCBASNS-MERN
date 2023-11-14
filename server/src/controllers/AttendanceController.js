@@ -47,7 +47,7 @@ const getAllAdviserAttendances = async (req, res) => {
 const getAllSemesterAttendances = async (req, res) => {
   const { id: semester_id } = req.params;
   const page = parseInt(req.query.page) || 1;
-  const perPage = parseInt(req.query.perPage) || 10;
+  const perPage = parseInt(req.query.perPage) || 7;
 
   if (!isValidObjectId(semester_id)) {
     return res.status(404).json({ error: "No such semester" });
