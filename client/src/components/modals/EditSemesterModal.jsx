@@ -4,6 +4,7 @@ import { Alert } from "../../utils/Alert";
 import UpperCaseWords from "../../utils/UpperCaseWords";
 import ValidationMessage from "../typography//ValidationMessage";
 import ErrorModal from "./ErrorModal";
+import numbersOnly from "../../utils/NumberKeys";
 
 export default function EditSemesterModal({
   toggleModal,
@@ -492,8 +493,10 @@ export default function EditSemesterModal({
                       <div className="relative w-full">
                         <input
                           onChange={(e) => setStartYear(() => e.target.value)}
+                          onKeyDown={numbersOnly}
                           value={startYear}
                           className="px-2 py-2 w-full bg-gray-100 rounded-md"
+                          maxLength={4}
                         />
                         {/* HERE */}
                         {schoolYearError && (

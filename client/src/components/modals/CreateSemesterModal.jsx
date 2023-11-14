@@ -4,6 +4,7 @@ import { Alert } from "../../utils/Alert";
 import ErrorModal from "./ErrorModal";
 import UpperCaseWords from "../../utils/UpperCaseWords";
 import ValidationMessage from "../typography//ValidationMessage";
+import numbersOnly from "../../utils/NumberKeys";
 
 const CreateSemesterModal = ({
   toggleModal,
@@ -60,7 +61,7 @@ const CreateSemesterModal = ({
 
     getAllTracks();
     const currentYear = new Date().getFullYear();
-    setStartYear(() => (currentYear - 1).toString());
+    setStartYear(() => (currentYear).toString());
   }, []);
 
   useEffect(() => {
@@ -466,12 +467,14 @@ const CreateSemesterModal = ({
                       <div className="relative w-full">
                         <input
                           onChange={(e) => setStartYear(() => e.target.value)}
+                          onKeyDown={numbersOnly}
                           value={startYear}
                           className={
                             !schoolYearError
                               ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                               : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                           }
+                          maxLength={4}
                         />
                         {/* HERE */}
                         {schoolYearError && (
