@@ -29,6 +29,7 @@ const CreateSemesterModal = ({
   const [errorSection, setErrorSection] = useState(false);
 
   const [tracks, setTracks] = useState([]);
+  const [sections, setSections] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -40,6 +41,8 @@ const CreateSemesterModal = ({
   const [pmTimeOutErrorMessage, setPmTimeOutErrorMessage] = useState("");
   const [schoolYearError, setSchoolYearError] = useState("");
   const [lastSelectedMeridiem, setLastSelectedMeridiem] = useState("");
+
+  const [filteredSections, setFilteredSections] = useState([]);
 
   // const { semesterList, dispatch } = useContext(SemesterContext);
 
@@ -61,7 +64,7 @@ const CreateSemesterModal = ({
 
     getAllTracks();
     const currentYear = new Date().getFullYear();
-    setStartYear(() => (currentYear).toString());
+    setStartYear(() => currentYear.toString());
   }, []);
 
   useEffect(() => {
@@ -72,6 +75,47 @@ const CreateSemesterModal = ({
       }
     });
   }, [track]);
+
+  useEffect(() => {
+    const getAllSections = async () => {
+      try {
+        const response = await axiosClient.get("/section");
+        if (response.status === 200 && response.data.length) {
+          const sections = response.data;
+          const filtered = sections.filter((section) => section.grade === 12);
+          setSections(() => sections);
+          setFilteredSections(filtered);
+          setSection(filtered[0].section);
+        } else {
+          setShowErrorModal(true);
+        }
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
+    };
+    getAllSections();
+  }, []);
+
+  useEffect(() => {
+    if (sections) {
+      const filtered = sections.filter(
+        (section) => section.grade == gradeLevel
+      );
+      const sorted = filtered.sort((a, b) => {
+        let fa = a.section.toLowerCase(),
+          fb = b.section.toLowerCase();
+
+        if (fa < fb) {
+          return -1;
+        }
+        if (fa > fb) {
+          return 1;
+        }
+        return 0;
+      });
+      setFilteredSections(sorted);
+    }
+  }, [gradeLevel, sections]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -247,10 +291,9 @@ const CreateSemesterModal = ({
     if (startYear < currentYear) {
       setSchoolYearError("Invalid school year.");
     } else {
-      setEndYear(parseInt(startYear) + 1)
+      setEndYear(parseInt(startYear) + 1);
       setSchoolYearError("");
     }
-
   }, [startYear]);
 
   return (
@@ -427,7 +470,7 @@ const CreateSemesterModal = ({
                 <div className="flex space-x-3">
                   <div className="w-full">
                     <label>Section</label>
-                    <input
+                    <select
                       onChange={(e) => setSection(() => e.target.value)}
                       value={section}
                       type="text"
@@ -436,7 +479,18 @@ const CreateSemesterModal = ({
                           ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                           : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                       }
-                    />
+                    >
+                      {filteredSections &&
+                        filteredSections.map((section, index) => (
+                          <option
+                            key={section._id}
+                            value={section.section}
+                            defaultValue={index === 0 ? true : false}
+                          >
+                            {section.section}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
                 {errorSection && (

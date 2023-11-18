@@ -30,6 +30,7 @@ export default function EditSemesterModal({
   const [errorSection, setErrorSection] = useState(false);
 
   const [tracks, setTracks] = useState([]);
+  const [sections, setSections] = useState([]);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const [errorModalMessage, setErrorModalMessage] = useState("");
@@ -42,6 +43,8 @@ export default function EditSemesterModal({
 
   const [years, setYears] = useState([]);
   const [months, setMonths] = useState([]);
+
+  const [filteredSections, setFilteredSections] = useState([]);
 
   useEffect(() => {
     const getAllTracks = async () => {
@@ -95,6 +98,45 @@ export default function EditSemesterModal({
     const currentYear = new Date().getFullYear();
     setStartYear(() => (currentYear - 1).toString());
   }, [semesterId]);
+
+  useEffect(() => {
+    const getAllSections = async () => {
+      try {
+        const response = await axiosClient.get("/section");
+        if (response.status === 200 && response.data.length) {
+          const sections = response.data;
+          const filtered = sections.filter((section) => section.grade === 12);
+          setSections(() => sections);
+          setFilteredSections(filtered);
+          setSection(filtered[0].section);
+        }
+      } catch (error) {
+        setErrorModalMessage(error.message);
+      }
+    };
+    getAllSections();
+  }, []);
+
+  useEffect(() => {
+    if (sections) {
+      const filtered = sections.filter(
+        (section) => section.grade == gradeLevel
+      );
+      const sorted = filtered.sort((a, b) => {
+        let fa = a.section.toLowerCase(),
+          fb = b.section.toLowerCase();
+
+        if (fa < fb) {
+          return -1;
+        }
+        if (fa > fb) {
+          return 1;
+        }
+        return 0;
+      });
+      setFilteredSections(sorted);
+    }
+  }, [gradeLevel, sections]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -453,7 +495,7 @@ export default function EditSemesterModal({
                 <div className="flex space-x-3">
                   <div className="w-full">
                     <label>Section</label>
-                    <input
+                    <select
                       onChange={(e) => setSection(() => e.target.value)}
                       value={section}
                       type="text"
@@ -462,7 +504,18 @@ export default function EditSemesterModal({
                           ? "px-2 py-2 w-full bg-gray-100 rounded-md"
                           : "px-2 py-2 w-full bg-gray-100 border border-red-500 rounded-md"
                       }
-                    />
+                    >
+                      {filteredSections &&
+                        filteredSections.map((section, index) => (
+                          <option
+                            key={section._id}
+                            value={section.section}
+                            defaultValue={index === 0 ? true : false}
+                          >
+                            {section.section}
+                          </option>
+                        ))}
+                    </select>
                   </div>
                 </div>
                 {errorSection && (
