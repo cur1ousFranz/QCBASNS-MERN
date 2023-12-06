@@ -3,6 +3,7 @@ import getWeekdaysAndFormattedDatesInMonth from "../../utils/GetWeekDaysInMonth"
 import { REPORT } from "../../constants/Report";
 import getWeeksInMonth from "../../utils/GetWeekDaysInWeek";
 import { countResult, getStudentsRecord } from "../../utils/ReportUtil";
+import ReportDetailsModal from "../modals/ReportDetailsModal";
 
 export default function MonthlyReportTable({
   selectedMonthIndex,
@@ -16,6 +17,8 @@ export default function MonthlyReportTable({
   const [weekDaysAndDates, setWeekDaysAndDates] = useState([]);
   const [monthlyAttendance, setMonthlyAttendance] = useState([]);
   const [selectedRow, setSelectedRow] = useState("");
+  const [showReportDetailsModal, setShowReportDetailsModal] = useState(false);
+  const [studentReportDetails, setStudentReportDetails] = useState({})
 
   useEffect(() => {
     if (tableShow === REPORT.Monthly) {
@@ -39,7 +42,11 @@ export default function MonthlyReportTable({
 
   useEffect(() => {
     // Set inital attendance record
-    if (weekDaysAndDates && monthAttendances.length && currentSelectedSemester) {
+    if (
+      weekDaysAndDates &&
+      monthAttendances.length &&
+      currentSelectedSemester
+    ) {
       const studentsListInitialRecord = getStudentsRecord(
         weekDaysAndDates,
         monthAttendances,
@@ -116,6 +123,10 @@ export default function MonthlyReportTable({
                         <td
                           key={full_name + dateValues + index}
                           className="text-xs border"
+                          onClick={() => {
+                            setStudentReportDetails({...dateValues, full_name})
+                            setShowReportDetailsModal(true)
+                          }}
                         >
                           {dateValues.record === REPORT.NoRecord && (
                             <div className="p-3 text-center text-gray-400">
@@ -157,13 +168,26 @@ export default function MonthlyReportTable({
                     </tr>
                   );
                 })}
-                {monthlyAttendance && monthlyAttendance.length === 0 && (
-                  <tr>
-                    <td colSpan={5 + weekDaysAndDates.length} className="py-2 border-t text-center">No data to show.</td>
-                  </tr>
-                )}
+            {monthlyAttendance && monthlyAttendance.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5 + weekDaysAndDates.length}
+                  className="py-2 border-t text-center"
+                >
+                  No data to show.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
+
+        {showReportDetailsModal && (
+          <ReportDetailsModal
+            toggleModal={setShowReportDetailsModal}
+            title="Record"
+            body={studentReportDetails}
+          />
+        )}
       </div>
     </>
   );
